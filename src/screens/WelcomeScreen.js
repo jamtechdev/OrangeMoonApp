@@ -29,13 +29,13 @@ function WelcomeScreen({navigation}) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Say hello to your new app</Text>
       <FastImage
         style={{ width: 200, height: 200 }}
         source={{
           uri: 'https://img1.wsimg.com/isteam/ip/e5efb5b2-e0c9-49e4-8d56-56ef04be68f7/Orange-Moon-Student-Safety-Services.png/:/rs=w:311,h:200,cg:true,m/cr=w:311,h:200/qt=q:95',
         }}
       />
+      <Text style={styles.title}>Welcome Orange Moon</Text>
       <TouchableOpacity
         style={styles.loginContainer}
         onPress={() => navigation.navigate('Login')}>

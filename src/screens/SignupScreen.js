@@ -16,6 +16,7 @@ function SignupScreen({navigation}) {
 
   const onRegister = () =>{
       console.log(fullname, phone, email , password)
+    navigation.navigate('DrawerStack', { fullname });
 
   }
 

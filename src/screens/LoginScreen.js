@@ -24,7 +24,7 @@ function LoginScreen({navigation}) {
 
 
   const onLogin =()=>{
-
+    navigation.navigate('DrawerStack');
   }
 
 
@@ -131,8 +131,8 @@ const styles = StyleSheet.create({
   },
   facebookContainer: {
     alignItems: 'center',
-    width: 192,
-    backgroundColor: AppStyles.color.facebook,
+    width: AppStyles.buttonWidth.main,
+    backgroundColor: AppStyles.color.tint,
     borderRadius: AppStyles.borderRadius.main,
     padding: 10,
     marginTop: 30,
