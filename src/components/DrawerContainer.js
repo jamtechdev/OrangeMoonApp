@@ -20,6 +20,20 @@ export default function DrawerContainer({navigation}) {
                 navigation.navigate('LoginStack');
           }}
         />
+          <MenuButton
+          title="About"
+          source={AppIcon.images.defaultUser}
+          onPress={() => {
+                navigation.navigate('AboutStack');
+          }}
+        />
+          <MenuButton
+          title="Contact"
+          source={AppIcon.images.defaultUser}
+          onPress={() => {
+                navigation.navigate('ContactStack');
+          }}
+        />
       </View>
     </View>
   );

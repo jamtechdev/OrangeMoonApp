@@ -8,6 +8,8 @@ import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
+import AboutScreen from '../screens/AboutScreen';
+import ContactScreen from '../screens/ContactScreen';
 import {AppIcon, AppStyles} from '../AppStyles';
 import {Configuration} from '../Configuration';
 import DrawerContainer from '../components/DrawerContainer';
@@ -52,13 +54,60 @@ const HomeStack = () => (
     />
   </Stack.Navigator>
 );
+const AboutStack = () => (
+  <Stack.Navigator
+    initialRouteName="About"
+    screenOptions={{
+      headerTintColor: 'red',
+      headerTitleStyle: styles.headerTitleStyle,
+      headerMode: 'float',
+      tabBarIcon: 'ios-list'
+    }}>
+      <Stack.Screen
+      name="About"
+      component={AboutScreen}
+      options={({navigation}) => ({
+        headerLeft: () => (
+          <Pressable onPress={() => navigation.openDrawer()}>
+            <Image style={styles.iconStyle} source={AppIcon.images.menu} />
+          </Pressable>
+        ),
+        headerLeftContainerStyle: {paddingLeft: 10},
+      })}
+    />
+  </Stack.Navigator>
+);
+
+const ContactStack = () => (
+  <Stack.Navigator
+    initialRouteName="Contact"
+    screenOptions={{
+      headerTintColor: 'red',
+      headerTitleStyle: styles.headerTitleStyle,
+      headerMode: 'float',
+    }}>
+      <Stack.Screen
+      name="Contact"
+      component={ContactScreen}
+      options={({navigation}) => ({
+        headerLeft: () => (
+          <Pressable onPress={() => navigation.openDrawer()}>
+            <Image style={styles.iconStyle} source={AppIcon.images.menu} />
+          </Pressable>
+        ),
+        headerLeftContainerStyle: {paddingLeft: 10},
+      })}
+    />
+  </Stack.Navigator>
+);
+
 
 const BottomTab = createBottomTabNavigator();
 
 const TabNavigator = () => (
   <BottomTab.Navigator
     initialRouteName="Home"
-    screenOptions={{
+    screenOptions={({ route})=>({
       tabBarInactiveTintColor: 'grey',
       tabBarActiveTintColor: AppStyles.color.tint,
       tabBarIcon: ({focused}) => {
@@ -67,16 +116,21 @@ const TabNavigator = () => (
             style={{
               tintColor: focused ? AppStyles.color.tint : AppStyles.color.grey,
             }}
-            source={AppIcon.images.home}
+            source={route.name === 'HomeStack' ? AppIcon.images.home : AppIcon.images.home}
           />
         );
       },
       headerShown: false,
-    }}>
+    })}>
     <BottomTab.Screen
       options={{tabBarLabel: 'Home'}}
       name="HomeStack"
       component={HomeStack}
+    />
+     <BottomTab.Screen
+      options={{tabBarLabel: 'About'}}
+      name="AboutStack"
+      component={AboutStack}
     />
   </BottomTab.Navigator>
 );
@@ -94,6 +148,7 @@ const DrawerStack = () => (
       <DrawerContainer navigation={navigation} />
     )}>
     <Drawer.Screen name="Tab" component={TabNavigator} />
+    <Drawer.Screen name="ContactStack" component={ContactStack} />
   </Drawer.Navigator>
 );
 
