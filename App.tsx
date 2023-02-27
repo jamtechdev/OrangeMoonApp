@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 // /**
 //  * Sample React Native App
 //  * https://github.com/facebook/react-native
@@ -122,21 +123,19 @@
 
 import React from 'react';
 import {AppRegistry} from 'react-native';
-import thunk from 'redux-thunk';
 import {Provider} from 'react-redux';
-import {createStore, applyMiddleware} from 'redux';
-
-import AppReducer from './src/reducers';
+import {store, persistor} from './src/reducers/store';
 import AppNavigator from './src/navigations/AppNavigation';
-
-const store = createStore(AppReducer, applyMiddleware(thunk));
+import {PersistGate} from 'redux-persist/integration/react';
 
 console.disableYellowBox = true;
 
 function App() {
   return (
     <Provider store={store}>
-      <AppNavigator />
+      <PersistGate loading={null} persistor={persistor}>
+        <AppNavigator />
+      </PersistGate>
     </Provider>
   );
 }

@@ -7,12 +7,12 @@ com.orangmoon.app-jetified-annotation-experimental-1.1.0-5 C:\Users\pc\.gradle\c
 com.orangmoon.app-transition-1.2.0-6 C:\Users\pc\.gradle\caches\transforms-3\3444de6ee31c32042bfac5bde7fd8821\transformed\transition-1.2.0\res
 com.orangmoon.app-appcompat-1.4.1-7 C:\Users\pc\.gradle\caches\transforms-3\390fec0296bc36742fba54a420c04065\transformed\appcompat-1.4.1\res
 com.orangmoon.app-lifecycle-viewmodel-2.3.1-8 C:\Users\pc\.gradle\caches\transforms-3\3a0f4cd0fcb4e59d0eeaec7328d4dce2\transformed\lifecycle-viewmodel-2.3.1\res
-com.orangmoon.app-jetified-drawee-2.6.0-9 C:\Users\pc\.gradle\caches\transforms-3\64ab442615f3756bb46bd53f4069aea2\transformed\jetified-drawee-2.6.0\res
-com.orangmoon.app-jetified-glide-4.12.0-10 C:\Users\pc\.gradle\caches\transforms-3\67df54b9367780f90e27c3e476d14740\transformed\jetified-glide-4.12.0\res
-com.orangmoon.app-jetified-appcompat-resources-1.4.1-11 C:\Users\pc\.gradle\caches\transforms-3\793b781559eb20770a4345f46214991a\transformed\jetified-appcompat-resources-1.4.1\res
-com.orangmoon.app-jetified-autofill-1.1.0-12 C:\Users\pc\.gradle\caches\transforms-3\79c6c13168c9a0f100196d628b24bf20\transformed\jetified-autofill-1.1.0\res
-com.orangmoon.app-lifecycle-runtime-2.4.0-13 C:\Users\pc\.gradle\caches\transforms-3\872347ca18edf42f726b40efc9fc01d0\transformed\lifecycle-runtime-2.4.0\res
-com.orangmoon.app-jetified-core-ktx-1.5.0-14 C:\Users\pc\.gradle\caches\transforms-3\89454c7f4ac0b9e53489a333b944caf5\transformed\jetified-core-ktx-1.5.0\res
+com.orangmoon.app-jetified-core-ktx-1.6.0-9 C:\Users\pc\.gradle\caches\transforms-3\4587de546ab4deb1fbfdb6067cba3bc5\transformed\jetified-core-ktx-1.6.0\res
+com.orangmoon.app-jetified-drawee-2.6.0-10 C:\Users\pc\.gradle\caches\transforms-3\64ab442615f3756bb46bd53f4069aea2\transformed\jetified-drawee-2.6.0\res
+com.orangmoon.app-jetified-glide-4.12.0-11 C:\Users\pc\.gradle\caches\transforms-3\67df54b9367780f90e27c3e476d14740\transformed\jetified-glide-4.12.0\res
+com.orangmoon.app-jetified-appcompat-resources-1.4.1-12 C:\Users\pc\.gradle\caches\transforms-3\793b781559eb20770a4345f46214991a\transformed\jetified-appcompat-resources-1.4.1\res
+com.orangmoon.app-jetified-autofill-1.1.0-13 C:\Users\pc\.gradle\caches\transforms-3\79c6c13168c9a0f100196d628b24bf20\transformed\jetified-autofill-1.1.0\res
+com.orangmoon.app-lifecycle-runtime-2.4.0-14 C:\Users\pc\.gradle\caches\transforms-3\872347ca18edf42f726b40efc9fc01d0\transformed\lifecycle-runtime-2.4.0\res
 com.orangmoon.app-cardview-1.0.0-15 C:\Users\pc\.gradle\caches\transforms-3\8af4bcd0e7bd4e899c6f74ff0520d65e\transformed\cardview-1.0.0\res
 com.orangmoon.app-jetified-react-android-0.71.3-debug-16 C:\Users\pc\.gradle\caches\transforms-3\8b07754142de06fa88289354ebe36ee0\transformed\jetified-react-android-0.71.3-debug\res
 com.orangmoon.app-jetified-flipper-0.125.0-17 C:\Users\pc\.gradle\caches\transforms-3\9112988e20ad25c32468b7d009f10311\transformed\jetified-flipper-0.125.0\res
@@ -23,15 +23,16 @@ com.orangmoon.app-coordinatorlayout-1.1.0-21 C:\Users\pc\.gradle\caches\transfor
 com.orangmoon.app-jetified-viewpager2-1.0.0-22 C:\Users\pc\.gradle\caches\transforms-3\e02b5f8f97fcd8bced077fff18b23eb1\transformed\jetified-viewpager2-1.0.0\res
 com.orangmoon.app-jetified-emoji2-views-helper-1.0.0-23 C:\Users\pc\.gradle\caches\transforms-3\e856aa0533ca710bee3c904b6895d956\transformed\jetified-emoji2-views-helper-1.0.0\res
 com.orangmoon.app-material-1.1.0-24 C:\Users\pc\.gradle\caches\transforms-3\ff06b511a3b64a9f992a538e90dfb504\transformed\material-1.1.0\res
-com.orangmoon.app-pngs-25 D:\orangMoon\OrangMoon\android\app\build\generated\res\pngs\debug
-com.orangmoon.app-resValues-26 D:\orangMoon\OrangMoon\android\app\build\generated\res\resValues\debug
-com.orangmoon.app-rs-27 D:\orangMoon\OrangMoon\android\app\build\generated\res\rs\debug
-com.orangmoon.app-mergeDebugResources-28 D:\orangMoon\OrangMoon\android\app\build\intermediates\incremental\debug\mergeDebugResources\merged.dir
-com.orangmoon.app-mergeDebugResources-29 D:\orangMoon\OrangMoon\android\app\build\intermediates\incremental\debug\mergeDebugResources\stripped.dir
-com.orangmoon.app-merged_res-30 D:\orangMoon\OrangMoon\android\app\build\intermediates\merged_res\debug
-com.orangmoon.app-debug-31 D:\orangMoon\OrangMoon\android\app\src\debug\res
-com.orangmoon.app-main-32 D:\orangMoon\OrangMoon\android\app\src\main\res
-com.orangmoon.app-packaged_res-33 D:\orangMoon\OrangMoon\node_modules\@react-native-async-storage\async-storage\android\build\intermediates\packaged_res\debug
-com.orangmoon.app-packaged_res-34 D:\orangMoon\OrangMoon\node_modules\react-native-fast-image\android\build\intermediates\packaged_res\debug
-com.orangmoon.app-packaged_res-35 D:\orangMoon\OrangMoon\node_modules\react-native-safe-area-context\android\build\intermediates\packaged_res\debug
-com.orangmoon.app-packaged_res-36 D:\orangMoon\OrangMoon\node_modules\react-native-screens\android\build\intermediates\packaged_res\debug
+com.orangmoon.app-pngs-25 D:\Work directory\OrangeMoonApp\android\app\build\generated\res\pngs\debug
+com.orangmoon.app-resValues-26 D:\Work directory\OrangeMoonApp\android\app\build\generated\res\resValues\debug
+com.orangmoon.app-rs-27 D:\Work directory\OrangeMoonApp\android\app\build\generated\res\rs\debug
+com.orangmoon.app-mergeDebugResources-28 D:\Work directory\OrangeMoonApp\android\app\build\intermediates\incremental\debug\mergeDebugResources\merged.dir
+com.orangmoon.app-mergeDebugResources-29 D:\Work directory\OrangeMoonApp\android\app\build\intermediates\incremental\debug\mergeDebugResources\stripped.dir
+com.orangmoon.app-merged_res-30 D:\Work directory\OrangeMoonApp\android\app\build\intermediates\merged_res\debug
+com.orangmoon.app-debug-31 D:\Work directory\OrangeMoonApp\android\app\src\debug\res
+com.orangmoon.app-main-32 D:\Work directory\OrangeMoonApp\android\app\src\main\res
+com.orangmoon.app-packaged_res-33 D:\Work directory\OrangeMoonApp\node_modules\@react-native-async-storage\async-storage\android\build\intermediates\packaged_res\debug
+com.orangmoon.app-packaged_res-34 D:\Work directory\OrangeMoonApp\node_modules\react-native-fast-image\android\build\intermediates\packaged_res\debug
+com.orangmoon.app-packaged_res-35 D:\Work directory\OrangeMoonApp\node_modules\react-native-gesture-handler\android\build\intermediates\packaged_res\debug
+com.orangmoon.app-packaged_res-36 D:\Work directory\OrangeMoonApp\node_modules\react-native-safe-area-context\android\build\intermediates\packaged_res\debug
+com.orangmoon.app-packaged_res-37 D:\Work directory\OrangeMoonApp\node_modules\react-native-screens\android\build\intermediates\packaged_res\debug

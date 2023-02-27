@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable prettier/prettier */
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
@@ -7,6 +9,7 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
+import { connect, useSelector } from 'react-redux';
 import FastImage from 'react-native-fast-image';
 // import auth from '@react-native-firebase/auth';
 // import firebase from '@react-native-firebase/app';
@@ -17,13 +20,16 @@ import {login} from '../reducers';
 import {AppStyles} from '../AppStyles';
 
 function WelcomeScreen({navigation}) {
+  const auth = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(true);
-
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  
-  // }, []);
+  useEffect(() => {
+    if (auth?.isLoggedIn == true){
+      console.log(auth)
+      navigation.navigate('DrawerStack');
+    }
+  }, []);
 
 
 
@@ -100,4 +106,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WelcomeScreen;
+
+
+const mapStateToProps = (state) => ({
+  user: state.auth.user,
+});
+
+export default connect(mapStateToProps)(WelcomeScreen);

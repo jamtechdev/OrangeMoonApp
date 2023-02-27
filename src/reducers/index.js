@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import {combineReducers} from 'redux';
-import AsyncStorage from '@react-native-async-storage/async-storage'
+
 
 const LOGIN = 'LOGIN';
 const LOGOUT = 'LOGOUT';
@@ -19,16 +19,18 @@ export const logout = (user) => ({
 function auth(state = initialAuthState, action) {
   switch (action.type) {
     case LOGIN:
-      return {...state, isLoggedIn: true, user: action.user};
+      console.log(action,"reducer")
+      return {...state, 
+        isLoggedIn: true,
+        user: action.user};
     case LOGOUT:
-      AsyncStorage.removeItem('@loggedInUserID:id');
-      AsyncStorage.removeItem('@loggedInUserID:key');
-      AsyncStorage.removeItem('@loggedInUserID:password');
       return {...state, isLoggedIn: false, user: {}};
     default:
       return state;
   }
 }
+
+
 
 const AppReducer = combineReducers({
   auth,

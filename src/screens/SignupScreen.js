@@ -1,11 +1,11 @@
 /* eslint-disable prettier/prettier */
 import React, {useState} from 'react';
-import {Alert, StyleSheet, Text, TextInput, View, TouchableOpacity} from 'react-native';
-// import Button from 'react-native-button';
+import { Alert, StyleSheet, Text, Button, TextInput, View, TouchableOpacity} from 'react-native';
+import axios from 'axios';
 import {AppStyles} from '../AppStyles';
 import {useDispatch} from 'react-redux';
 import {login} from '../reducers';
-
+import { useForm, Controller } from "react-hook-form";
 function SignupScreen({navigation}) {
   const [fullname, setFullname] = useState('');
   const [phone, setPhone] = useState('');
@@ -19,54 +19,102 @@ function SignupScreen({navigation}) {
     navigation.navigate('DrawerStack', { fullname });
 
   }
+  const { control, handleSubmit, formState: { errors } } = useForm();
+  const onSubmit = data =>{
+    console.log(data);
 
+    axios.post('https://63fc84bb859df29986be3dac.mockapi.io/user',data).then(res=>{
+      console.log(res);
+      if (res.status == '201'){
+        if(res.data.role == 'client'){
+          navigation.navigate('DrawerStack');
+        }
+      }
+    }).catch(error=>console.log(error));
+
+  }
   return (
     <View style={styles.container}>
       <Text style={[styles.title, styles.leftTitle]}>Create new account</Text>
       <View style={styles.InputContainer}>
-        <TextInput
-          style={styles.body}
-          placeholder="Full Name"
-          onChangeText={setFullname}
-          value={fullname}
-          placeholderTextColor={AppStyles.color.grey}
-          underlineColorAndroid="transparent"
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              style={styles.body}
+              placeholder="Full Name"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+          name="name"
+        />
+        </View>
+      {errors.name && <Text>This is required.</Text>}
+        <View style={styles.InputContainer}>
+        <Controller
+          control={control}
+          rules={{
+            maxLength: 100,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              style={styles.body}
+              placeholder="email"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+          name="email"
         />
       </View>
+        {errors.email && <Text>This is required.</Text>}
       <View style={styles.InputContainer}>
-        <TextInput
-          style={styles.body}
-          placeholder="Phone Number"
-          onChangeText={setPhone}
-          value={phone}
-          placeholderTextColor={AppStyles.color.grey}
-          underlineColorAndroid="transparent"
+        <Controller
+          control={control}
+          rules={{
+            maxLength: 100,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              style={styles.body}
+              placeholder="password"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+          name="password"
         />
       </View>
+        {errors.password && <Text>This is required.</Text>}
       <View style={styles.InputContainer}>
-        <TextInput
-          style={styles.body}
-          placeholder="E-mail Address"
-          onChangeText={setEmail}
-          value={email}
-          placeholderTextColor={AppStyles.color.grey}
-          underlineColorAndroid="transparent"
+        <Controller
+          control={control}
+          rules={{
+            maxLength: 100,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              style={styles.body}
+              placeholder="admin or client "
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+          name="role"
         />
       </View>
-      <View style={styles.InputContainer}>
-        <TextInput
-          style={styles.body}
-          placeholder="Password"
-          secureTextEntry={true}
-          onChangeText={setPassword}
-          value={password}
-          placeholderTextColor={AppStyles.color.grey}
-          underlineColorAndroid="transparent"
-        />
-      </View>
+      {errors.role && <Text>This is required.</Text>}
       <TouchableOpacity
-        style={[styles.facebookContainer, {marginTop: 50}]}
-        onPress={() => onRegister()}>
+        style={[styles.facebookContainer, { marginTop: 50 }]}
+        onPress={handleSubmit(onSubmit)}>
         <Text style={styles.facebookText}>Sign Up</Text>
       </TouchableOpacity>
     </View>

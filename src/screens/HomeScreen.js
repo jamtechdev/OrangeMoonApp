@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, {useLayoutEffect} from 'react';
 import {ScrollView, StyleSheet, Text} from 'react-native';
 import {connect, useSelector} from 'react-redux';
@@ -15,7 +16,7 @@ function HomeScreen({navigation}) {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Welcome {auth.user?.fullname ?? 'User'}</Text>
+      <Text style={styles.title}>Welcome {auth.user?.name ?? 'User'}</Text>
     </ScrollView>
   );
 }

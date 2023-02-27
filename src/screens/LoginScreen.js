@@ -14,6 +14,7 @@ import {AppStyles} from '../AppStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch} from 'react-redux';
 import {login} from '../reducers';
+import axios from 'axios';
 
 function LoginScreen({navigation}) {
   const [loading, setLoading] = useState(false);
@@ -24,8 +25,20 @@ function LoginScreen({navigation}) {
 
 
   const onLogin =()=>{
-    navigation.navigate('DrawerStack');
+
+    axios.get('https://63fc84bb859df29986be3dac.mockapi.io/user/1').then(res => {
+      console.log(res);
+      if (res.status == '200') {
+        if (res.data.role == 'admin') {
+          navigation.navigate('DrawerStack');
+          dispatch(login(res.data))
+
+        }
+      }
+    }).catch(error => console.log(error));
+    // navigation.navigate('DrawerStack');
   }
+
 
 
   return (

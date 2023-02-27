@@ -1,3 +1,6 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable prettier/prettier */
 import React, {useLayoutEffect} from 'react';
 import {ScrollView, StyleSheet, Text} from 'react-native';
 import {connect, useSelector} from 'react-redux';
@@ -15,7 +18,7 @@ function ContactScreen({navigation}) {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Welcome on Contact Screen {auth.user?.fullname ?? 'User'}</Text>
+      <Text style={styles.title}>Welcome on Contact Screen {auth.user?.name ?? 'User'}</Text>
     </ScrollView>
   );
 }

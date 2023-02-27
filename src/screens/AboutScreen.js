@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, {useLayoutEffect} from 'react';
 import {ScrollView, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {connect, useSelector} from 'react-redux';
@@ -18,7 +19,7 @@ function AboutScreen({navigation}) {
 
   return (
       <ScrollView style={styles.container}>
-      <Text style={styles.title}>Welcome to About Screen {auth.user?.fullname ?? 'User'}</Text>
+      <Text style={styles.title}>Welcome to About Screen {auth.user?.name ?? 'User'}</Text>
     </ScrollView>
   );
 }
