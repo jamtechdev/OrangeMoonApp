@@ -11,7 +11,8 @@ const initialState = {
     error: null,
 };
 
-const authReducer = (state = initialState, action) => {
+const authReducer = (state = initialState, action, token) => {
+    console.log(" here ,my scction", action.token)
     switch (action.type) {
         case LOGIN_SUCCESS:
             return {

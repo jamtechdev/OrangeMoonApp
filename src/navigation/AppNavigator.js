@@ -12,10 +12,14 @@ import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
-import AboutScreen from '../screens/AboutScreen';
-import ContactScreen from '../screens/ContactScreen';
+import BookingRequest from '../screens/BookingRequest';
+import ProfileScreen from '../screens/ProfileScreen';
+import forgetPasswordScreen from '../screens/forgetPasswordScreen';
+import ChatScreen from '../screens/Chat';
+import PaymentScreen from '../screens/PaymentScreen';
 import { AppIcon, AppStyles } from '../utils/AppStyles';
 import DrawerContainer from '../components/DrawerContainer';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Stack = createStackNavigator();
 
@@ -29,8 +33,9 @@ const LoginStack = () => (
             headerMode: 'float',
         }}>
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Signup" component={SignupScreen} />
+        <Stack.Screen name="Sign-In" component={LoginScreen} />
+        <Stack.Screen name="Sign-Up" component={SignupScreen} />
+        <Stack.Screen name="forgetPassword" component={forgetPasswordScreen} />
     </Stack.Navigator>
 );
 
@@ -57,17 +62,17 @@ const HomeStack = () => (
     </Stack.Navigator>
 );
 
-const AboutStack = () => (
+const BookingRequestStack = () => (
     <Stack.Navigator
-        initialRouteName="About"
+        initialRouteName="Booking"
         screenOptions={{
             headerTintColor: 'red',
             headerTitleStyle: styles.headerTitleStyle,
             headerMode: 'float',
         }}>
         <Stack.Screen
-            name="About"
-            component={AboutScreen}
+            name="Booking"
+            component={BookingRequest}rt
             options={({ navigation }) => ({
                 headerLeft: () => (
                     <Pressable onPress={() => navigation.openDrawer()}>
@@ -75,22 +80,23 @@ const AboutStack = () => (
                     </Pressable>
                 ),
                 headerLeftContainerStyle: { paddingLeft: 10 },
+                title: 'Booking Request',
             })}
         />
     </Stack.Navigator>
 );
 
-const ContactStack = () => (
+const ChatStack = () => (
     <Stack.Navigator
-        initialRouteName="Contact"
+        initialRouteName="Chat"
         screenOptions={{
             headerTintColor: 'red',
             headerTitleStyle: styles.headerTitleStyle,
             headerMode: 'float',
         }}>
         <Stack.Screen
-            name="Contact"
-            component={ContactScreen}
+            name="Chat"
+            component={ChatScreen}
             options={({ navigation }) => ({
                 headerLeft: () => (
                     <Pressable onPress={() => navigation.openDrawer()}>
@@ -98,11 +104,70 @@ const ContactStack = () => (
                     </Pressable>
                 ),
                 headerLeftContainerStyle: { paddingLeft: 10 },
+                title: 'Chat',
+            })}
+        />
+    </Stack.Navigator>
+);
+const ProfileStack = () => (
+    <Stack.Navigator
+        initialRouteName="Profile"
+        screenOptions={{
+            headerTintColor: 'red',
+            headerTitleStyle: styles.headerTitleStyle,
+            headerMode: 'float',
+        }}>
+        <Stack.Screen
+            name="Profile"
+            component={ProfileScreen}
+            options={({ navigation }) => ({
+                headerLeft: () => (
+                    <Pressable onPress={() => navigation.openDrawer()}>
+                        <Image style={styles.iconStyle} source={AppIcon.images.menu} />
+                    </Pressable>
+                ),
+                headerLeftContainerStyle: { paddingLeft: 10 },
+                title: 'Profile',
             })}
         />
     </Stack.Navigator>
 );
 
+const PaymentStack = () => (
+    <Stack.Navigator
+        initialRouteName="Payment"
+        screenOptions={{
+            headerTintColor: 'red',
+            headerTitleStyle: styles.headerTitleStyle,
+            headerMode: 'float',
+        }}>
+        <Stack.Screen
+            name="Payment"
+            component={PaymentScreen}
+            options={({ navigation }) => ({
+                headerLeft: () => (
+                    <Pressable onPress={() => navigation.openDrawer()}>
+                        <Image style={styles.iconStyle} source={AppIcon.images.menu} />
+                    </Pressable>
+                ),
+                headerLeftContainerStyle: { paddingLeft: 10 },
+                title: 'Payment',
+            })}
+        />
+    </Stack.Navigator>
+);
+const getIconName = (name) => {
+    const { home, defaultUser, chat } = AppIcon.images;
+    if (name === 'HomeStack'){
+        return 'home';
+    } else if (name === 'BookingRequestStack'){
+        return 'book';
+    } else if (name === 'ProfileStack'){
+        return 'user-o';
+    } else {
+        return 'home';
+    }
+}
 const BottomTab = createBottomTabNavigator();
 
 const TabNavigator = () => (
@@ -113,16 +178,13 @@ const TabNavigator = () => (
             tabBarActiveTintColor: AppStyles.color.tint,
             tabBarIcon: ({ focused }) => {
                 return (
-                    <Image
-                        style={{
-                            tintColor: focused ? AppStyles.color.tint : AppStyles.color.grey,
-                        }}
-                        source={
-                            route.name === 'HomeStack'
-                                ? AppIcon.images.home
-                                : AppIcon.images.home
-                        }
-                    />
+                    // <Image
+                    //     style={{
+                    //         tintColor: focused ? AppStyles.color.tint : AppStyles.color.grey,
+                    //     }}
+                    //     source={}
+                    // />
+                    <Icon name={getIconName(route.name)} size={30} color={focused ? AppStyles.color.tint : AppStyles.color.grey} />
                 );
             },
             headerShown: false,
@@ -133,9 +195,14 @@ const TabNavigator = () => (
             component={HomeStack}
         />
         <BottomTab.Screen
-            options={{ tabBarLabel: 'About' }}
-            name="AboutStack"
-            component={AboutStack}
+            options={{ tabBarLabel: 'Booking Request' }}
+            name="BookingRequestStack"
+            component={BookingRequestStack}
+        />
+        <BottomTab.Screen
+            options={{ tabBarLabel: 'Profile' }}
+            name="ProfileStack"
+            component={ProfileStack}
         />
     </BottomTab.Navigator>
 );
@@ -152,17 +219,19 @@ const DrawerStack = () => (
             <DrawerContainer navigation={navigation} />
         )}>
         <Drawer.Screen name="Tab" component={TabNavigator} />
-        <Drawer.Screen name="ContactStack" component={ContactStack} />
+        <Drawer.Screen name="ChatStack" component={ChatStack} />
+        <Drawer.Screen name="PaymentStack" component={PaymentStack} />
     </Drawer.Navigator>
 );
 
 const AppNavigator = () => {
-    let userRole = useSelector(state => state.user); // Get user role from Redux store
+    let auth = useSelector((state) => state.auth); // Get user role from Redux store
+    const { token } = auth;
     // Render the appropriate navigation based on the user role
     return (
         <NavigationContainer>
             <Stack.Navigator
-                initialRouteName={userRole ? 'DrawerStack' : 'LoginStack'} // Check if user role exists
+                initialRouteName={token ? 'DrawerStack' : 'LoginStack'} // Check if user role exists
                 screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="LoginStack" component={LoginStack} />
                 <Stack.Screen name="DrawerStack" component={DrawerStack} />

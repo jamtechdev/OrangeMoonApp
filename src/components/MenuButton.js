@@ -1,27 +1,46 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable prettier/prettier */
 import React from 'react';
 import {Image, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 import {AppStyles} from '../utils/AppStyles';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function MenuButton(props) {
+  const { active, icon, onPress, title } = props; 
   return (
     <TouchableHighlight
-      onPress={props.onPress}
-      style={styles.btnClickContain}
+      onPress={onPress}
+      style={active ? styles.btnClickContainActive : styles.btnClickContain}
       underlayColor="rgba(128, 128, 128, 0.1)">
       <View style={styles.btnContainer}>
-        <Image source={props.source} style={styles.btnIcon} />
-        <Text style={styles.btnText}>{props.title}</Text>
+        <Icon
+          name={icon}
+          color={active ? AppStyles.color.tint : AppStyles.color.white}
+          size={25}
+        />
+        <Text style={active ? styles.btnTextActive : styles.btnText}>{title}</Text>
       </View>
     </TouchableHighlight>
   );
 }
 
 const styles = StyleSheet.create({
+  btnClickContainActive: {
+    flexDirection: 'row',
+    padding: 10,
+    backgroundColor: '#fff',
+    paddingHorizontal: 30,
+    borderBottomWidth: 1, 
+    paddingVertical:15,
+  },
   btnClickContain: {
     flexDirection: 'row',
-    padding: 5,
-    marginTop: 5,
-    marginBottom: 5,
+    padding: 10,
+    // marginTop: 5,
+    // marginBottom: 10,
+    paddingHorizontal: 30,
+    borderBottomWidth:1,
+    paddingVertical: 15, 
   },
   btnContainer: {
     flex: 1,
@@ -33,8 +52,15 @@ const styles = StyleSheet.create({
     width: 25,
   },
   btnText: {
-    fontSize: 16,
-    marginLeft: 10,
+    fontSize: 18,
+    marginLeft: 15,
     marginTop: 2,
+    color: AppStyles.color.white,
   },
+  btnTextActive:{
+    fontSize: 18,
+    marginLeft: 15,
+    marginTop: 2,
+    color: AppStyles.color.tint,
+  }
 });

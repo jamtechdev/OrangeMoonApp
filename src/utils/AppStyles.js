@@ -15,13 +15,16 @@ export const AppStyles = {
     title: "#464646",
     subtitle: "#545454",
     categoryTitle: "#161616",
+    primaryColor:'#f0443c',
     tint: "#ff5a66",
+    secondaryColor:'#201f2b',
     error:"#ff0000",
     description: "#bbbbbb",
     filterTitle: "#8a8a8a",
     starRating: "#2bdf85",
     location: "#a9a9a9",
-    white: "white",
+    white: "#fff",
+    black: '#000',
     facebook: "#4267b2",
     grey: "grey",
     greenBlue: "#00aea8",
@@ -59,10 +62,12 @@ export const AppIcon = {
     height: 25
   },
   images: {
+    logo: require(".././../assets/logo.png"),
     home: require(".././../assets/icons/home.png"),
     defaultUser: require(".././../assets/icons/default_user.jpg"),
     logout: require(".././../assets/icons/shutdown.png"),
-    menu: require(".././../assets/icons/menu.png")
+    menu: require(".././../assets/icons/menu.png"),
+    chat: require(".././../assets/icons/chat.png")
   }
 };
 

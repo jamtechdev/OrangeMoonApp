@@ -1,28 +1,23 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-undef */
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-trailing-spaces */
 import React, { useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  Alert,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
+import { View } from 'react-native';
+import { TextInput, Text, Checkbox, Button, Snackbar, HelperText } from 'react-native-paper';
 import { useForm, Controller } from "react-hook-form";
-import { AppStyles } from '../utils/AppStyles';
+import { AppStyles,AppIcon } from '../utils/AppStyles';
 import { connect } from 'react-redux';
 import { authService } from '../utils/_services/authService';
-import { useDispatch } from 'react-redux';
 import {loginSuccess } from '../redux/actions/authActions';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from "yup";
-
+import FastImage from 'react-native-fast-image';
+import globalStyles from '../utils/_css/globalStyle';
+import { Link } from '@react-navigation/native';
 function LoginScreen({ navigation, user, login  }) {
-  const dispatch = useDispatch();
   const [loading, setLoading] =useState(false);
+  const [visible, setVisible] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const validationSchema = Yup.object().shape({
@@ -46,31 +41,41 @@ function LoginScreen({ navigation, user, login  }) {
         setLoading(false);
         if (res && res.data && res.data.status === true) {
           const response = res.data;
-          login({payload:response?.data,token: response?.token})
+          const token = response?.token
+          // console.log('here my token', token)
+          login(response?.data, token)
           navigation.navigate('DrawerStack');
-        }else{
-          alert(res.message)
+        } else {
+          setVisible(true)
           console.log(res.message);
         }
       })
       .catch((err) => {
+        setVisible(true)
         setLoading(false);
-        console.log(err);
+        console.log(err,"error here ");
       });
   };
 
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.title, styles.leftTitle]}>Sign In</Text>
-      <View style={styles.InputContainer}>
+    <View style={globalStyles.container}>
+      <FastImage
+        style={globalStyles.logo}
+        source={AppIcon.images.logo}  
+      />
+      <Text style={[globalStyles.title, { marginTop: 70, marginBottom: 30 }]}>Sign-In here </Text>
         <Controller
           control={control}
           name="email"
           render={({ field: { onChange, onBlur, value } }) => (
              <TextInput
-              style={styles.body}
-              placeholder="E-mail or phone number"
+              style={globalStyles.inputStyle}
+              mode='outlined'
+              label='Email'
+              activeOutlineColor={AppStyles.color.secondaryColor}
+              outlineColor={AppStyles.color.secondaryColor}
+              placeholder="Enter your Email "
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
@@ -79,142 +84,87 @@ function LoginScreen({ navigation, user, login  }) {
         />
           )}
         />
-      </View>
-      {errors.email && <Text style={styles.errorMsg}>{errors.email.message}</Text>}
-      <View style={styles.InputContainer}>
+      {errors?.email && (
+        <HelperText type="error" visible={errors?.email}>
+          {errors?.email?.message}
+        </HelperText>
+      )}
         <Controller
           control={control}
           name="password"
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              style={styles.body}
               secureTextEntry={!showPassword}
-              placeholder="Password"
-              placeholderTextColor={AppStyles.color.grey}
-              underlineColorAndroid="transparent"
+              placeholder="Enter your Password"
+              style={globalStyles.inputStyle}
+              mode='outlined'
+              label='Password'
+              activeOutlineColor={AppStyles.color.secondaryColor}
+              outlineColor={AppStyles.color.secondaryColor}
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
+              placeholderTextColor={AppStyles.color.grey}
+              underlineColorAndroid="transparent"
+              right={<TextInput.Icon icon={showPassword ?"eye-off" : "eye"} onPress={()=>setShowPassword(!showPassword)} />}
             />
-            
           )}
-     
         />
-        {/* <TouchableOpacity
-          style={styles.toggleButton}
-          onPress={() => setShowPassword(!showPassword)}
-        >
-          <Text style={styles.toggleButtonText}>
-            {showPassword ? 'Hide' : 'Show'} Password
-          </Text>
-        </TouchableOpacity> */}
-      </View>
-      {errors.password && <Text style={styles.errorMsg}>{errors.password.message}</Text>}
-      <TouchableOpacity
-        style={[styles.facebookContainer, { marginTop: 50 }]}
-        onPress={handleSubmit(onSubmit)}>
-        <Text style={styles.facebookText}>Sign Up</Text>
-      </TouchableOpacity>
+      {errors?.password && (
+      <HelperText type="error" visible={errors?.password}>
+        {errors?.password?.message}
+      </HelperText>
+      )}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft:35, marginVertical:12 }}>
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center',  }}>
+          <Controller
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <Checkbox
+                status={value ? 'checked' : 'unchecked'}
+                onPress={() => onChange(!value)}
+                color={AppStyles.color.tint}
+              />
+            )}
+            name="myCheckbox"
+            defaultValue={false}
+          />
+          <Text > Remember me</Text>
+        </View>
+        <View style={{ flex: 1, marginLeft: 50,  }}>
+          {/* need to set use this ====>>>>> params: {id: 'jane' } */}
+          <Link to={{ screen: 'forgetPassword' }}>
+            <Text style={globalStyles.linkStyle}> ForgetPassword ?</Text>
+          </Link>
+        </View>
 
-      {loading ? (
-        <ActivityIndicator
-          style={{ marginTop: 30 }}
-          size="large"
-          animating={loading}
-          color={AppStyles.color.tint}
-        />
-      ) : null}
+      </View>
+      <Button style={globalStyles.inputStyle} loading={loading} textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" onPress={handleSubmit(onSubmit)}>
+        Sign-In
+      </Button>
+      <View style={{ marginTop : 10 }}>
+        <Link to={{ screen: 'Sign-Up' }}>
+          <Text style={globalStyles.linkStyle}> New client Sign-Up ?</Text>
+        </Link>
+      </View>
+
+      <Snackbar
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        duration={3000}
+     >
+        Email & Password does not match with our record
+      </Snackbar>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  or: {
-    color: 'black',
-    marginTop: 40,
-    marginBottom: 10,
-  },
-  title: {
-    fontSize: AppStyles.fontSize.title,
-    fontWeight: 'bold',
-    color: AppStyles.color.tint,
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  leftTitle: {
-    alignSelf: 'stretch',
-    textAlign: 'left',
-    marginLeft: 20,
-  },
-  content: {
-    paddingLeft: 50,
-    paddingRight: 50,
-    textAlign: 'center',
-    fontSize: AppStyles.fontSize.content,
-    color: AppStyles.color.text,
-  },
-  loginContainer: {
-    alignItems: 'center',
-    width: AppStyles.buttonWidth.main,
-    backgroundColor: AppStyles.color.tint,
-    borderRadius: AppStyles.borderRadius.main,
-    padding: 10,
-    marginTop: 30,
-  },
-  loginText: {
-    color: AppStyles.color.white,
-  },
-  placeholder: {
-    color: 'red',
-  },
-  InputContainer: {
-    width: AppStyles.textInputWidth.main,
-    marginTop: 30,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: AppStyles.color.grey,
-    borderRadius: AppStyles.borderRadius.main,
-  },
-  body: {
-    height: 42,
-    paddingLeft: 20,
-    paddingRight: 20,
-    color: AppStyles.color.text,
-  },
-  facebookContainer: {
-    alignItems: 'center',
-    width: AppStyles.buttonWidth.main,
-    backgroundColor: AppStyles.color.tint,
-    borderRadius: AppStyles.borderRadius.main,
-    padding: 10,
-    marginTop: 30,
-  },
-  facebookText: {
-    color: AppStyles.color.white,
-  },
-  googleContainer: {
-    width: 192,
-    height: 48,
-    marginTop: 30,
-  },
-  googleText: {
-    color: AppStyles.color.white,
-  },
-  errorMsg:{
-    color: AppStyles.color.error,
-  }
-});
 
 const mapStateToProps = (state) => ({
   user: state.auth.user,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  login: (response) => dispatch(loginSuccess(response)),
+  login: (response, token) => dispatch(loginSuccess(response, token)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);

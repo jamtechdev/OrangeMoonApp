@@ -1,71 +1,104 @@
+/* eslint-disable jsx-quotes */
+/* eslint-disable prettier/prettier */
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-alert */
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import React, { useState, useEffect }from 'react';
 import { StyleSheet, View} from 'react-native';
 import MenuButton from '../components/MenuButton';
 import {AppIcon} from '../utils/AppStyles';
 import { connect } from 'react-redux';
 import { logoutSuccess } from '../redux/actions/authActions';
 import { authService } from '../utils/_services';
-function DrawerContainer({ navigation, user, logout }) {
+import { Text } from 'react-native-paper';
+import FastImage from 'react-native-fast-image';
 
+function DrawerContainer({ navigation,  auth, logout }) {
+  const [active, setActive]= useState(0);
   const handleLogout = () => {
-    alert(JSON.stringify(user))
-    authService.logout().then(res=>{
-console.log(res);
+    const { token } = auth;
+    authService.logout(token).then(res=>{
+      console.log(res);
     }).catch(error=>{
-      // alert(error);
       console.log(error)
     })
-    logout();
-    navigation.navigate('loginStack')
+    navigation.navigate('LoginStack')
+    setTimeout(() => {
+      logout();
+    }, 1000);
+ 
   };
-  
+
   return (
-    <View style={styles.content}>
+    <View style={[styles.content, { backgroundColor: '#232530' }]}>
+      <View style={[styles.view,{backgroundColor : '#201f2b'}]}>
+        <FastImage
+          style={{ width : 70, height : 70 }}
+          source={AppIcon.images.logo}
+        />
+        <Text style={{  color: '#fff'}} variant="headlineMedium"> Orange Moon</Text>
+      </View>
       <View style={styles.container}>
         <MenuButton
-          title="LOG OUT"
-          source={AppIcon.images.logout}
+          title="Home"
+          icon='home'
+          active={active === 0 ? true : false}
+          onPress={() => {
+            setActive(0);
+            navigation.navigate('Tab');
+          }}
+        />
+        <MenuButton
+          title="Chat"
+          icon='wechat'
+          active={active === 1 ? true : false}
+          onPress={() => {
+            setActive(1);
+            navigation.navigate('ChatStack');
+          }}
+        />
+        <MenuButton
+          title="Payment"
+          icon='credit-card'
+          active={active === 2 ? true : false}
+          onPress={() => {
+            setActive(2);
+            navigation.navigate('PaymentStack');
+          }}
+        />
+        <MenuButton
+          title="Logout"
+          icon='power-off'
+          active={false}
           onPress={() => {
             handleLogout()
           }}
         />
-          <MenuButton
-          title="About"
-          source={AppIcon.images.defaultUser}
-          onPress={() => {
-                navigation.navigate('AboutStack');
-          }}
-        />
-          <MenuButton
-          title="Contact"
-          source={AppIcon.images.defaultUser}
-          onPress={() => {
-                navigation.navigate('ContactStack');
-          }}
-        />
       </View>
     </View>
+    
   );
 }
 
 const styles = StyleSheet.create({
   content: {
     flex: 1,
+  },
+  view:{
+    paddingVertical: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    // justifyContent: 'space-between',
   },
   container: {
     flex: 1,
     alignItems: 'flex-start',
-    paddingHorizontal: 20,
+    // paddingHorizontal: 20,
   },
 });
 
 const mapStateToProps = (state) => ({
-  user: state.auth
+  auth: state.auth
 });
 
 const mapDispatchToProps = (dispatch) => ({
