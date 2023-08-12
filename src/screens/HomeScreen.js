@@ -5,13 +5,13 @@ import { connect } from 'react-redux';
 import { AppStyles } from '../utils/AppStyles';
 import { Configuration } from '../utils/Configuration';
 import { Surface, Text } from 'react-native-paper';
-import { dashboardService } from '../utils/_services';
+import { monitorService } from '../utils/_services';
 import { DataTable } from 'react-native-paper';
 function HomeScreen({ navigation, user, token }) {
   const { first_name, last_name, email, online_status, status, user_type } = user;
 const [dashboardData, setDashboardData] = useState()
   useEffect(()=>{
-    dashboardService.dashboard(token).then(res=>{
+    monitorService.dashboard(token).then(res=>{
       // console.log(res,"here my console res");
       setDashboardData(res?.monitorBookingDayRequest)
     }).catch(error=>console.log(error))
@@ -92,7 +92,7 @@ const [dashboardData, setDashboardData] = useState()
         </Surface>
       </View>
 
-      <DataTable>
+      {/* <DataTable>
       <DataTable.Header>
         <DataTable.Title>Dessert</DataTable.Title>
         <DataTable.Title numeric>Calories</DataTable.Title>
@@ -118,7 +118,7 @@ const [dashboardData, setDashboardData] = useState()
         showFastPaginationControls
         selectPageDropdownLabel={'Rows per page'}
       />
-    </DataTable>
+    </DataTable> */}
 
     </ScrollView>
   );

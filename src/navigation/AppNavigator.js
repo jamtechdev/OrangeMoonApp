@@ -14,7 +14,7 @@ import SignupScreen from '../screens/SignupScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import BookingRequest from '../screens/BookingRequest';
 import ProfileScreen from '../screens/ProfileScreen';
-import forgetPasswordScreen from '../screens/forgetPasswordScreen';
+import ForgetPasswordScreen from '../screens/ForgetPasswordScreen';
 import ChatScreen from '../screens/Chat';
 import PaymentScreen from '../screens/PaymentScreen';
 import { AppIcon, AppStyles } from '../utils/AppStyles';
@@ -35,7 +35,7 @@ const LoginStack = () => (
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Sign-In" component={LoginScreen} />
         <Stack.Screen name="Sign-Up" component={SignupScreen} />
-        <Stack.Screen name="forgetPassword" component={forgetPasswordScreen} />
+        <Stack.Screen name="ForgetPassword" component={ForgetPasswordScreen} />
     </Stack.Navigator>
 );
 

@@ -24,7 +24,7 @@ function LoginScreen({ navigation, user, login  }) {
     email: Yup.string().required("Email is required").email("Email is invalid"),
     password: Yup.string()
       .required("Password is mandatory")
-      .min(8, "Password must be at 8 char long")
+      // .min(8, "Password must be at 8 char long")
       // .matches(
       //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
       //   "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
@@ -35,7 +35,7 @@ function LoginScreen({ navigation, user, login  }) {
 
   const onSubmit = (data) => {
     setLoading(true);
-    authService.login(data)
+    authService.login({email : data.email, password : data.password})
       .then((res) => {
         console.log(res);
         setLoading(false);
@@ -62,7 +62,7 @@ function LoginScreen({ navigation, user, login  }) {
     <View style={globalStyles.container}>
       <FastImage
         style={globalStyles.logo}
-        source={AppIcon.images.logo}  
+        source={AppIcon.images.logo}
       />
       <Text style={[globalStyles.title, { marginTop: 70, marginBottom: 30 }]}>Sign-In here </Text>
         <Controller
@@ -133,7 +133,7 @@ function LoginScreen({ navigation, user, login  }) {
         </View>
         <View style={{ flex: 1, marginLeft: 50,  }}>
           {/* need to set use this ====>>>>> params: {id: 'jane' } */}
-          <Link to={{ screen: 'forgetPassword' }}>
+          <Link to={{ screen: 'ForgetPassword' }}>
             <Text style={globalStyles.linkStyle}> ForgetPassword ?</Text>
           </Link>
         </View>
