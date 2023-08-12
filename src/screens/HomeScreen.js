@@ -12,7 +12,7 @@ function HomeScreen({ navigation, user, token }) {
 const [dashboardData, setDashboardData] = useState()
   useEffect(()=>{
     monitorService.dashboard(token).then(res=>{
-      console.log(res,"here my console res");
+      // console.log(res,"here my console res");
       setDashboardData(res?.monitorBookingDayRequest)
     }).catch(error=>console.log(error))
   })
