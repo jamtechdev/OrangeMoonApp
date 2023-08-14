@@ -28,8 +28,10 @@ async function bookingRequest(token, status) {
     if(status){
         url = 'monitor-booking-requests?status='+ status
     }
-    return await axios.get(
+    console.log(token, status)
+    return await axios.post(
         `${API_URL}/${url}`,
+        {},
         {
             headers: { 'Authorization' : 'Bearer ' + token },
         }

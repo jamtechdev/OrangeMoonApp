@@ -3,7 +3,7 @@
 // Action Types
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
-
+export const ROUTE_VALUE = 'ROUTE_VALUE';
 
 // Action Creators
 
@@ -17,4 +17,7 @@ export const logoutSuccess = () => ({
     type: LOGOUT_SUCCESS,
 });
 
-
+export const routeValue = (id) => ({
+    type: ROUTE_VALUE,
+    payload: id
+});

@@ -1,12 +1,13 @@
 /* eslint-disable prettier/prettier */
 import React, { useLayoutEffect , useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native'; // Import View
+import { ScrollView, StyleSheet, View, Pressable } from 'react-native'; // Import View
 import { connect } from 'react-redux';
 import { AppStyles } from '../utils/AppStyles';
 import { Configuration } from '../utils/Configuration';
 import { Surface, Text } from 'react-native-paper';
 import { monitorService } from '../utils/_services';
 import { DataTable } from 'react-native-paper';
+import Chat from './Chat';
 function HomeScreen({ navigation, user, token }) {
   const { first_name, last_name, email, online_status, status, user_type } = user;
 const [dashboardData, setDashboardData] = useState()
@@ -59,8 +60,11 @@ const [dashboardData, setDashboardData] = useState()
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Hii, {first_name} {last_name}</Text>
+      <Pressable onPress={()=> navigation.navigate('ArchiveBookingStack')}>
+                    <Text>hiii click here </Text>
+                    </Pressable>
       <View style={styles.columnContainer}>
-        <Surface style={styles.surface} elevation={5}>
+        <Surface style={styles.surface} elevation={5} >
           <Text variant="titleMedium">User Details </Text>
           <Text>{email}</Text>
           <Text>User Type : {user_type }</Text>

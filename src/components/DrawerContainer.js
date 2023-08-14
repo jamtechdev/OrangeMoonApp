@@ -26,7 +26,7 @@ function DrawerContainer({ navigation,  auth, logout }) {
     setTimeout(() => {
       logout();
     }, 1000);
- 
+
   };
 
   return (
@@ -49,20 +49,29 @@ function DrawerContainer({ navigation,  auth, logout }) {
           }}
         />
         <MenuButton
-          title="Chat"
-          icon='wechat'
+          title="Archive Booking"
+          icon='book'
           active={active === 1 ? true : false}
           onPress={() => {
             setActive(1);
+            navigation.navigate('ArchiveBookingStack');
+          }}
+        />
+        <MenuButton
+          title="Chat"
+          icon='wechat'
+          active={active === 4 ? true : false}
+          onPress={() => {
+            setActive(4);
             navigation.navigate('ChatStack');
           }}
         />
         <MenuButton
           title="Payment"
           icon='credit-card'
-          active={active === 2 ? true : false}
+          active={active === 5 ? true : false}
           onPress={() => {
-            setActive(2);
+            setActive(5);
             navigation.navigate('PaymentStack');
           }}
         />
@@ -76,7 +85,7 @@ function DrawerContainer({ navigation,  auth, logout }) {
         />
       </View>
     </View>
-    
+
   );
 }
 

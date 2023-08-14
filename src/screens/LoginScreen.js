@@ -42,7 +42,7 @@ function LoginScreen({ navigation, user, login  }) {
         if (res && res.data && res.data.status === true) {
           const response = res.data;
           const token = response?.token
-          // console.log('here my token', token)
+          console.log('here my token', token)
           login(response?.data, token)
           navigation.navigate('DrawerStack');
         } else {

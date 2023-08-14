@@ -13,6 +13,8 @@ import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import BookingRequest from '../screens/BookingRequest';
+import BookingDetails from '../screens/BookingDetails';
+import ArchiveBooking from '../screens/ArchiveBooking';
 import ProfileScreen from '../screens/ProfileScreen';
 import ForgetPasswordScreen from '../screens/ForgetPasswordScreen';
 import ChatScreen from '../screens/Chat';
@@ -72,7 +74,7 @@ const BookingRequestStack = () => (
         }}>
         <Stack.Screen
             name="Booking"
-            component={BookingRequest}rt
+            component={BookingRequest}
             options={({ navigation }) => ({
                 headerLeft: () => (
                     <Pressable onPress={() => navigation.openDrawer()}>
@@ -85,7 +87,53 @@ const BookingRequestStack = () => (
         />
     </Stack.Navigator>
 );
+const BookingDetailsStack = () => (
+    <Stack.Navigator
+        initialRouteName="Booking Details"
 
+        screenOptions={{
+            headerTintColor: 'red',
+            headerTitleStyle: styles.headerTitleStyle,
+            headerMode: 'float',
+        }}>
+        <Stack.Screen
+            name="Booking Details"
+            component={BookingDetails}
+            options={({ navigation }) => ({
+                headerLeft: () => (
+                    <Pressable onPress={() => navigation.goBack()}>
+                      <Icon color={AppStyles.color?.tint} name='arrow-left' size={30}  />
+                    </Pressable>
+                ),
+                headerLeftContainerStyle: { paddingLeft: 10 },
+                title: 'Booking Details',
+            })}
+        />
+    </Stack.Navigator>
+);
+const ArchiveBookingStack = () => (
+    <Stack.Navigator
+        initialRouteName="Archive Booking"
+        screenOptions={{
+            headerTintColor: 'red',
+            headerTitleStyle: styles.headerTitleStyle,
+            headerMode: 'float',
+        }}>
+        <Stack.Screen
+            name="Archive Booking"
+            component={ArchiveBooking}
+            options={({ navigation }) => ({
+                headerLeft: () => (
+                    <Pressable onPress={() => navigation.openDrawer()}>
+                        <Image style={styles.iconStyle} source={AppIcon.images.menu} />
+                    </Pressable>
+                ),
+                headerLeftContainerStyle: { paddingLeft: 10 },
+                title: 'Archive Booking',
+            })}
+        />
+    </Stack.Navigator>
+);
 const ChatStack = () => (
     <Stack.Navigator
         initialRouteName="Chat"
@@ -207,6 +255,7 @@ const TabNavigator = () => (
     </BottomTab.Navigator>
 );
 
+
 const Drawer = createDrawerNavigator();
 const DrawerStack = () => (
     <Drawer.Navigator
@@ -221,8 +270,10 @@ const DrawerStack = () => (
         <Drawer.Screen name="Tab" component={TabNavigator} />
         <Drawer.Screen name="ChatStack" component={ChatStack} />
         <Drawer.Screen name="PaymentStack" component={PaymentStack} />
+        <Drawer.Screen name="ArchiveBookingStack" component={ArchiveBookingStack} />
     </Drawer.Navigator>
 );
+
 
 const AppNavigator = () => {
     let auth = useSelector((state) => state.auth); // Get user role from Redux store
@@ -235,6 +286,7 @@ const AppNavigator = () => {
                 screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="LoginStack" component={LoginStack} />
                 <Stack.Screen name="DrawerStack" component={DrawerStack} />
+                <Stack.Screen name="BookingDetails" component={BookingDetailsStack} />
             </Stack.Navigator>
         </NavigationContainer>
     );

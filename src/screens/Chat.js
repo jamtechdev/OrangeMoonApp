@@ -5,41 +5,69 @@ import { connect, useSelector } from 'react-redux';
 import { AppIcon, AppStyles } from '../utils/AppStyles';
 import { Configuration } from '../utils/Configuration';
 import { GiftedChat } from 'react-native-gifted-chat';
+import { chatService } from '../utils/_services';
 
-
-function ChatScreen({ navigation, user }) {
+function ChatScreen({ navigation, user, token }) {
     const [messages, setMessages] = useState([])
+    const [page , setPage] = useState(1)
     // useLayoutEffect(() => {
     //     navigation.setOptions({
     //         title: 'Chat',
     //     });
     // }, [navigation]);
 
+    useEffect(()=>{
 
-    useEffect(() => {
-        setMessages([
-            {
-                _id: 1,
-                text: 'Hello OrangeMoon user',
-                createdAt: new Date(),
-                user: {
-                    _id: 2,
-                    name: 'orangeMoon',
-                    avatar: AppIcon.images.logo,
-                },
-            },
-        ])
-    }, [])
+        chatService.getConversation(token, user.id, 1,page).then(res=>{
+          console.log(res,"here my console res");
+          let response = res?.data?.data
+          if(response){
+            const transformedData = response.map(item => {
+                return {
+                    _id: item.id,             // Use receiver_id as _id
+                    text: item.message,              // Use message as text
+                    createdAt: new Date(item.date_time), // Convert date_time to a Date object
+                    user: {
+                        _id: item.sender_id,         // Use receiver_id as _id for the user
+                        name: item.sender_name,      // Use sender_name as name
+                        avatar: 'https://staging.orangemoonsss.com/images/'+item.sender_img,     // Use sender_img as avatar
+                    },
+                };
+            });
+            setMessages(transformedData)
+          }
+
+        }).catch(error=>console.log(error))
+        chatService.updateUnreadMassage(token).then(res=>{
+            console.log(res,"here my console res");
+          }).catch(error=>console.log(error))
+          chatService.updateUnreadMassage(token).then(res=>{
+            console.log(res,"here my console res");
+          }).catch(error=>console.log(error))
+
+      },[])
 
     const handleSend = (newMessages) => {
-        setMessages((previousMessages) =>
-            GiftedChat.append(previousMessages, newMessages)
-        );
+        console.log(newMessages)
+        const sendData = {
+            message: newMessages[0]?.text,
+            sender_id: user.id,
+            receiver_id: 1,
+            sender_name: newMessages[0]?.user?.name,
+            receiver_name: 'Orangemoon',
+            sender_img: '1672486286.jpg',
+            receiver_img: 'site-logo.png',
+            status: 'unread'
+        }
+        chatService.postConversation(token, sendData).then(res=>{
+            console.log(res,"here my console res");
+            setMessages((previousMessages) =>
+          GiftedChat.append(previousMessages, newMessages)
+           );
+          }).catch(error=>console.log(error))
     };
 
-    const route = () => {
-        navigation.navigate('LoginStack');
-    };
+
 
     return (
         <View style={styles.container}>
@@ -47,9 +75,9 @@ function ChatScreen({ navigation, user }) {
                 messages={messages}
                 onSend={handleSend}
                 user={{
-                    _id: 1,
-                    name: 'user',
-                    avatar: AppIcon.images.defaultUser,
+                    _id: user?.id,
+                    name: user?.first_name +' ' + user?.last_name,
+                    avatar:'https://staging.orangemoonsss.com/images/'+ '1672486286.jpg',
                 }}
                 renderUsernameOnMessage={true}
                 showUserAvatar={true}
@@ -72,11 +100,9 @@ const styles = StyleSheet.create({
     },
 });
 
-// const mapStateToProps = (state) => ({
-//   user: state.auth.user,
-// });
+const mapStateToProps = (state) => ({
+  user: state.auth.user,
+  token : state.auth.token
+});
 
-// export default connect(mapStateToProps)(AboutScreen);
-
-
-export default ChatScreen;
+export default connect(mapStateToProps)(ChatScreen);
