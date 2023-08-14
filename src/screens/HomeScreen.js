@@ -60,9 +60,9 @@ const [dashboardData, setDashboardData] = useState()
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Hii, {first_name} {last_name}</Text>
-      <Pressable onPress={()=> navigation.navigate('ArchiveBookingStack')}>
+      {/* <Pressable onPress={()=> navigation.navigate('ArchiveBookingStack')}>
                     <Text>hiii click here </Text>
-                    </Pressable>
+                    </Pressable> */}
       <View style={styles.columnContainer}>
         <Surface style={styles.surface} elevation={5} >
           <Text variant="titleMedium">User Details </Text>
