@@ -8,7 +8,7 @@ import { Configuration } from '../utils/Configuration';
 import { monitorService } from '../utils/_services';
 import { routeValue } from '../redux/actions/authActions';
 function BookingRequest({ navigation, user , token, route}) {
-  const [bookingData, setBookingData] = useState()
+  const [bookingData, setBookingData] = useState([])
   useEffect(()=>{
     monitorService.bookingRequest(token).then(res=>{
       console.log(res,"here my console res");
@@ -38,7 +38,7 @@ function BookingRequest({ navigation, user , token, route}) {
               </Card.Content>
             </Card>
           ))}
-          {!bookingData && (<Text> Data not found</Text>) }
+       {!bookingData?.length && (<Text> Data not found</Text>) }
         </List.Section>
       </View>
     </ScrollView>
