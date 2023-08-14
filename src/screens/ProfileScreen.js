@@ -23,10 +23,10 @@ function ProfileScreen({ user }) {
                     <Title style={styles.other}>status : {status}</Title>
                     <Title style={styles.other}>User Type : {user_type}</Title>
                     <Title style={styles.other}>Online Status : {online_status}</Title>
-                    <Caption style={styles.bio}>
+                    {/* <Caption style={styles.bio}>
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac
                         tristique mauris. Curabitur id elit sed urna condimentum bibendum.
-                    </Caption>
+                    </Caption> */}
 
                 </Card.Content>
             </Card>

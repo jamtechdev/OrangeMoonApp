@@ -23,30 +23,29 @@ function BookingDetails({ navigation,route, user ,value,  token}) {
             <Card  style={styles.card}>
               <Card.Title title={`Booking Id :  ${bookingDetails?.booking_id}`} />
               <Card.Content>
-                <Paragraph>Group_name : {bookingDetails?.booking?.group_name} </Paragraph>
-                <Paragraph>status : {bookingDetails?.status} </Paragraph>
-                <Paragraph>booking  : {bookingDetails?.booking?.group_name} </Paragraph>
+                <Paragraph>Group Name : {bookingDetails?.booking?.group_name} </Paragraph>
+                <Paragraph>Status : {bookingDetails?.status} </Paragraph>
                 <Paragraph>Assigned by : {bookingDetails?.assigned_by} </Paragraph>
 
-                <Paragraph>holiday_amount : {bookingDetails?.booking?.holiday_amount} </Paragraph>
-                <Paragraph>hotel_id : {bookingDetails?.booking?.hotel_id} </Paragraph>
-                <Paragraph>parking_fee : {bookingDetails?.booking?.parking_fee} </Paragraph>
-                <Paragraph>start_date : {bookingDetails?.booking?.start_date} </Paragraph>
-                <Paragraph>start_time : {bookingDetails?.booking?.start_time} </Paragraph>
-                <Paragraph>no_of_student : {bookingDetails?.booking?.no_of_student} </Paragraph>
-                <Paragraph>no_of_monitor : {bookingDetails?.booking?.no_of_monitor} </Paragraph>
-                <Paragraph>no_of_floor : {bookingDetails?.booking?.no_of_floor} </Paragraph>
-                <Paragraph>notes : {bookingDetails?.booking?.notes} </Paragraph>
-                <Paragraph>gl_contact_no : {bookingDetails?.booking?.gl_contact_no} </Paragraph>
-                <Paragraph>end_date : {bookingDetails?.booking?.end_date} </Paragraph>
-                <Paragraph>end_time : {bookingDetails?.booking?.end_time} </Paragraph>
+                <Paragraph>Holiday Amount : {bookingDetails?.booking?.holiday_amount} </Paragraph>
+                <Paragraph>Hotel Id : {bookingDetails?.booking?.hotel_id} </Paragraph>
+                <Paragraph>Parking Fee : {bookingDetails?.booking?.parking_fee} </Paragraph>
+                <Paragraph>Start Date : {bookingDetails?.booking?.start_date} </Paragraph>
+                <Paragraph>Start Time : {bookingDetails?.booking?.start_time} </Paragraph>
+                <Paragraph>No of Student : {bookingDetails?.booking?.no_of_student} </Paragraph>
+                <Paragraph>No of Monitor : {bookingDetails?.booking?.no_of_monitor} </Paragraph>
+                <Paragraph>No of Floor : {bookingDetails?.booking?.no_of_floor} </Paragraph>
+                <Paragraph>Notes : {bookingDetails?.booking?.notes} </Paragraph>
+                <Paragraph>Gl Contact No : {bookingDetails?.booking?.gl_contact_no} </Paragraph>
+                <Paragraph>end Date : {bookingDetails?.booking?.end_date} </Paragraph>
+                <Paragraph>End Time : {bookingDetails?.booking?.end_time} </Paragraph>
 
-                <Paragraph> Hotel name : {bookingDetails?.booking?.hotel?.name} </Paragraph>
-                <Paragraph> Hotel phone : {bookingDetails?.booking?.hotel?.phone} </Paragraph>
-                <Paragraph> Hotel place_id : {bookingDetails?.booking?.hotel?.place_id} </Paragraph>
-                <Paragraph> Hotel zip_code : {bookingDetails?.booking?.hotel?.zip_code} </Paragraph>
-                <Paragraph> Hotel state_id : {bookingDetails?.booking?.hotel?.state_id} </Paragraph>
-                <Paragraph> Hotel address : {bookingDetails?.booking?.hotel?.address} </Paragraph>
+                <Paragraph> Hotel Name : {bookingDetails?.booking?.hotel?.name} </Paragraph>
+                <Paragraph> Hotel Phone : {bookingDetails?.booking?.hotel?.phone} </Paragraph>
+                <Paragraph> Hotel Place_id : {bookingDetails?.booking?.hotel?.place_id} </Paragraph>
+                <Paragraph> Hotel Zip_code : {bookingDetails?.booking?.hotel?.zip_code} </Paragraph>
+                <Paragraph> Hotel State Id : {bookingDetails?.booking?.hotel?.state_id} </Paragraph>
+                <Paragraph> Hotel Address : {bookingDetails?.booking?.hotel?.address} </Paragraph>
               </Card.Content>
             </Card>
           )}

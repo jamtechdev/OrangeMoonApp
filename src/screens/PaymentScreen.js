@@ -1,50 +1,40 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, Linking } from 'react-native';
 import { TextInput, Button, Title } from 'react-native-paper';
 import { connect } from 'react-redux';
 import { AppStyles } from '../utils/AppStyles';
 import { Configuration } from '../utils/Configuration';
 
 function PaymentScreen({ navigation, user }) {
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvc, setCVC] = useState('');
 
-  const handlePayment = () => {
-    // Perform Stripe payment integration here
-    console.log('Payment processed');
+
+
+  const handlePayment = async() => {
+    const url = 'https://connect.stripe.com/express/oauth/v2/authorize?response_type=code&scope=read_write&redirect_uri=https%3A%2F%2Fstaging.orangemoonsss.com%2Fstripe%2Fconnect-stripe-redirect&client_id=ca_Kz1aOhcWevW0ykZu1nnhOHp07QrKyBB5';
+
+    // Check if the URL can be opened
+    const supported = await Linking.canOpenURL(url);
+
+    if (supported) {
+      // Open the URL in the default browser
+      await Linking.openURL(url);
+    } else {
+      console.error("Don't know how to open URL: " + url);
+    }
   };
   return (
     <ScrollView >
       <View style={styles.container}>
-        <Title style={styles.title}>Stripe Payment</Title>
-        <TextInput
-          label="Card Number"
-          value={cardNumber}
-          onChangeText={(text) => setCardNumber(text)}
-          style={styles.input}
-        />
-        <TextInput
-          label="Expiry Date"
-          value={expiryDate}
-          onChangeText={(text) => setExpiryDate(text)}
-          style={styles.input}
-        />
-        <TextInput
-          label="CVC"
-          value={cvc}
-          onChangeText={(text) => setCVC(text)}
-          style={styles.input}
-        />
+        <Title style={styles.title}>Stripe Connect </Title>
         <Button
           mode="contained"
           onPress={handlePayment}
           style={styles.button}
           contentStyle={styles.buttonContent}
         >
-          Pay
+          + Connect Stripe
         </Button>
       </View>
     </ScrollView>

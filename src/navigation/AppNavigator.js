@@ -16,6 +16,8 @@ import BookingRequest from '../screens/BookingRequest';
 import BookingDetails from '../screens/BookingDetails';
 import ArchiveBooking from '../screens/ArchiveBooking';
 import ProfileScreen from '../screens/ProfileScreen';
+import Scheduling from '../screens/Scheduling';
+import CompleteReport from '../screens/CompleteReport';
 import ForgetPasswordScreen from '../screens/ForgetPasswordScreen';
 import ChatScreen from '../screens/Chat';
 import PaymentScreen from '../screens/PaymentScreen';
@@ -134,6 +136,55 @@ const ArchiveBookingStack = () => (
         />
     </Stack.Navigator>
 );
+
+const CompleteReportStack = () => (
+    <Stack.Navigator
+        initialRouteName="Complete Report"
+        screenOptions={{
+            headerTintColor: 'red',
+            headerTitleStyle: styles.headerTitleStyle,
+            headerMode: 'float',
+        }}>
+        <Stack.Screen
+            name="Complete Report"
+            component={CompleteReport}
+            options={({ navigation }) => ({
+                headerLeft: () => (
+                    <Pressable onPress={() => navigation.openDrawer()}>
+                        <Image style={styles.iconStyle} source={AppIcon.images.menu} />
+                    </Pressable>
+                ),
+                headerLeftContainerStyle: { paddingLeft: 10 },
+                title: 'Complete Report',
+            })}
+        />
+    </Stack.Navigator>
+);
+
+const SchedulingStack = () => (
+    <Stack.Navigator
+        initialRouteName="Scheduling"
+        screenOptions={{
+            headerTintColor: 'red',
+            headerTitleStyle: styles.headerTitleStyle,
+            headerMode: 'float',
+        }}>
+        <Stack.Screen
+            name="Scheduling"
+            component={Scheduling}
+            options={({ navigation }) => ({
+                headerLeft: () => (
+                    <Pressable onPress={() => navigation.openDrawer()}>
+                        <Image style={styles.iconStyle} source={AppIcon.images.menu} />
+                    </Pressable>
+                ),
+                headerLeftContainerStyle: { paddingLeft: 10 },
+                title: 'Scheduling',
+            })}
+        />
+    </Stack.Navigator>
+);
+
 const ChatStack = () => (
     <Stack.Navigator
         initialRouteName="Chat"
@@ -271,6 +322,8 @@ const DrawerStack = () => (
         <Drawer.Screen name="ChatStack" component={ChatStack} />
         <Drawer.Screen name="PaymentStack" component={PaymentStack} />
         <Drawer.Screen name="ArchiveBookingStack" component={ArchiveBookingStack} />
+        <Drawer.Screen name="SchedulingStack" component={SchedulingStack} />
+        <Drawer.Screen name="CompleteReportStack" component={CompleteReportStack} />
     </Drawer.Navigator>
 );
 

@@ -31,7 +31,7 @@ function ArchiveBooking({ navigation, user , token, route}) {
       <View style={styles.container}>
         <List.Section>
           { ArchiveData && ArchiveData?.map((booking) => (
-            <Card key={booking.id} style={styles.card} onPress={()=>navigateDetails(booking)}>
+            <Card key={booking.id} style={styles.card} >
               <Card.Title title={`Request Id :  ${booking.booking_id}`} />
               <Card.Content>
                 <Paragraph>Group Name : {booking.group_name} </Paragraph>

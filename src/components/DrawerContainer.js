@@ -58,6 +58,24 @@ function DrawerContainer({ navigation,  auth, logout }) {
           }}
         />
         <MenuButton
+          title="Scheduling"
+          icon='table'
+          active={active === 2 ? true : false}
+          onPress={() => {
+            setActive(2);
+            navigation.navigate('SchedulingStack');
+          }}
+        />
+        <MenuButton
+          title="Complete Report"
+          icon='clone'
+          active={active === 3 ? true : false}
+          onPress={() => {
+            setActive(3);
+            navigation.navigate('CompleteReportStack');
+          }}
+        />
+        <MenuButton
           title="Chat"
           icon='wechat'
           active={active === 4 ? true : false}

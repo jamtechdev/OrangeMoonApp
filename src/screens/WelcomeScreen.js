@@ -30,9 +30,9 @@ function WelcomeScreen({ navigation }) {
       <Button style={globalStyles.inputStyle} buttonColor={AppStyles.color.tint} mode="contained" onPress={() => navigation.navigate('Sign-In')}>
         Sign In
       </Button>
-      <Button style={globalStyles.inputStyle} textColor={AppStyles.color.secondaryColor} buttonColor={AppStyles.color.white} mode="outlined" onPress={() => navigation.navigate('Sign-Up')}>
+      {/* <Button style={globalStyles.inputStyle} textColor={AppStyles.color.secondaryColor} buttonColor={AppStyles.color.white} mode="outlined" onPress={() => navigation.navigate('Sign-Up')}>
         Sign Up
-      </Button>
+      </Button> */}
     </View>
   );
 }

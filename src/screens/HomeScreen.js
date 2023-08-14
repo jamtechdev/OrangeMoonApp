@@ -4,66 +4,43 @@ import { ScrollView, StyleSheet, View, Pressable } from 'react-native'; // Impor
 import { connect } from 'react-redux';
 import { AppStyles } from '../utils/AppStyles';
 import { Configuration } from '../utils/Configuration';
-import { Surface, Text } from 'react-native-paper';
 import { monitorService } from '../utils/_services';
-import { DataTable } from 'react-native-paper';
+import { List,Text, Card, Avatar, Title,Surface, Paragraph, DataTable } from 'react-native-paper';
 import Chat from './Chat';
 function HomeScreen({ navigation, user, token }) {
   const { first_name, last_name, email, online_status, status, user_type } = user;
-const [dashboardData, setDashboardData] = useState()
+const [dashboardData, setDashboardData] = useState([])
   useEffect(()=>{
     monitorService.dashboard(token).then(res=>{
       // console.log(res,"here my console res");
-      setDashboardData(res?.monitorBookingDayRequest)
+      setDashboardData(res?.data?.data)
     }).catch(error=>console.log(error))
   })
-  const [page, setPage] = React.useState(1);
-  const [numberOfItemsPerPageList] = React.useState([2, 3, 4]);
-  const [itemsPerPage, onItemsPerPageChange] = React.useState(
-    numberOfItemsPerPageList[0]
-  );
-
-  const [items] = React.useState([
-   {
-     key: 1,
-     name: 'Cupcake',
-     calories: 356,
-     fat: 16,
-   },
-   {
-     key: 2,
-     name: 'Eclair',
-     calories: 262,
-     fat: 16,
-   },
-   {
-     key: 3,
-     name: 'Frozen yogurt',
-     calories: 159,
-     fat: 6,
-   },
-   {
-     key: 4,
-     name: 'Gingerbread',
-     calories: 305,
-     fat: 3.7,
-   },
-  ]);
-
-  const from = page * itemsPerPage;
-  const to = Math.min((page + 1) * itemsPerPage, items.length);
-
-  React.useEffect(() => {
-    setPage(0);
-  }, [itemsPerPage]);
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Hii, {first_name} {last_name}</Text>
-      {/* <Pressable onPress={()=> navigation.navigate('ArchiveBookingStack')}>
+      <Text style={styles.subtitle}>Today's Booking</Text>
+      <View style={styles.container}>
+        <List.Section>
+          { dashboardData && dashboardData?.map((booking) => (
+            <Card key={booking.id} style={styles.card}>
+              <Card.Title title={`Group Name  :  ${booking.group_name}`} />
+              <Card.Content>
+                <Paragraph>Status : {booking.dates} </Paragraph>
+                <Paragraph>Start Time : {booking.start_time} </Paragraph>
+                <Paragraph>End Time : {booking.end_time} </Paragraph>
+                <Paragraph>Status : {booking.status} </Paragraph>
+              </Card.Content>
+            </Card>
+          ))}
+          {!dashboardData?.length && (<Text> Data not found</Text>) }
+        </List.Section>
+      </View>
+      {/* <Pressable onPress={()=>  navigation.navigate('CompleteReportStack')}>
                     <Text>hiii click here </Text>
                     </Pressable> */}
-      <View style={styles.columnContainer}>
+      {/* <View style={styles.columnContainer}>
         <Surface style={styles.surface} elevation={5} >
           <Text variant="titleMedium">User Details </Text>
           <Text>{email}</Text>
@@ -84,8 +61,8 @@ const [dashboardData, setDashboardData] = useState()
           <Text variant="displaySmall">18</Text>
           <Text>Archive Booking</Text>
         </Surface>
-      </View>
-      <View style={styles.columnContainer}>
+      </View> */}
+      {/* <View style={styles.columnContainer}>
         <Surface style={styles.surface} elevation={5}>
           <Text variant="displaySmall">15</Text>
           <Text>Scheduling</Text>
@@ -94,7 +71,7 @@ const [dashboardData, setDashboardData] = useState()
           <Text variant="displaySmall">8</Text>
           <Text>Completed Reports</Text>
         </Surface>
-      </View>
+      </View> */}
 
       {/* <DataTable>
       <DataTable.Header>
@@ -139,6 +116,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: AppStyles.color.title,
     marginBottom: 20,
+  },
+  subtitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: AppStyles.color.title,
+    marginBottom: 20,
+    marginTop:5
   },
   columnContainer: {
     flexDirection: 'row',

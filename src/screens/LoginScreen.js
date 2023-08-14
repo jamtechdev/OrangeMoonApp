@@ -142,11 +142,11 @@ function LoginScreen({ navigation, user, login  }) {
       <Button style={globalStyles.inputStyle} loading={loading} textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" onPress={handleSubmit(onSubmit)}>
         Sign-In
       </Button>
-      <View style={{ marginTop : 10 }}>
+      {/* <View style={{ marginTop : 10 }}>
         <Link to={{ screen: 'Sign-Up' }}>
           <Text style={globalStyles.linkStyle}> New client Sign-Up ?</Text>
         </Link>
-      </View>
+      </View> */}
 
       <Snackbar
         visible={visible}
