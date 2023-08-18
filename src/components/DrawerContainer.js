@@ -3,40 +3,40 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-alert */
 /* eslint-disable prettier/prettier */
-import React, { useState, useEffect }from 'react';
-import { StyleSheet, View} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 import MenuButton from '../components/MenuButton';
-import {AppIcon} from '../utils/AppStyles';
+import { AppIcon } from '../utils/AppStyles';
 import { connect } from 'react-redux';
 import { logoutSuccess } from '../redux/actions/authActions';
 import { authService } from '../utils/_services';
 import { Text } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 
-function DrawerContainer({ navigation,  auth, logout }) {
-  const [active, setActive]= useState(0);
+function DrawerContainer({ navigation, auth, logout }) {
+  const [active, setActive] = useState(0);
   const handleLogout = () => {
     const { token } = auth;
-    authService.logout(token).then(res=>{
+    authService.logout(token).then(res => {
       console.log(res);
-    }).catch(error=>{
+    }).catch(error => {
       console.log(error)
     })
     navigation.navigate('LoginStack')
     setTimeout(() => {
       logout();
-    }, 1000);
+    }, 1500);
 
   };
 
   return (
     <View style={[styles.content, { backgroundColor: '#232530' }]}>
-      <View style={[styles.view,{backgroundColor : '#201f2b'}]}>
+      <View style={[styles.view, { backgroundColor: '#201f2b' }]}>
         <FastImage
-          style={{ width : 70, height : 70 }}
+          style={{ width: 70, height: 70 }}
           source={AppIcon.images.logo}
         />
-        <Text style={{  color: '#fff'}} variant="headlineMedium"> Orange Moon</Text>
+        <Text style={{ color: '#fff' }} variant="headlineMedium"> Orange Moon</Text>
       </View>
       <View style={styles.container}>
         <MenuButton
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  view:{
+  view: {
     paddingVertical: 20,
     flexDirection: 'row',
     alignItems: 'center',
