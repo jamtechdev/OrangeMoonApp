@@ -16,14 +16,17 @@ import BookingRequest from '../screens/BookingRequest';
 import BookingDetails from '../screens/BookingDetails';
 import ArchiveBooking from '../screens/ArchiveBooking';
 import ProfileScreen from '../screens/ProfileScreen';
+import EditProfileScreen from '../screens/EditProfile';
 import Scheduling from '../screens/Scheduling';
 import CompleteReport from '../screens/CompleteReport';
+import SubReports from '../screens/SubReports';
 import ForgetPasswordScreen from '../screens/ForgetPasswordScreen';
 import ChatScreen from '../screens/Chat';
 import PaymentScreen from '../screens/PaymentScreen';
 import { AppIcon, AppStyles } from '../utils/AppStyles';
 import DrawerContainer from '../components/DrawerContainer';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 const Stack = createStackNavigator();
 
@@ -104,7 +107,7 @@ const BookingDetailsStack = () => (
             options={({ navigation }) => ({
                 headerLeft: () => (
                     <Pressable onPress={() => navigation.goBack()}>
-                      <Icon color={AppStyles.color?.tint} name='arrow-left' size={30}  />
+                        <Icon color={AppStyles.color?.tint} name='arrow-left' size={30} />
                     </Pressable>
                 ),
                 headerLeftContainerStyle: { paddingLeft: 10 },
@@ -156,6 +159,30 @@ const CompleteReportStack = () => (
                 ),
                 headerLeftContainerStyle: { paddingLeft: 10 },
                 title: 'Complete Report',
+            })}
+        />
+    </Stack.Navigator>
+);
+
+const SubReportStack = () => (
+    <Stack.Navigator
+        initialRouteName="Sub-Report"
+        screenOptions={{
+            headerTintColor: 'red',
+            headerTitleStyle: styles.headerTitleStyle,
+            headerMode: 'float',
+        }}>
+        <Stack.Screen
+            name="Sub-Report"
+            component={SubReports}
+            options={({ navigation }) => ({
+                headerLeft: () => (
+                    <Pressable onPress={() => navigation.goBack()}>
+                        <Icon color={AppStyles.color?.tint} name='arrow-left' size={30} />
+                    </Pressable>
+                ),
+                headerLeftContainerStyle: { paddingLeft: 10 },
+                title: 'Sub-Report',
             })}
         />
     </Stack.Navigator>
@@ -231,6 +258,30 @@ const ProfileStack = () => (
         />
     </Stack.Navigator>
 );
+const EditProfileStack = () => (
+    <Stack.Navigator
+        initialRouteName="Edit Profile"
+        screenOptions={{
+            headerTintColor: 'red',
+            headerTitleStyle: styles.headerTitleStyle,
+            headerMode: 'float',
+        }}>
+        <Stack.Screen
+            name="Edit Profile"
+            component={EditProfileScreen}
+            options={({ navigation }) => ({
+                headerLeft: () => (
+                    <Pressable onPress={() => navigation.goBack()}>
+                        <Icon color={AppStyles.color?.tint} name='arrow-left' size={30} />
+                    </Pressable>
+                ),
+                headerLeftContainerStyle: { paddingLeft: 10 },
+                title: 'Edit Profile',
+            })}
+        />
+    </Stack.Navigator>
+);
+
 
 const PaymentStack = () => (
     <Stack.Navigator
@@ -257,11 +308,11 @@ const PaymentStack = () => (
 );
 const getIconName = (name) => {
     const { home, defaultUser, chat } = AppIcon.images;
-    if (name === 'HomeStack'){
+    if (name === 'HomeStack') {
         return 'home';
-    } else if (name === 'BookingRequestStack'){
+    } else if (name === 'BookingRequestStack') {
         return 'book';
-    } else if (name === 'ProfileStack'){
+    } else if (name === 'ProfileStack') {
         return 'user-o';
     } else {
         return 'home';
@@ -340,6 +391,8 @@ const AppNavigator = () => {
                 <Stack.Screen name="LoginStack" component={LoginStack} />
                 <Stack.Screen name="DrawerStack" component={DrawerStack} />
                 <Stack.Screen name="BookingDetails" component={BookingDetailsStack} />
+                <Stack.Screen name="SubReport" component={SubReportStack} />
+                <Stack.Screen name="EditProfile" component={EditProfileStack} />
             </Stack.Navigator>
         </NavigationContainer>
     );

@@ -63,7 +63,14 @@ const globalStyles = StyleSheet.create({
     divider: {
         height: 2,
         backgroundColor: '#ccc'
-    }
+    },
+    subtitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: AppStyles.color.title,
+        marginBottom: 5,
+        marginTop: 5
+    },
 });
 
 export default globalStyles;

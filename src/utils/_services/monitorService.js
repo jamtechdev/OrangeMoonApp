@@ -13,6 +13,9 @@ export const monitorService = {
     completedReport,
     reportDetails,
     bookingChangeStatus,
+    getStateList,
+    getCityList,
+    editProfile,
 };
 
 async function dashboard(token) {
@@ -75,6 +78,32 @@ async function bookingChangeStatus(token, id, status) {
         `${API_URL}/monitor-booking-requests/change-status/${id}/${status}`,
         {
             headers: { 'Authorization': 'Bearer ' + token },
+        }
+    );
+}
+async function getStateList(token) {
+    return await axios.get(
+        `${API_URL}/get-state`,
+        {
+            headers: { 'Authorization': 'Bearer ' + token },
+        }
+    );
+}
+async function getCityList(token, stateId) {
+    return await axios.post(`${API_URL}/get-city/?state_id=${stateId}`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+}
+
+async function editProfile(token, id, data) {
+    console.log(data)
+    return await axios.post(
+        `${API_URL}/monitor/update-profile/${id}`,
+        data,
+        {
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'multipart/form-data' },
         }
     );
 }

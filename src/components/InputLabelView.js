@@ -4,7 +4,7 @@ import { View, ScrollView, StyleSheet } from 'react-native';
 import { Text, TextInput, } from 'react-native-paper';
 
 
-export default function InputLabelView({ label, value, editable = false, password, multiline = false }) {
+const InputLabelView = React.memo(({ label, value, editable = false, password, multiline = false }) => {
     const [showPassword, setShowPassword] = useState(false);
     return (
         <View style={styles.detailItem}>
@@ -28,7 +28,7 @@ export default function InputLabelView({ label, value, editable = false, passwor
             )}
         </View>
     );
-}
+})
 
 const styles = StyleSheet.create({
     detailItem: {
@@ -50,3 +50,5 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
 });
+
+export default InputLabelView

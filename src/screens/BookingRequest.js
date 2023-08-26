@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
-import React, { useLayoutEffect, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Pressable } from 'react-native';
-import { Portal, Dialog, Button, Text, DataTable, SegmentedButtons, Searchbar, TouchableRipple } from 'react-native-paper';
+import { Portal, Dialog, Button, Text, DataTable, SegmentedButtons, Searchbar, } from 'react-native-paper';
 import { connect } from 'react-redux';
 import { AppStyles } from '../utils/AppStyles';
 import { monitorService } from '../utils/_services';
@@ -12,10 +12,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import LoadingContainer from '../components/LoadingContainer';
 import globalStyles from '../utils/_css/globalStyle';
 function BookingRequest({ navigation, user, token, route }) {
-  const [bookingData, setBookingData] = useState([])
-  const [bookingDataBkp, setBookingDataBkp] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [segmentedValue, setSegmentedValue] = React.useState('All');
+  const [bookingData, setBookingData] = useState([]);
+  const [bookingDataBkp, setBookingDataBkp] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
+  const [segmentedValue, setSegmentedValue] = useState('All');
   const [sortDirections, setSortDirections] = useState({
     booking_id: 'none', // Initialize with 'none' as the default
     group_name: 'none',
@@ -33,8 +34,8 @@ function BookingRequest({ navigation, user, token, route }) {
   );
   const from = page * itemsPerPage;
   const to = Math.min((page + 1) * itemsPerPage, bookingData?.length);
-  const toggleDialogAccept = () => { setIsAcceptDialogVisible(!isAcceptDialogVisible) };
-  const toggleDialogReject = () => { setIsRejectDialogVisible(!isRejectDialogVisible) };
+  const toggleDialogAccept = () => { setIsAcceptDialogVisible(!isAcceptDialogVisible); };
+  const toggleDialogReject = () => { setIsRejectDialogVisible(!isRejectDialogVisible); };
 
   React.useEffect(() => {
     setPage(0);
@@ -88,18 +89,21 @@ function BookingRequest({ navigation, user, token, route }) {
   };
 
   const updateBookingStatus = (status) => {
-    console.log(status, updateId)
+    setIsButtonLoading(true);
     monitorService.bookingChangeStatus(token, updateId, status).then(res => {
+      setIsButtonLoading(false);
       if (res?.data?.status === true) {
-        monitorDataCall()
+        monitorDataCall();
       }
-      console.log(res.data.status, 'status ')
       if (status === 'ACCEPTED') {
-        toggleDialogAccept()
+        toggleDialogAccept();
       } else {
-        toggleDialogReject()
+        toggleDialogReject();
       }
-    }).catch(error => console.log(error))
+    }).catch(error => {
+      setIsButtonLoading(false);
+      console.log(error);
+    })
   }
   const handleSearch = (query) => {
     const lowerCaseQuery = query.toLowerCase();
@@ -196,7 +200,7 @@ function BookingRequest({ navigation, user, token, route }) {
             <Text>By Accepting, I agree to the payment terms outlined in my Seasonal Contractor agreement between myself and Orange Moon. I further agree to abide by the dresscode and conduct requirements established by Orange Moon of which I have read and maintain a copy of for my records.</Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button mode="contained" onPress={() => { updateBookingStatus('ACCEPTED') }}>Yes </Button>
+            <Button mode="contained" loading={isButtonLoading} onPress={() => { updateBookingStatus('ACCEPTED') }}>Yes </Button>
             <Button mode="contained" onPress={toggleDialogAccept}>No</Button>
           </Dialog.Actions>
         </Dialog>
@@ -206,7 +210,7 @@ function BookingRequest({ navigation, user, token, route }) {
             <Text>You won't be able to undo.</Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button mode="contained" onPress={() => { updateBookingStatus('REJECTED') }}>Yes </Button>
+            <Button mode="contained" loading={isButtonLoading} onPress={() => { updateBookingStatus('REJECTED') }}>Yes </Button>
             <Button mode="contained" onPress={toggleDialogReject}>No</Button>
           </Dialog.Actions>
         </Dialog>

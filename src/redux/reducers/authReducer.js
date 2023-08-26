@@ -2,13 +2,14 @@
 import {
     LOGIN_SUCCESS,
     LOGOUT_SUCCESS,
-    ROUTE_VALUE
+    ROUTE_VALUE,
+    UPDATE_PROFILE
 } from '../actions/authActions';
 
 const initialState = {
     loading: false,
-    user: null,
-    token:null,
+    user: {},
+    token: null,
     value: null,
     error: null,
 };
@@ -28,15 +29,22 @@ const authReducer = (state = initialState, action,) => {
                 ...state,
                 loading: false,
                 user: null,
-                token:null,
+                token: null,
                 error: null,
             };
-            case ROUTE_VALUE:
-                console.log(action.payload, 'payload ')
-                return {
-                    ...state,
-                    value:action.payload,
-                };
+        case ROUTE_VALUE:
+            return {
+                ...state,
+                value: action.payload,
+            };
+        case UPDATE_PROFILE:
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    ...action.payload, // Merge updated profile data
+                },
+            };
         default:
             return state;
     }

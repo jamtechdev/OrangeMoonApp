@@ -151,10 +151,19 @@ function HomeScreen({ navigation, user, token }) {
     console.log(filteredData, query)
     setSearchQuery(query);
   };
-
+  function isTimePastOrEqual(bookingStartTime) {
+    const currentDateTime = new Date();
+    return currentDateTime >= bookingStartTime;
+  }
+  const getShowButtonCheck = (monitorBookingDayRequest) => {
+    const bookingStartTime = new Date(monitorBookingDayRequest.booking_day.date + ' ' + monitorBookingDayRequest.booking_day.start_time);
+    const isActive = isTimePastOrEqual(bookingStartTime);
+    return isActive;
+  }
+  // navigation.navigate('LoginStack')
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.subtitle}>Today's Booking</Text>
+      <Text style={globalStyles.subtitle}>Today's Booking</Text>
       <Divider style={globalStyles.divider} />
       <View style={styles.container}>
         <Searchbar
@@ -180,7 +189,11 @@ function HomeScreen({ navigation, user, token }) {
                 <DataTable.Cell >{formatTime(item?.booking_day?.start_time)}</DataTable.Cell>
                 <DataTable.Cell >{formatTime(item?.booking_day?.end_time)}</DataTable.Cell>
                 <DataTable.Cell >{item?.status}</DataTable.Cell>
-                <DataTable.Cell > <Icon name='hospital-o' onPress={toggleDialog} size={20} color={AppStyles.color.tint} /> </DataTable.Cell>
+                <DataTable.Cell >
+                  {getShowButtonCheck(item) === true && (
+                    <Icon name='hospital-o' onPress={toggleDialog} size={20} color={AppStyles.color.tint} />
+                  )}
+                </DataTable.Cell>
               </DataTable.Row>
             ))}
             {!dashboardData?.length && !isLoading && (<Text style={globalStyles.emptyData}> Data not found</Text>)}
@@ -244,7 +257,7 @@ function HomeScreen({ navigation, user, token }) {
                     <RadioButton.Item label="No" value="No" />
                   </RadioButton.Group>
                   <HelperText type="error" visible={selectedRadio == 'No' ? true : false}>
-                    Please contact the Night Auditor on duty
+                    Symptoms & Exposure: Passed, Click Submit button to continue
                   </HelperText>
                 </View>
               )}
@@ -255,8 +268,11 @@ function HomeScreen({ navigation, user, token }) {
                     <RadioButton.Item label="yes" value="yes" />
                     <RadioButton.Item label="No" value="No" />
                   </RadioButton.Group>
-                  <HelperText type="error" visible={selectedRadio ? true : false}>
+                  <HelperText type="error" visible={selectedRadio == 'yes' ? true : false}>
                     Please contact the Night Auditor on duty
+                  </HelperText>
+                  <HelperText type="error" visible={selectedRadio == 'No' ? true : false}>
+                    Symptoms & Exposure: Passed, Click Submit button to continue
                   </HelperText>
                 </View>
               )}
@@ -285,13 +301,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: AppStyles.color.title,
     marginBottom: 20,
-  },
-  subtitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: AppStyles.color.title,
-    marginBottom: 5,
-    marginTop: 5
   },
   columnContainer: {
     flexDirection: 'row',
