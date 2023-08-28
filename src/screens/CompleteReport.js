@@ -36,7 +36,6 @@ function CompleteReport({ navigation, user, token, route }) {
 
   useEffect(() => {
     monitorService.completedReport(token).then(res => {
-      console.log(res, "here my console res");
       setCompleteData(res?.data?.data);
       setCompleteDataBkp(res?.data?.data);
       setIsLoading(false);
@@ -113,13 +112,6 @@ function CompleteReport({ navigation, user, token, route }) {
           onChangeText={handleSearch}
           value={searchQuery}
         />
-        {/* <View style={styles.container}>
-        <Searchbar
-         
-          placeholder="Search"
-          onChangeText={handleSearch}
-          value={searchQuery}
-        /> */}
         <ScrollView horizontal >
           <DataTable style={styles.DataTable}>
             <DataTable.Header style={styles.header}>
@@ -127,6 +119,7 @@ function CompleteReport({ navigation, user, token, route }) {
               <DataTable.Title sortDirection={sortDirections.group_name} onPress={() => handleSort('group_name')} style={styles.headerCell}> Group Name </DataTable.Title>
               <DataTable.Title sortDirection={sortDirections.start_date} onPress={() => handleSort('start_date')}>Start Date </DataTable.Title>
               <DataTable.Title sortDirection={sortDirections.end_date} onPress={() => handleSort('end_date')}> End Date  </DataTable.Title>
+              <DataTable.Title >Action </DataTable.Title>
             </DataTable.Header>
             {isLoading && (<LoadingContainer />)}
             {completeData?.slice(from, to).map((item) => (
@@ -135,6 +128,7 @@ function CompleteReport({ navigation, user, token, route }) {
                 <DataTable.Cell style={styles.cell} >{item.booking.group_name}</DataTable.Cell>
                 <DataTable.Cell >{formatDate(item.booking.start_date)} </DataTable.Cell>
                 <DataTable.Cell >{formatDate(item.booking.end_date)} </DataTable.Cell>
+                <DataTable.Cell >  <Icon name='eye' size={20} color={AppStyles.color.tint} style={styles.icon} /> </DataTable.Cell>
               </DataTable.Row>
             ))}
             {!completeData?.length && !isLoading && (<Text style={globalStyles.emptyData}> Data not found</Text>)}

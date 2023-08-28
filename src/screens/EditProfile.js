@@ -35,7 +35,7 @@ function EditProfileScreen({ user, token, navigation, login }) {
         last_name: Yup.string().required("Last Name is required"),
         email: Yup.string().required("Email is required").email("Email is invalid"),
         payRate: Yup.string().required("Hourly Rate is required"),
-        d_o_b: Yup.date().required("DOB is required"),
+        d_o_b: Yup.string().required("DOB is required"),
         gender: Yup.string().required("Gender is required"),
         shirt_size: Yup.string().required("Shirt Size is required"),
         social_security: Yup.string()
@@ -66,7 +66,6 @@ function EditProfileScreen({ user, token, navigation, login }) {
     const phone_Value = watch('phone');
     const social_value = watch('social_security');
     const emergency_contact = watch('emergency_contact_phone');
-    console.log(formatPhoneNumber(social_value))
     useEffect(() => {
         setValue('phone', formatPhoneNumber(phone_Value));
         setValue('social_security', formatPhoneNumber(social_value));
@@ -165,7 +164,6 @@ function EditProfileScreen({ user, token, navigation, login }) {
         formData.append('preferred_location', JSON.stringify(data.preferred_location));
         formData.append('medical_condition', data.medical_condition);
         formData.append('password', data.password);
-        console.log(data, formData)
         if (image) {
             formData.append('image', {
                 uri: image?.path,
@@ -213,6 +211,7 @@ function EditProfileScreen({ user, token, navigation, login }) {
                             <FormTextInput control={control} errors={errors} name="last_name" label="Last Name" />
                             <FormTextInput control={control} errors={errors} name="email" label="Email" />
                             <FormTextInput control={control} errors={errors} name="payRate" label="Hourly Rate" />
+                            <Text>{monitor.d_o_b}</Text>
                             <FormDateInput control={control} name="d_o_b" label="DOB" setValue={setValue} errors={errors} defaultValue={monitor?.d_o_b} />
                             <FormRadioButtons
                                 control={control}

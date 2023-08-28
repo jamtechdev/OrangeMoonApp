@@ -16,6 +16,7 @@ export const monitorService = {
     getStateList,
     getCityList,
     editProfile,
+    BookingReportActionCheck,
 };
 
 async function dashboard(token) {
@@ -98,9 +99,18 @@ async function getCityList(token, stateId) {
 }
 
 async function editProfile(token, id, data) {
-    console.log(data)
     return await axios.post(
         `${API_URL}/monitor/update-profile/${id}`,
+        data,
+        {
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'multipart/form-data' },
+        }
+    );
+}
+
+async function BookingReportActionCheck(token, data) {
+    return await axios.post(
+        `${API_URL}/monitor-booking-day-report`,
         data,
         {
             headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'multipart/form-data' },

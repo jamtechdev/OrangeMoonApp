@@ -30,6 +30,7 @@ function HomeScreen({ navigation, user, token }) {
       question4: false, value4: '',
     }
   );
+  const [bookingId, setBookingId] = useState(0);
   const [page, setPage] = useState(0);
   const [numberOfItemsPerPageList] = useState([10, 25, 50, 100]);
   const [itemsPerPage, onItemsPerPageChange] = useState(
@@ -43,56 +44,85 @@ function HomeScreen({ navigation, user, token }) {
   React.useEffect(() => {
     setPage(0);
   }, [itemsPerPage]);
-  const toggleDialog = () => {
-    setIsDialogVisible(!isDialogVisible);
-  };
+  const openActionDialog = (item) => {
+    setBookingId(item.id);
+    setIsDialogVisible(true);
+  }
+  const closeActionDialog = () => {
+    setAskQuestion({
+      ...sortDirections,
+      question1: true,
+      question2: false,
+      question3: false,
+      question4: false,
+      question5: false,
+    });
+    setSelectedRadio('');
+    setBookingId(0);
+    setIsDialogVisible(false);
+  }
   const handleRadioSelect = (value) => {
     setSelectedRadio(value);
-    console.log(value)
-    console.log
     if (askQuestion.question1 === true && value === 'No') {
       setAskQuestion({
         ...sortDirections,
         question1: false,
-        value1: value,
         question2: true
       });
       setSelectedRadio('')
+      return;
     } else if (askQuestion.question2 === true && value === 'No') {
       setAskQuestion({
         ...sortDirections,
         question2: false,
-        value2: value,
         question3: true
       });
-      setSelectedRadio('')
+      setSelectedRadio('');
+      return;
     } else if (askQuestion.question3 === true && value === 'yes') {
       setAskQuestion({
         ...sortDirections,
         question3: false,
-        value3: value,
         question4: true
       });
-      setSelectedRadio('')
+      setSelectedRadio('');
+      return;
     } else if (askQuestion.question4 === true) {
       setAskQuestion({
         ...sortDirections,
         question4: true,
-        value4: value,
       });
+      return;
     }
   };
 
+  const actionCheckSubmit = () => {
+    let data = {
+      temperature: 'Passed',
+      booking_day_request_id: bookingId,
+      answer: 'no',
+    };
+    monitorService.BookingReportActionCheck(token, data).then(res => {
+      todayReportData();
+    }).catch((error) => {
+      console.log(error);
+    });
+  };
+
   useEffect(() => {
+    todayReportData();
+  }, []);
+  const todayReportData = () => {
     monitorService.dashboard(token).then(res => {
-      setDashboardData(res?.data?.monitorBookingDayRequest)
-      setDashboardDataBkp(res?.data?.monitorBookingDayRequest)
-      setIsLoading(false)
+      console.log(res);
+      setDashboardData(res?.data?.monitorBookingDayRequest);
+      setDashboardDataBkp(res?.data?.monitorBookingDayRequest);
+      setIsLoading(false);
     }).catch(error => {
       console.log(error);
-      setIsLoading(false)
-    })
-  }, [token])
+      setIsLoading(false);
+    });
+  };
 
   const handleSort = async (columnKey) => {
     const nextSortDirection =
@@ -144,23 +174,43 @@ function HomeScreen({ navigation, user, token }) {
       item?.status.toLowerCase().includes(lowerCaseQuery)
     );
     if (filteredData.length !== 0) {
-      setDashboardData(filteredData)
+      setDashboardData(filteredData);
     } else {
-      setDashboardData(dashboardDataBkp)
+      setDashboardData(dashboardDataBkp);
     }
-    console.log(filteredData, query)
+    console.log(filteredData, query);
     setSearchQuery(query);
   };
-  function isTimePastOrEqual(bookingStartTime) {
+  // function isTimePastOrEqual(bookingStartTime) {
+  //   const currentDateTime = new Date();
+  //   return currentDateTime >= bookingStartTime;
+  // }
+  // const getShowButtonCheck = (monitorBookingDayRequest) => {
+  //   const bookingStartTime = new Date(monitorBookingDayRequest.booking_day.date + ' ' + monitorBookingDayRequest.booking_day.start_time);
+  //   const isActive = isTimePastOrEqual(bookingStartTime);
+  //   return isActive;
+  // }
+  const checkActive = (monitorBookingDayRequest) => {
     const currentDateTime = new Date();
-    return currentDateTime >= bookingStartTime;
+    const firstTime = new Date(currentDateTime);
+    const secondTime = new Date(monitorBookingDayRequest.booking_day.date + ' ' + monitorBookingDayRequest.booking_day.start_time);
+    const intervalInMilliseconds = secondTime - firstTime;
+    const intervalInHours = intervalInMilliseconds / (1000 * 60 * 60);
+
+    let active = false;
+    if (intervalInHours <= 8 && intervalInHours > 1) {
+      active = true;
+    }
+    // else if (intervalInHours <= 1 && monitorBookingDayRequest.monitorBookingRequest.temperature_button === true) {
+    //   active = true;
+    // }
+
+    const getBookingTimeZone = monitorBookingDayRequest.booking_day.booking?.hotel?.state?.time_zone || 'EST'; // here i don't get the hotel state timezone 
+    const timeZone = new Date().toLocaleString('en-US', { timeZone: getBookingTimeZone });
+    const currentDate = new Date(timeZone).toISOString().split('T')[0];
+
+    return currentDate
   }
-  const getShowButtonCheck = (monitorBookingDayRequest) => {
-    const bookingStartTime = new Date(monitorBookingDayRequest.booking_day.date + ' ' + monitorBookingDayRequest.booking_day.start_time);
-    const isActive = isTimePastOrEqual(bookingStartTime);
-    return isActive;
-  }
-  // navigation.navigate('LoginStack')
   return (
     <ScrollView style={styles.container}>
       <Text style={globalStyles.subtitle}>Today's Booking</Text>
@@ -182,20 +232,39 @@ function HomeScreen({ navigation, user, token }) {
               <DataTable.Title style={globalStyles.headerCellCommon}> Action </DataTable.Title>
             </DataTable.Header>
             {isLoading && (<LoadingContainer />)}
-            {dashboardData.slice(from, to).map((item) => (
-              <DataTable.Row key={item.id} >
-                <DataTable.Cell style={globalStyles.cell} >{item?.booking_day?.booking?.group_name}</DataTable.Cell>
-                <DataTable.Cell style={globalStyles.CellDate}> {formatDate(item?.booking_day?.date)} </DataTable.Cell>
-                <DataTable.Cell >{formatTime(item?.booking_day?.start_time)}</DataTable.Cell>
-                <DataTable.Cell >{formatTime(item?.booking_day?.end_time)}</DataTable.Cell>
-                <DataTable.Cell >{item?.status}</DataTable.Cell>
-                <DataTable.Cell >
-                  {getShowButtonCheck(item) === true && (
-                    <Icon name='hospital-o' onPress={toggleDialog} size={20} color={AppStyles.color.tint} />
-                  )}
-                </DataTable.Cell>
-              </DataTable.Row>
-            ))}
+            {dashboardData.slice(from, to).map((item) => {
+              if (item.booking_day?.end_time) {
+                return (
+
+                  <DataTable.Row key={item.id} >
+                    <DataTable.Cell style={globalStyles.cell} >{item?.booking_day?.booking?.group_name}</DataTable.Cell>
+                    <DataTable.Cell style={globalStyles.CellDate}> {formatDate(item?.booking_day?.date)} </DataTable.Cell>
+                    <DataTable.Cell >{formatTime(item?.booking_day?.start_time)}</DataTable.Cell>
+                    <DataTable.Cell >{formatTime(item?.booking_day?.end_time)}</DataTable.Cell>
+                    <DataTable.Cell >{item?.monitor_booking_day_report == null ? "NOT STARTED" : "IN PROGRESS"}</DataTable.Cell>
+                    <DataTable.Cell >
+                      {!item?.monitor_booking_day_report && item?.booking_day?.date <= checkActive(item) && (
+                        <Icon name='hospital-o' onPress={() => openActionDialog(item)} size={20} color={AppStyles.color.tint} />
+                      )}
+                      {item?.monitor_booking_day_report && (
+                        <Icon name='eye' onPress={() => console.log("create a page for show the data ")} size={20} color={AppStyles.color.tint} />
+                      )}
+                      {item?.monitor_booking_day_report && item?.precheckCount === 0 && (
+                        <Icon name='play' onPress={() => openActionDialog(item)} size={20} color={AppStyles.color.tint} />
+                      )}
+                      {item?.monitor_booking_day_report && item?.precheckCount > 0 && (
+                        <Icon name='plus' onPress={() => openActionDialog(item)} size={20} color={AppStyles.color.tint} />
+                      )}
+                      {item?.monitor_booking_day_report && item?.precheckCount > 0 && item.monitor_booking_day_report?.end_time == null && (
+                        <Icon name='stop' onPress={() => openActionDialog(item)} size={20} color={AppStyles.color.tint} />
+                      )}
+                    </DataTable.Cell>
+                  </DataTable.Row>
+                )
+              }
+              return null;
+            }
+            )}
             {!dashboardData?.length && !isLoading && (<Text style={globalStyles.emptyData}> Data not found</Text>)}
             <DataTable.Pagination
               page={page}
@@ -211,7 +280,7 @@ function HomeScreen({ navigation, user, token }) {
           </DataTable>
         </ScrollView>
         <Portal>
-          <Dialog visible={isDialogVisible} onDismiss={toggleDialog}>
+          <Dialog visible={isDialogVisible} onDismiss={closeActionDialog}>
             <Dialog.Title>Wellness Check{ }</Dialog.Title>
             <Dialog.Content>
               {askQuestion.question1 === true && (
@@ -279,9 +348,9 @@ function HomeScreen({ navigation, user, token }) {
             </Dialog.Content>
             <Dialog.Actions>
               {selectedRadio && (
-                <Button mode="contained" onPress={toggleDialog}>Submit</Button>
+                <Button mode="contained" onPress={() => actionCheckSubmit()}>Submit</Button>
               )}
-              <Button mode="contained" onPress={toggleDialog}>Cancel</Button>
+              <Button mode="contained" onPress={() => closeActionDialog()} >Cancel</Button>
             </Dialog.Actions>
           </Dialog>
         </Portal>

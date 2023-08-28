@@ -39,7 +39,6 @@ function LoginScreen({ navigation, user, login }) {
     setLoading(true);
     authService.login({ email: data.email, password: data.password })
       .then((res) => {
-        console.log(res);
         setLoading(false);
         if (res && res.data && res.data.status === true) {
           let response = res.data;

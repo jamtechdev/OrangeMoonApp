@@ -39,7 +39,7 @@ function ProfileScreen({ user, navigation, token }) {
                     {/* onPress={() => navigation.navigate('CompleteReportStack')} */}
                     <Text style={styles.heading} > Profile Details </Text>
                     <Text style={styles.heading} onPress={() => navigation.navigate('LoginStack')}> logp Details </Text>
-                    {/* <Text style={styles.heading} onPress={() => navigation.navigate('PaymentStack')}> Profile Details </Text> */}
+                    <Text style={styles.heading} onPress={() => navigation.navigate('CompleteReportStack')}> Profile Details </Text>
                     <Divider style={globalStyles.divider} />
                     <View style={styles.detailsContainer}>
                         <InputLabelView label="First Name" value={profileData?.first_name} />
