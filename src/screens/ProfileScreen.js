@@ -15,28 +15,28 @@ function ProfileScreen({ user, navigation, token }) {
     const [profileData, setProfileData] = useState()
     // navigation.navigate('LoginStack')
     const [stateList, setStateList] = useState([]);
+    const [state, setState] = useState([]);
     useEffect(() => {
         setProfileData(user)
     }, [user])
-    const imagesrc = 'https://staging.orangemoonsss.com/images/' + profileData?.monitor?.photo;
+    const imageSrc = 'https://staging.orangemoonsss.com/images/' + profileData?.monitor?.photo;
     useEffect(() => {
         monitorService.getStateList(token).then(res => {
             setStateList(res.data.states);
-            console.log(res.data.states)
+            let stateData = getStateNamesByIds(profileData?.monitor?.preferred_location, stateList)
+            setState(stateData);
         }).catch(error => {
             console.log(error);
         });
 
     }, [])
-
     return (
         <ScrollView style={styles.container} nestedScrollEnabled={true} >
             <Card style={styles.card}>
                 <Card.Content >
                     <View style={styles.content}>
-                        <Avatar.Image size={150} source={{ uri: imagesrc }} style={styles.profileImage} />
+                        <Avatar.Image size={150} source={{ uri: imageSrc }} style={styles.profileImage} />
                     </View>
-                    {/* onPress={() => navigation.navigate('CompleteReportStack')} */}
                     <Text style={styles.heading} > Profile Details </Text>
                     <Text style={styles.heading} onPress={() => navigation.navigate('LoginStack')}> logp Details </Text>
                     <Text style={styles.heading} onPress={() => navigation.navigate('CompleteReportStack')}> Profile Details </Text>
@@ -57,7 +57,7 @@ function ProfileScreen({ user, navigation, token }) {
                         <InputLabelView label="State " value={profileData?.monitor?.state.state_name} />
                         <InputLabelView label="City " value={profileData?.monitor?.city.city_name} />
                         <InputLabelView label="Zipcode " value={profileData?.monitor?.zip_code} />
-                        <InputLabelView label="Preferred Job Location " value={getStateNamesByIds(profileData?.monitor?.preferred_location, stateList)} multiline={true} />
+                        {state && (<InputLabelView label="Preferred Job Location " value={state} multiline={true} />)}
                         <InputLabelView label="Medical Conditions/Allergies " value={profileData?.monitor?.medical_condition} multiline={true} />
                         <InputLabelView label="Password " value={profileData?.password} password={true} />
                     </View>

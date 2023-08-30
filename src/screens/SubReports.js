@@ -6,39 +6,40 @@ import { connect } from 'react-redux';
 import { AppStyles } from '../utils/AppStyles';
 import { monitorService } from '../utils/_services';
 import { routeValue } from '../redux/actions/authActions';
-import { formatDate, sortingHelper } from '../utils/_helpers';
+import { formatDate, formatTime } from '../utils/_helpers';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LoadingContainer from '../components/LoadingContainer';
 import globalStyles from '../utils/_css/globalStyle';
-
+import { CommonActions } from '@react-navigation/native';
 function SubReports({ navigation, user, token, route, value }) {
     const [subReport, setSubReportData] = useState([]);
     const [subReportBkp, setSubReportDataBkp] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    // const [sortDirections, setSortDirections] = useState({
-    //     id: 'none', // Initialize with 'none' as the default
-    //     group_name: 'none',
-    //     start_date: 'none',
-    //     end_date: 'none',
-    // });
-    // const [searchQuery, setSearchQuery] = useState('');
-    // const [page, setPage] = useState(0);
-    // const [numberOfItemsPerPageList] = useState([10, 25, 50, 100]);
-    // const [itemsPerPage, onItemsPerPageChange] = useState(
-    //     numberOfItemsPerPageList[0]
-    // );
-    // const from = page * itemsPerPage;
-    // const to = Math.min((page + 1) * itemsPerPage, completeData?.length);
+    const [sortDirections, setSortDirections] = useState({
+        id: 'none',
+        date: 'none',
+        start_time: 'none',
+        end_time: 'none',
+        temperature: 'none',
+    });
+    const [searchQuery, setSearchQuery] = useState('');
+    const [page, setPage] = useState(0);
+    const [numberOfItemsPerPageList] = useState([10, 25, 50, 100]);
+    const [itemsPerPage, onItemsPerPageChange] = useState(
+        numberOfItemsPerPageList[0]
+    );
+    const from = page * itemsPerPage;
+    const to = Math.min((page + 1) * itemsPerPage, subReport?.length);
 
-    // React.useEffect(() => {
-    //     setPage(0);
-    // }, [itemsPerPage]);
+    React.useEffect(() => {
+        setPage(0);
+    }, [itemsPerPage]);
 
     useEffect(() => {
-        monitorService.reportDetails(token, value).then(res => {
-            console.log(res)
-            setSubReportData(res?.data?.data?.data);
-            setSubReportDataBkp(res?.data?.data?.data);
+        monitorService.reportDetails(token, value.id).then(res => {
+            console.log(res, res?.data?.data)
+            setSubReportData(res?.data?.data);
+            setSubReportDataBkp(res?.data?.data);
             setIsLoading(false);
         }).catch(error => {
             console.log(error);
@@ -46,99 +47,100 @@ function SubReports({ navigation, user, token, route, value }) {
         });
     }, [])
 
-    // const navigateDetails = (booking) => {
-    //     route(booking?.id);
-    //     // navigation.navigate({
-    //     //   name: 'BookingDetails',
-    //     //   params: { bookingId: booking.id },
-    //     // });
-    //     console.log(booking)
-    // }
+    const navigateDetails = (booking) => {
+        // route(booking?.id);
+        navigation.dispatch(
+            CommonActions.navigate({
+                name: 'DetailsReport',
+                params: { user: 'jane' },
+            })
+        )
+        // navigation.navigate('DetailsReport', { userId: 456 });
+        console.log(booking)
+    }
 
-    // const handleSort = async (columnKey) => {
-    //     const nextSortDirection =
-    //         sortDirections[columnKey] === 'ascending'
-    //             ? 'descending'
-    //             : 'ascending';
-    //     setSortDirections({
-    //         ...sortDirections,
-    //         [columnKey]: nextSortDirection,
-    //     });
-    //     // const value = await sortingHelper(completeData, columnKey, nextSortDirection)
-    //     let sortDataType = typeof completeData[0]['booking'][columnKey];
-    //     const sortedData = [...completeData].sort((a, b) => {
-    //         const aValue = a['booking'][columnKey];
-    //         const bValue = b['booking'][columnKey];
-    //         switch (sortDataType) {
-    //             case 'number':
-    //                 return nextSortDirection === 'ascending' ? aValue - bValue : bValue - aValue;
-    //             case 'string':
-    //                 return nextSortDirection === 'ascending' ? aValue?.localeCompare(bValue) : bValue?.localeCompare(aValue);
-    //             case 'object': // Assuming the data type is Date
-    //                 return nextSortDirection === 'ascending' ? aValue?.getTime() - bValue?.getTime() : bValue?.getTime() - aValue?.getTime();
-    //             default:
-    //                 return 0; // Return 0 for unknown data types or if sortKey is not found
-    //         }
-    //     });
-    //     setCompleteData(sortedData);
-    // };
-    // const handleSearch = (query) => {
-    //     const lowerCaseQuery = query.toLowerCase();
-    //     const filteredData = completeData.filter((item) =>
-    //         item?.booking_id?.toString()?.toLowerCase()?.includes(lowerCaseQuery) ||
-    //         item?.booking?.group_name?.toLowerCase()?.includes(lowerCaseQuery) ||
-    //         formatDate(item?.booking?.start_date)?.toLowerCase()?.includes(lowerCaseQuery) ||
-    //         formatDate(item?.booking?.end_date)?.toLowerCase()?.includes(lowerCaseQuery)
-    //     );
-    //     if (filteredData.length == 0 || query == '') {
-    //         setCompleteData(completeDataBkp)
-    //     } else {
-    //         setCompleteData(filteredData)
-    //     }
-    //     setSearchQuery(query);
-    // };
+    const handleSort = async (columnKey) => {
+        const nextSortDirection =
+            sortDirections[columnKey] === 'ascending'
+                ? 'descending'
+                : 'ascending';
+        setSortDirections({
+            ...sortDirections,
+            [columnKey]: nextSortDirection,
+        });
+        // const value = await sortingHelper(completeData, columnKey, nextSortDirection)
+        let sortDataType = typeof subReport[0][columnKey];
+        const sortedData = [...subReport].sort((a, b) => {
+            const aValue = a[columnKey];
+            const bValue = b[columnKey];
+            switch (sortDataType) {
+                case 'number':
+                    return nextSortDirection === 'ascending' ? aValue - bValue : bValue - aValue;
+                case 'string':
+                    return nextSortDirection === 'ascending' ? aValue?.localeCompare(bValue) : bValue?.localeCompare(aValue);
+                case 'object': // Assuming the data type is Date
+                    return nextSortDirection === 'ascending' ? aValue?.getTime() - bValue?.getTime() : bValue?.getTime() - aValue?.getTime();
+                default:
+                    return 0; // Return 0 for unknown data types or if sortKey is not found
+            }
+        });
+        setSubReportData(sortedData);
+    };
+    const handleSearch = (query) => {
+        const lowerCaseQuery = query.toLowerCase();
+        const filteredData = subReport.filter((item) =>
+            item?.toString()?.toLowerCase()?.includes(lowerCaseQuery) ||
+            formatDate(item?.date)?.toLowerCase()?.includes(lowerCaseQuery) ||
+            formatTime(item?.start_time).includes(lowerCaseQuery) ||
+            formatTime(item?.end_time).includes(lowerCaseQuery) ||
+            item?.temperature.toLowerCase().includes(lowerCaseQuery)
+        );
+        if (filteredData.length === 0 || query === '') {
+            setSubReportData(subReportBkp);
+        } else {
+            setSubReportData(filteredData);
+        }
+        setSearchQuery(query);
+    };
 
     return (
         <ScrollView style={styles.container}>
             <Text style={globalStyles.subtitle}> Sub-Reports</Text>
             <Divider style={globalStyles.divider} />
             <View style={styles.container}>
-                {/* <Searchbar
+                <Searchbar
                     placeholder="Search"
                     style={styles.Searchbar}
                     onChangeText={handleSearch}
                     value={searchQuery}
-                /> */}
-                {/* <View style={styles.container}>
-        <Searchbar
-         
-          placeholder="Search"
-          onChangeText={handleSearch}
-          value={searchQuery}
-        /> */}
-                {/* <ScrollView horizontal >
+                />
+                <ScrollView horizontal >
                     <DataTable style={styles.DataTable}>
                         <DataTable.Header style={styles.header}>
                             <DataTable.Title sortDirection={sortDirections.id} onPress={() => handleSort('id')}> ID </DataTable.Title>
-                            <DataTable.Title sortDirection={sortDirections.group_name} onPress={() => handleSort('group_name')} style={styles.headerCell}> Group Name </DataTable.Title>
-                            <DataTable.Title sortDirection={sortDirections.start_date} onPress={() => handleSort('start_date')}>Start Date </DataTable.Title>
-                            <DataTable.Title sortDirection={sortDirections.end_date} onPress={() => handleSort('end_date')}> End Date  </DataTable.Title>
+                            <DataTable.Title sortDirection={sortDirections.date} onPress={() => handleSort('date')} > Date </DataTable.Title>
+                            <DataTable.Title sortDirection={sortDirections.start_time} onPress={() => handleSort('start_time')}>Start Time </DataTable.Title>
+                            <DataTable.Title sortDirection={sortDirections.end_time} onPress={() => handleSort('end_time')}> End Time  </DataTable.Title>
+                            <DataTable.Title sortDirection={sortDirections.temperature} onPress={() => handleSort('temperature')}> Wellness Check Status </DataTable.Title>
+                            <DataTable.Title > Action </DataTable.Title>
                         </DataTable.Header>
                         {isLoading && (<LoadingContainer />)}
-                        {completeData?.slice(from, to).map((item) => (
+                        {subReport?.slice(from, to).map((item) => (
                             <DataTable.Row key={item.id} onPress={() => navigateDetails(item)}>
-                                <DataTable.Cell >{item.booking.id} </DataTable.Cell>
-                                <DataTable.Cell style={styles.cell} >{item.booking.group_name}</DataTable.Cell>
-                                <DataTable.Cell >{formatDate(item.booking.start_date)} </DataTable.Cell>
-                                <DataTable.Cell >{formatDate(item.booking.end_date)} </DataTable.Cell>
+                                <DataTable.Cell >{item.id} </DataTable.Cell>
+                                <DataTable.Cell >{item?.date}</DataTable.Cell>
+                                <DataTable.Cell >{formatTime(item?.start_time)} </DataTable.Cell>
+                                <DataTable.Cell >{formatTime(item?.end_time)} </DataTable.Cell>
+                                <DataTable.Cell > {item?.temperature} </DataTable.Cell>
+                                <DataTable.Cell >  <Icon name='eye' size={20} color={AppStyles.color.tint} style={styles.icon} /> </DataTable.Cell>
                             </DataTable.Row>
                         ))}
-                        {!completeData?.length && !isLoading && (<Text style={globalStyles.emptyData}> Data not found</Text>)}
+                        {!subReport?.length && !isLoading && (<Text style={globalStyles.emptyData}> Data not found</Text>)}
                         <DataTable.Pagination
                             page={page}
-                            numberOfPages={Math.ceil(completeData.length / itemsPerPage)}
+                            numberOfPages={Math.ceil(subReport.length / itemsPerPage)}
                             onPageChange={(page) => setPage(page)}
-                            label={`${from + 1}-${to} of ${completeData.length}`}
+                            label={`${from + 1}-${to} of ${subReport.length}`}
                             numberOfItemsPerPageList={numberOfItemsPerPageList}
                             numberOfItemsPerPage={itemsPerPage}
                             onItemsPerPageChange={onItemsPerPageChange}
@@ -146,7 +148,7 @@ function SubReports({ navigation, user, token, route, value }) {
                             selectPageDropdownLabel={'Rows per page'}
                         />
                     </DataTable>
-                </ScrollView> */}
+                </ScrollView>
             </View>
         </ScrollView>
     );

@@ -46,10 +46,10 @@ function CompleteReport({ navigation, user, token, route }) {
   }, [])
 
   const navigateDetails = (booking) => {
-    route(booking?.id);
+    route(booking);
     navigation.navigate({
       name: 'SubReport',
-      params: { bookingId: booking.id },
+      params: { bookingId: booking },
     });
     console.log(booking, 'here my route ')
   }

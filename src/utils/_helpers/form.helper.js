@@ -2,6 +2,9 @@
 export const phoneRegExp =
     /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/;
 
+export const socialSecurity =
+    /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{2}\)?)\s?-?\s?(\(?\d{4}\)?)?$/;
+
 export const _IsValidateEmail = async (data) => {
     const notExceptedEmail = ["@gmail", "@yahoo", "@hotmail"];
     for (let i = 0; i < notExceptedEmail.length; i++) {
@@ -44,14 +47,14 @@ export const numberArray = (stringArrayValue) => {
 
 export function getStateNamesByIds(ids, stateList) {
     let selectedStates = [];
-    console.log(ids)
+    // console.log(ids)
     if (ids && typeof ids[0] === 'string') {
         const numericIds = ids?.map(id => parseInt(id));
         selectedStates = stateList.filter(item => numericIds.includes(item.id));
     } else {
         selectedStates = stateList.filter(item => ids.includes(item.id));
     }
-    const stateNames = selectedStates.map(item => item.state_name);
+    let stateNames = selectedStates.map(item => item.state_name);
     return stateNames.join(', ');
 }
 
@@ -73,3 +76,18 @@ export function formatPhoneNumber(phoneNumber) {
 
 
 
+export function formatSocialSecurity(phoneNumber) {
+    if (phoneNumber) {
+        const numericPhoneNumber = phoneNumber.replace(/\D/g, '');
+        let formattedPhoneNumber = '';
+        if (numericPhoneNumber.length > 3 && numericPhoneNumber.length <= 5) {
+            formattedPhoneNumber = numericPhoneNumber.replace(/^(\d{3})(\d+)$/, '$1-$2');
+        } else if (numericPhoneNumber.length > 5) {
+            formattedPhoneNumber = numericPhoneNumber.replace(/^(\d{3})(\d{2})(\d+)$/, '$1-$2-$3');
+        } else {
+            formattedPhoneNumber = numericPhoneNumber;
+        }
+        return formattedPhoneNumber;
+    }
+    return phoneNumber;
+}

@@ -16,7 +16,7 @@ import FormDateInput from '../components/FormDateInput';
 import FormDropdown from '../components/FormDropdown';
 import ImagePicker from 'react-native-image-crop-picker';
 import { monitorService } from '../utils/_services';
-import { transformedStateData, transformedCityData, phoneRegExp, numberArray, formatPhoneNumber } from '../utils/_helpers';
+import { transformedStateData, transformedCityData, phoneRegExp, socialSecurity, numberArray, formatPhoneNumber, formatSocialSecurity } from '../utils/_helpers';
 import { authService } from '../utils/_services/authService';
 
 function EditProfileScreen({ user, token, navigation, login }) {
@@ -40,7 +40,7 @@ function EditProfileScreen({ user, token, navigation, login }) {
         shirt_size: Yup.string().required("Shirt Size is required"),
         social_security: Yup.string()
             .required("Social Security is required")
-            .matches(phoneRegExp, "Social Security is not valid")
+            .matches(socialSecurity, "Social Security is not valid")
             .min(9, "Phone number must be at least 9 digits"),
         address: Yup.string().required("Address is required"),
         phone: Yup.string()
@@ -68,7 +68,7 @@ function EditProfileScreen({ user, token, navigation, login }) {
     const emergency_contact = watch('emergency_contact_phone');
     useEffect(() => {
         setValue('phone', formatPhoneNumber(phone_Value));
-        setValue('social_security', formatPhoneNumber(social_value));
+        setValue('social_security', formatSocialSecurity(social_value));
         setValue('emergency_contact_phone', formatPhoneNumber(emergency_contact));
     }, [emergency_contact, phone_Value, social_value])
     useEffect(() => {
@@ -211,7 +211,6 @@ function EditProfileScreen({ user, token, navigation, login }) {
                             <FormTextInput control={control} errors={errors} name="last_name" label="Last Name" />
                             <FormTextInput control={control} errors={errors} name="email" label="Email" />
                             <FormTextInput control={control} errors={errors} name="payRate" label="Hourly Rate" />
-                            <Text>{monitor.d_o_b}</Text>
                             <FormDateInput control={control} name="d_o_b" label="DOB" setValue={setValue} errors={errors} defaultValue={monitor?.d_o_b} />
                             <FormRadioButtons
                                 control={control}
