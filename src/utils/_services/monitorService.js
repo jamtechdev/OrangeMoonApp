@@ -17,6 +17,7 @@ export const monitorService = {
     getCityList,
     editProfile,
     BookingReportActionCheck,
+    getAllDetailsReport,
 };
 
 async function dashboard(token) {
@@ -114,6 +115,17 @@ async function BookingReportActionCheck(token, data) {
         data,
         {
             headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'multipart/form-data' },
+        }
+    );
+}
+
+//https://staging.orangemoonsss.com/api/v1/monitor-booking-day-report/78/continue/00:00/04:00
+
+async function getAllDetailsReport(token, data) {
+    return await axios.get(
+        `${API_URL}/monitor-booking-day-report/${data?.id}/continue/${data?.start_Time}/${data?.end_Time}`,
+        {
+            headers: { 'Authorization': 'Bearer ' + token },
         }
     );
 }

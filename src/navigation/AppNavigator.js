@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import { Image, Pressable, StyleSheet, Text } from 'react-native';
+import { Image, Pressable, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -27,7 +27,7 @@ import { AppIcon, AppStyles } from '../utils/AppStyles';
 import DrawerContainer from '../components/DrawerContainer';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DetailsReport from '../screens/DetailsReport';
-
+import { useRoute } from '@react-navigation/native';
 
 const Stack = createStackNavigator();
 
@@ -283,30 +283,33 @@ const EditProfileStack = () => (
     </Stack.Navigator>
 );
 
-const DetailsReportStack = () => (
-    <Stack.Navigator
-        initialRouteName="Details"
-        screenOptions={{
-            headerTintColor: 'red',
-            headerTitleStyle: styles.headerTitleStyle,
-            headerMode: 'float',
-        }}>
-        <Stack.Screen
-            name="Details"
-            component={DetailsReport}
-            options={({ navigation }) => ({
-                headerLeft: (route) => (
-                    <Pressable onPress={() => navigation.goBack()}>
-                        <Icon color={AppStyles.color?.tint} name='arrow-left' size={30} />
-                        <Text>{route.params ? route.params.userId : 'No User ID'}</Text>
-                    </Pressable>
-                ),
-                headerLeftContainerStyle: { paddingLeft: 10 },
-                title: 'Details',
-            })}
-        />
-    </Stack.Navigator>
-);
+const DetailsReportStack = () => {
+    const route = useRoute();
+    console.log(route, "here route ise ")
+    return (
+        <Stack.Navigator
+            initialRouteName="Details"
+            screenOptions={{
+                headerTintColor: 'red',
+                headerTitleStyle: styles.headerTitleStyle,
+                headerMode: 'float',
+            }}>
+            <Stack.Screen
+                name="Details"
+                component={() => <DetailsReport route={route} />}
+                options={({ navigation }) => ({
+                    headerLeft: () => (
+                        <Pressable onPress={() => navigation.goBack()}>
+                            <Icon color={AppStyles.color?.tint} name='arrow-left' size={30} />
+                        </Pressable>
+                    ),
+                    headerLeftContainerStyle: { paddingLeft: 10 },
+                    title: 'Details',
+                })}
+            />
+        </Stack.Navigator>
+    )
+};
 
 
 const PaymentStack = () => (
@@ -419,7 +422,7 @@ const AppNavigator = () => {
                 <Stack.Screen name="BookingDetails" component={BookingDetailsStack} />
                 <Stack.Screen name="SubReport" component={SubReportStack} />
                 <Stack.Screen name="EditProfile" component={EditProfileStack} />
-                <Stack.Screen name="DetailsReport" component={DetailsReportStack} initialParams={{ userId: 123 }} />
+                <Stack.Screen name="DetailsReport" component={DetailsReportStack} />
             </Stack.Navigator>
         </NavigationContainer>
     );

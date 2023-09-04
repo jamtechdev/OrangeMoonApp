@@ -10,7 +10,7 @@ import { formatDate, formatTime } from '../utils/_helpers';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LoadingContainer from '../components/LoadingContainer';
 import globalStyles from '../utils/_css/globalStyle';
-import { CommonActions } from '@react-navigation/native';
+
 function SubReports({ navigation, user, token, route, value }) {
     const [subReport, setSubReportData] = useState([]);
     const [subReportBkp, setSubReportDataBkp] = useState([]);
@@ -49,13 +49,7 @@ function SubReports({ navigation, user, token, route, value }) {
 
     const navigateDetails = (booking) => {
         // route(booking?.id);
-        navigation.dispatch(
-            CommonActions.navigate({
-                name: 'DetailsReport',
-                params: { user: 'jane' },
-            })
-        )
-        // navigation.navigate('DetailsReport', { userId: 456 });
+        navigation.navigate('DetailsReport', { Booking: booking });
         console.log(booking)
     }
 

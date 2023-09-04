@@ -43,11 +43,11 @@ function BookingRequest({ navigation, user, token, route }) {
 
   const SegmentedButtonsValue = [
     { value: 'All', label: 'All' },
-    { value: 'Pending', label: 'Pending' },
-    { value: 'Accepted', label: 'Accepted' },
-    { value: 'Completed', label: 'Completed' },
-    { value: 'Rejected', label: 'Rejected' },
-    { value: 'Cancelled', label: 'Cancelled' },
+    { value: 'PENDING', label: 'Pending' },
+    { value: 'ACCEPTED', label: 'Accepted' },
+    { value: 'COMPLETED', label: 'Completed' },
+    { value: 'REJECTED', label: 'Rejected' },
+    { value: 'CANCEL', label: 'Cancelled' },
   ]
 
   useEffect(() => {
@@ -153,12 +153,13 @@ function BookingRequest({ navigation, user, token, route }) {
             {bookingData?.slice(from, to).map((item) => (
               <DataTable.Row key={item.id} >
                 <DataTable.Cell >{item.booking_id} <View style={styles.iconGap} /></DataTable.Cell>
-                <DataTable.Cell style={styles.cell} onPress={() => navigateDetails(item)}>{item.group_name}</DataTable.Cell>
+                <DataTable.Cell style={styles.cell} >{item.group_name}</DataTable.Cell>
                 <DataTable.Cell >{formatDate(item.dates)} <View style={styles.hederGap} /> </DataTable.Cell>
                 <DataTable.Cell >{item.status} <View style={styles.iconGap} /></DataTable.Cell>
                 <DataTable.Cell style={styles.iconCell} onPress={() => navigateDetails(item)} >
                   <View style={styles.iconGap} />
-                  <Icon name='eye' size={20} color={AppStyles.color.tint} style={styles.icon} />
+                  {item?.status !== "REJECTED" && item?.status !== "CANCEL" ? (<Icon name='eye' size={20} color={AppStyles.color.tint} style={styles.icon} />
+                  ) : ''}
                   <View style={styles.iconGap} />
                 </DataTable.Cell>
                 <DataTable.Cell style={styles.iconCell} >
