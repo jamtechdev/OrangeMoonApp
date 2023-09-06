@@ -41,7 +41,8 @@ export const AppStyles = {
     main: "70%"
   },
   textInputWidth: {
-    main: "80%"
+    main: "80%",
+    full: "100%"
   },
   borderRadius: {
     main: 25,

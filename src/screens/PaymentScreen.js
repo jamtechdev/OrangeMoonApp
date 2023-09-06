@@ -95,9 +95,9 @@ function PaymentScreen({ navigation, user, token }) {
         <LoadingContainer />
       )}
       {!isLoading && (
-        <ScrollView ScrollView >
+        <ScrollView style={styles.main}>
           <View style={styles.container}>
-            <Text style={styles.title}>Stripe Connect </Text>
+          <Text style={globalStyles.subtitle}> Stripe Connect </Text>
             <Divider style={globalStyles.divider} />
             {stripeShowData?.length !== 0 && stripeData && (
               <View style={styles.accountDetailsContainer}>
@@ -157,6 +157,7 @@ function PaymentScreen({ navigation, user, token }) {
                 + Connect Stripe
               </Button>
             )}
+             <Divider style={globalStyles.divider} />
             <View style={styles.DataTable}>
               <ScrollView horizontal >
                 <DataTable style={globalStyles.DataTable}>
@@ -208,10 +209,16 @@ function PaymentScreen({ navigation, user, token }) {
 }
 
 const styles = StyleSheet.create({
+  main: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    padding: 16,
+    paddingVertical: 10,
+    marginBottom: 15,
+    paddingHorizontal: 16,
   },
   title: {
     fontSize: 24,
@@ -223,9 +230,10 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 16,
+    marginHorizontal: 20,
   },
   buttonContent: {
-    height: 48,
+    height: 40,
   },
   accountDetailsContainer: {
     marginTop: 16,
@@ -235,20 +243,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 8,
-    marginHorizontal: 15
+    marginHorizontal: 15,
+    padding : 1,
   },
   keyText: {
     flex: 1,
     fontWeight: '700',
     color: '#777',
-    marginRight: 4, // Add some margin for separation
-    fontSize: 14
-  },
-  valueText: {
+    marginRight: 4, 
+    fontSize: 12
+},
+valueText: {
     flex: 1,
     marginLeft: 8,
-    fontSize: 13
-  },
+    fontSize: 12
+},
   DataTable: {
     marginTop: 20
   }

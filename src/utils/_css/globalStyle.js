@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { AppStyles, AppIcon } from '../AppStyles';
 const globalStyles = StyleSheet.create({
     container: {
@@ -26,6 +26,10 @@ const globalStyles = StyleSheet.create({
     },
     errorMsg: {
         color: AppStyles.color.error,
+    },
+    linkView :{
+        flex: 1,
+        marginLeft: Platform.OS === 'android' ? 50 : 25,
     },
     linkStyle: {
         color: AppStyles.color.blue,
@@ -62,7 +66,8 @@ const globalStyles = StyleSheet.create({
     },
     divider: {
         height: 2,
-        backgroundColor: '#ccc'
+        backgroundColor: '#ccc',
+        marginTop: 10
     },
     subtitle: {
         fontSize: 20,
@@ -71,6 +76,40 @@ const globalStyles = StyleSheet.create({
         marginBottom: 5,
         marginTop: 5
     },
+    card: {
+        marginVertical: 12,
+    },
+    cardContainer: {
+        flex: 1,
+        backgroundColor: '#fff',
+        paddingHorizontal: 20,
+        paddingVertical: 2,
+        marginBottom: Platform.OS === 'android' ? 0 : 15,
+    },
+    imageRow: {
+        flex: 1, 
+        alignItems: 'flex-end',
+        flexDirection: 'row',
+     
+    },
+    leftImageIcon :{
+        paddingBottom: 30,
+        left : 25,
+        zIndex: 100,
+        
+    },
+    rightImageIcon: {
+        paddingBottom: 30,
+        right : 25,
+        zIndex: 100,
+    },
+    fabGroup: {
+        position: 'absolute',
+        margin:  Platform.OS === 'android' ? 16 : 0,
+        right: 0,
+        bottom: 0,
+    },
+
 });
 
 export default globalStyles;

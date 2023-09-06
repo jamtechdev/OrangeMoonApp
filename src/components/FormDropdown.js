@@ -12,9 +12,15 @@ const FormDropdown = ({ control, updateValue, defaultValue, setDropdownName, dro
     useEffect(() => {
         updateValue(name, value)
     }, [value])
+    const  styleIndex ={ detailItem: {
+        // flexDirection: 'row',
+        alignItems: 'start',
+        marginBottom: 10,
+        zIndex : 999999 + Index,
+    }}
 
     return (
-        <View style={styles.detailItem}>
+        <View style={styleIndex.detailItem}>
             <Text style={styles.labelText}>{label} : </Text>
             <Controller
                 control={control}
@@ -66,6 +72,7 @@ const FormDropdown = ({ control, updateValue, defaultValue, setDropdownName, dro
                             itemStyle={styles.itemStyle}
                             zIndex={Index}
                             dropdownStyle={styles.dropdown}
+                            dropDownDirection="BOTTOM"
                         />
                         {error && (
                             <HelperText type="error" visible={error}>
@@ -84,6 +91,7 @@ const styles = StyleSheet.create({
         // flexDirection: 'row',
         alignItems: 'start',
         marginBottom: 10,
+        zIndex : 99999999,
     },
     labelText: {
         // width: '40%',

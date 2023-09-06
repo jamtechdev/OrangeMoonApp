@@ -18,6 +18,7 @@ function DetailsReport({ navigation, route, user, token }) {
     const [monitorActivitySorted, setMonitorActivitySorted] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     console.log(token)
+    
     useEffect(() => {
         if (route.params && route.params.Booking) {
             const paramsData = {
@@ -26,13 +27,13 @@ function DetailsReport({ navigation, route, user, token }) {
                 end_Time: route.params.Booking.end_Time,
             }
             monitorService.getAllDetailsReport(token, paramsData).then(res => {
+                console.log(res)
                 setReportDetails(res?.data);
                 setMonitorBookingDayReport(res?.data?.monitorBookingDayReport);
                 setBookingDayDetails(res?.data?.monitorBookingDetails);
                 setPreCheckQuestions(res?.data?.precheckQuestions);
                 setMonitorActivitySorted(res?.data?.monitorActivitySorted);
                 setIncidents(res?.data?.incidents);
-                console.log(res?.data);
                 setIsLoading(false)
             }).catch(error => { setIsLoading(false); console.log(error); });
         }
@@ -43,64 +44,95 @@ function DetailsReport({ navigation, route, user, token }) {
                 <LoadingContainer />
             )}
             {!isLoading && reportDetails && (
-                <ScrollView ScrollView >
+                <ScrollView style={styles.main}>
                     <View style={styles.container}>
-                        <Text style={styles.title}>Nightly Activity Report </Text>
-                        <Divider style={globalStyles.divider} />
-                        {monitorBookingDayReport && bookingDayDetails &&
-                            <View style={styles.accountDetailsContainer}>
-                                <View style={styles.detailRow} >
-                                    <Text style={styles.keyText} >Monitor Name  </Text>
-                                    <Text style={styles.valueText}>{bookingDayDetails?.first_name} {bookingDayDetails?.last_name} </Text>
-                                </View>
-                                <View style={styles.detailRow} >
-                                    <Text style={styles.keyText} >Date </Text>
-                                    <Text style={styles.valueText}>{bookingDayDetails?.date || '-'} </Text>
-                                </View>
-                                <View style={styles.detailRow} >
-                                    <Text style={styles.keyText} >Wellness Check Status </Text>
-                                    <Text style={styles.valueText}>{monitorBookingDayReport?.temperature || '-'}  </Text>
-                                </View>
-                                <View style={styles.detailRow} >
-                                    <Text style={styles.keyText} >Group Name</Text>
-                                    <Text style={styles.valueText}>{bookingDayDetails?.group_name || '-'}  </Text>
-                                </View>
-                                <View style={styles.detailRow} >
-                                    <Text style={styles.keyText} ># Of Students </Text>
-                                    <Text style={styles.valueText}>{bookingDayDetails?.no_of_students || '-'}  </Text>
-                                </View>
-                                <View style={styles.detailRow} >
-                                    <Text style={styles.keyText} ># Of Floors </Text>
-                                    <Text style={styles.valueText}>{bookingDayDetails?.no_of_floor || '-'}  </Text>
-                                </View>
-                                <View style={styles.detailRow} >
-                                    <Text style={styles.keyText} >TD/GL Name </Text>
-                                    <Text style={styles.valueText}>{bookingDayDetails?.gl_name || '-'}  </Text>
-                                </View>
-                                <View style={styles.detailRow} >
-                                    <Text style={styles.keyText} >TD/GL Phone </Text>
-                                    <Text style={styles.valueText}>{bookingDayDetails?.gl_phone || '-'}  </Text>
-                                </View>
-                                <View style={styles.detailRow} >
-                                    <Text style={styles.keyText} >Start Time </Text>
-                                    <Text style={styles.valueText}>{monitorBookingDayReport?.start_time || '-'}  </Text>
-                                </View>
-                                <View style={styles.detailRow} >
-                                    <Text style={styles.keyText} >End Time </Text>
-                                    <Text style={styles.valueText}>{monitorBookingDayReport?.end_time || '-'}  </Text>
-                                </View>
-                                <View style={styles.detailRow} >
-                                    <Text style={styles.keyText} >Start Location </Text>
-                                    <Text style={styles.valueText}>{monitorBookingDayReport?.start_location_addr || '-'}  </Text>
-                                </View>
-                                <View style={styles.detailRow} >
-                                    <Text style={styles.keyText} >End Location </Text>
-                                    <Text style={styles.valueText}>{monitorBookingDayReport?.end_location_addr || '-'}  </Text>
-                                </View>
-                            </View>
+                        <Card style={styles.card} >
+                            <Text style={globalStyles.subtitle}>Nightly Activity Report </Text>
+                            <Divider style={globalStyles.divider} />
+                            <Card.Content>
+                                {monitorBookingDayReport && bookingDayDetails &&
+                                    <View style={styles.accountDetailsContainer}>
+                                        <View style={styles.detailRow} >
+                                            <Text style={styles.keyText} >Monitor Name  </Text>
+                                            <Text style={styles.valueText}>{bookingDayDetails?.first_name} {bookingDayDetails?.last_name} </Text>
+                                        </View>
+                                        <View style={styles.detailRow} >
+                                            <Text style={styles.keyText} >Date </Text>
+                                            <Text style={styles.valueText}>{bookingDayDetails?.date || '-'} </Text>
+                                        </View>
+                                        <View style={styles.detailRow} >
+                                            <Text style={styles.keyText} >Wellness Check Status </Text>
+                                            <Text style={styles.valueText}>{monitorBookingDayReport?.temperature || '-'}  </Text>
+                                        </View>
+                                        <View style={styles.detailRow} >
+                                            <Text style={styles.keyText} >Group Name</Text>
+                                            <Text style={styles.valueText}>{bookingDayDetails?.group_name || '-'}  </Text>
+                                        </View>
+                                        <View style={styles.detailRow} >
+                                            <Text style={styles.keyText} ># Of Students </Text>
+                                            <Text style={styles.valueText}>{bookingDayDetails?.no_of_students || '-'}  </Text>
+                                        </View>
+                                        <View style={styles.detailRow} >
+                                            <Text style={styles.keyText} ># Of Floors </Text>
+                                            <Text style={styles.valueText}>{bookingDayDetails?.no_of_floor || '-'}  </Text>
+                                        </View>
+                                        <View style={styles.detailRow} >
+                                            <Text style={styles.keyText} >TD/GL Name </Text>
+                                            <Text style={styles.valueText}>{bookingDayDetails?.gl_name || '-'}  </Text>
+                                        </View>
+                                        <View style={styles.detailRow} >
+                                            <Text style={styles.keyText} >TD/GL Phone </Text>
+                                            <Text style={styles.valueText}>{bookingDayDetails?.gl_phone || '-'}  </Text>
+                                        </View>
+                                        <View style={styles.detailRow} >
+                                            <Text style={styles.keyText} >Start Time </Text>
+                                            <Text style={styles.valueText}>{monitorBookingDayReport?.start_time || '-'}  </Text>
+                                        </View>
+                                        <View style={styles.detailRow} >
+                                            <Text style={styles.keyText} >End Time </Text>
+                                            <Text style={styles.valueText}>{monitorBookingDayReport?.end_time || '-'}  </Text>
+                                        </View>
+                                        <View style={styles.detailRow} >
+                                            <Text style={styles.keyText} >Start Location </Text>
+                                            <Text style={styles.valueText}>{monitorBookingDayReport?.start_location_addr || '-'}  </Text>
+                                        </View>
+                                        <View style={styles.detailRow} >
+                                            <Text style={styles.keyText} >End Location </Text>
+                                            <Text style={styles.valueText}>{monitorBookingDayReport?.end_location_addr || '-'}  </Text>
+                                        </View>
+                                    </View>
+                                }
+                            </Card.Content>
+                        </Card>
+                        <View style={styles.nextView}>
+                            <Card style={styles.card} >
+                                <Text style={globalStyles.subtitle}>Pre-Checks</Text>
+                                <Divider style={globalStyles.divider} />
+                                <Card.Content>
+                                   
+                                </Card.Content>
+                            </Card>
+                        </View>
+                        <View style={styles.nextView}>
+                            <Card style={styles.card} >
+                                <Text style={globalStyles.subtitle}>Activities</Text>
+                                <Divider style={globalStyles.divider} />
 
 
-                        }
+                                <Card.Content>
+                                   
+                                </Card.Content>
+                            </Card>
+                        </View>
+                        <View style={styles.nextView}>
+                            <Card style={styles.card} >
+                                <Text style={globalStyles.subtitle}>Incident Reports</Text>
+                                <Divider style={globalStyles.divider} />
+                                <Card.Content>
+                                   
+                                </Card.Content>
+                            </Card>
+                        </View>
                     </View>
                 </ScrollView>
             )}
@@ -109,13 +141,19 @@ function DetailsReport({ navigation, route, user, token }) {
 }
 
 const styles = StyleSheet.create({
+    main: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        padding: 16,
+        paddingVertical: 10,
+        marginBottom: 15,
+        paddingHorizontal: 16,
     },
     title: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 16,
     },
@@ -129,30 +167,52 @@ const styles = StyleSheet.create({
         height: 48,
     },
     accountDetailsContainer: {
-        marginTop: 16,
+        marginTop: 10,
     },
     detailRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 8,
-        marginHorizontal: 15
+        padding: 3,
     },
     keyText: {
         flex: 1,
         fontWeight: '700',
         color: '#777',
         marginRight: 4, // Add some margin for separation
-        fontSize: 14
+        fontSize: 12
     },
     valueText: {
         flex: 1,
         marginLeft: 8,
-        fontSize: 13
+        fontSize: 12
     },
     DataTable: {
         marginTop: 20
-    }
+    },
+    nextView: {
+        marginVertical: 10,
+    },
+    card: {
+        padding: 15,
+        backgroundColor: '#fcfcfc'
+    },
+    tableRow: {
+        flexDirection: 'row',
+        borderBottomWidth: 1,
+        borderColor: '#ccc',
+        paddingVertical: 8,
+      },
+      tableHeader: {
+        fontWeight: 'bold',
+        fontSize: 16,
+        padding:10,
+      },
+      tableCell: {
+        fontSize: 16,
+        paddingLeft: 8,
+      },
 });
 
 

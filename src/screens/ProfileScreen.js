@@ -15,7 +15,7 @@ function ProfileScreen({ user, navigation, token }) {
     const [profileData, setProfileData] = useState()
     // navigation.navigate('LoginStack')
     const [stateList, setStateList] = useState([]);
-    const [state, setState] = useState([]);
+    const [state, setState] = useState('');
     useEffect(() => {
         setProfileData(user)
     }, [user])
@@ -25,21 +25,21 @@ function ProfileScreen({ user, navigation, token }) {
             setStateList(res.data.states);
             let stateData = getStateNamesByIds(profileData?.monitor?.preferred_location, stateList)
             setState(stateData);
+            console.log(typeof stateData, "data")
         }).catch(error => {
             console.log(error);
         });
-
     }, [])
     return (
         <ScrollView style={styles.container} nestedScrollEnabled={true} >
-            <Card style={styles.card}>
+            <Card style={globalStyles.card}>
                 <Card.Content >
                     <View style={styles.content}>
                         <Avatar.Image size={150} source={{ uri: imageSrc }} style={styles.profileImage} />
                     </View>
                     <Text style={styles.heading} > Profile Details </Text>
-                    <Text style={styles.heading} onPress={() => navigation.navigate('LoginStack')}> logp Details </Text>
-                    <Text style={styles.heading} onPress={() => navigation.navigate('CompleteReportStack')}> Profile Details </Text>
+                    {/* <Text style={styles.heading} onPress={() => navigation.navigate('LoginStack')}> logp Details </Text>
+                    <Text style={styles.heading} onPress={() => navigation.navigate('CompleteReportStack')}> Profile Details </Text> */}
                     <Divider style={globalStyles.divider} />
                     <View style={styles.detailsContainer}>
                         <InputLabelView label="First Name" value={profileData?.first_name} />
@@ -57,7 +57,7 @@ function ProfileScreen({ user, navigation, token }) {
                         <InputLabelView label="State " value={profileData?.monitor?.state.state_name} />
                         <InputLabelView label="City " value={profileData?.monitor?.city.city_name} />
                         <InputLabelView label="Zipcode " value={profileData?.monitor?.zip_code} />
-                        {state && (<InputLabelView label="Preferred Job Location " value={state} multiline={true} />)}
+                        {state !== '' && (<InputLabelView label="Preferred Job Location " value={state} multiline={true} />)}
                         <InputLabelView label="Medical Conditions/Allergies " value={profileData?.monitor?.medical_condition} multiline={true} />
                         <InputLabelView label="Password " value={profileData?.password} password={true} />
                     </View>
@@ -80,9 +80,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 2,
     },
-    card: {
-        marginBottom: 16,
-    },
     detailsContainer: {
         marginTop: 20,
     },
@@ -95,67 +92,12 @@ const styles = StyleSheet.create({
     heading: {
         fontSize: 20,
         fontWeight: 700
-        // marginBottom: 10,
     },
     buttonContainer: {
         marginBottom: 10,
         marginTop: 5,
         alignItems: 'center',
     },
-    // username: {
-    //     fontSize: 24,
-    //     fontWeight: 'bold',
-    //     marginBottom: 10,
-    // },
-    // email: {
-    //     fontSize: 18,
-    //     fontWeight: '600',
-    //     marginBottom: 15,
-    //     textAlign: 'center',
-    // },
-    // rate: {
-    //     fontSize: 16,
-    //     marginBottom: 15,
-    // },
-    // infoContainer: {
-    //     flexDirection: 'row',
-    //     justifyContent: 'space-between',
-    //     marginBottom: 5,
-    // },
-    // infoItem: {
-    //     flexDirection: 'row',
-    //     marginBottom: 10,
-    // },
-    // infoLabel: {
-    //     fontSize: 16,
-    //     fontWeight: '600',
-    //     marginRight: 5,
-    // },
-    // infoValue: {
-    //     fontSize: 16,
-    // },
-    // card: {
-    //     width: '90%',
-    //     padding: 10,
-    //     marginTop: 10,
-    // },
-    // inputStyle: {
-    //     width: '100%',
-    //     marginBottom: 10,
-    // },
-    // radioGroup: {
-    //     flexDirection: 'row', // Display radio buttons horizontally
-    //     justifyContent: 'space-between', // Add space between radio buttons
-    // },
-    // label: {
-    //     fontSize: 16,
-    //     fontWeight: 600
-    //     // marginBottom: 10,
-    // },
-    // labelContainer: {
-    //     alignSelf: 'flex-start', // Align label to the left
-    //     // marginBottom: 10,
-    // },
 });
 
 const mapStateToProps = (state) => ({

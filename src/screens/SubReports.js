@@ -152,7 +152,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        padding: 10,
+        paddingVertical: 5,
+        marginBottom: 15,
+        paddingHorizontal:10,
     },
     card: {
         marginBottom: 16,

@@ -36,6 +36,7 @@ const LoginStack = () => (
     <Stack.Navigator
         initialRouteName="Welcome"
         screenOptions={{
+            headerBackTitleVisible: false,
             headerTintColor: 'red',
             headerTitleStyle: styles.headerTitleStyle,
             headerMode: 'float',
@@ -96,7 +97,6 @@ const BookingRequestStack = () => (
 const BookingDetailsStack = () => (
     <Stack.Navigator
         initialRouteName="Booking Details"
-
         screenOptions={{
             headerTintColor: 'red',
             headerTitleStyle: styles.headerTitleStyle,
@@ -106,11 +106,12 @@ const BookingDetailsStack = () => (
             name="Booking Details"
             component={BookingDetails}
             options={({ navigation }) => ({
-                headerLeft: () => (
-                    <Pressable onPress={() => navigation.goBack()}>
-                        <Icon color={AppStyles.color?.tint} name='arrow-left' size={30} />
-                    </Pressable>
-                ),
+                // headerLeft: () => (
+                //     <Pressable onPress={() => navigation.goBack()}>
+                //         <Icon color={AppStyles.color?.tint} name='arrow-left' size={30} />
+                //     </Pressable>
+                // ),
+                headerBackTitleVisible: false,
                 headerLeftContainerStyle: { paddingLeft: 10 },
                 title: 'Booking Details',
             })}
@@ -177,11 +178,12 @@ const SubReportStack = () => (
             name="Sub-Report"
             component={SubReports}
             options={({ navigation }) => ({
-                headerLeft: () => (
-                    <Pressable onPress={() => navigation.goBack()}>
-                        <Icon color={AppStyles.color?.tint} name='arrow-left' size={30} />
-                    </Pressable>
-                ),
+                // headerLeft: () => (
+                //     <Pressable onPress={() => navigation.goBack()}>
+                //         <Icon color={AppStyles.color?.tint} name='arrow-left' size={30} />
+                //     </Pressable>
+                // ),
+                headerBackTitleVisible: false,
                 headerLeftContainerStyle: { paddingLeft: 10 },
                 title: 'Sub-Report',
             })}
@@ -271,11 +273,12 @@ const EditProfileStack = () => (
             name="Edit Profile"
             component={EditProfileScreen}
             options={({ navigation }) => ({
-                headerLeft: () => (
-                    <Pressable onPress={() => navigation.goBack()}>
-                        <Icon color={AppStyles.color?.tint} name='arrow-left' size={30} />
-                    </Pressable>
-                ),
+                // headerLeft: () => (
+                //     <Pressable onPress={() => navigation.goBack()}>
+                //         <Icon color={AppStyles.color?.tint} name='arrow-left' size={30} />
+                //     </Pressable>
+                // ),
+                headerBackTitleVisible: false,
                 headerLeftContainerStyle: { paddingLeft: 10 },
                 title: 'Edit Profile',
             })}
@@ -290,6 +293,7 @@ const DetailsReportStack = () => {
         <Stack.Navigator
             initialRouteName="Details"
             screenOptions={{
+                eaderShown: true,
                 headerTintColor: 'red',
                 headerTitleStyle: styles.headerTitleStyle,
                 headerMode: 'float',
@@ -298,11 +302,12 @@ const DetailsReportStack = () => {
                 name="Details"
                 component={() => <DetailsReport route={route} />}
                 options={({ navigation }) => ({
-                    headerLeft: () => (
-                        <Pressable onPress={() => navigation.goBack()}>
-                            <Icon color={AppStyles.color?.tint} name='arrow-left' size={30} />
-                        </Pressable>
-                    ),
+                    // headerLeft: () => (
+                    //     <Pressable onPress={() => navigation.goBack()}>
+                    //         <Icon color={AppStyles.color?.tint} name='arrow-left' size={30} />
+                    //     </Pressable>
+                    // ),
+                    headerBackTitleVisible: false,
                     headerLeftContainerStyle: { paddingLeft: 10 },
                     title: 'Details',
                 })}

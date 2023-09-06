@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { Text, TextInput, } from 'react-native-paper';
-
+import { AppStyles } from '../utils/AppStyles';
 
 const InputLabelView = React.memo(({ label, value, editable = false, password, multiline = false }) => {
     const [showPassword, setShowPassword] = useState(false);
@@ -47,7 +47,8 @@ const styles = StyleSheet.create({
     },
     valueInput: {
         flex: 1,
-        marginBottom: 10
+        marginBottom: 10,
+        width: AppStyles.textInputWidth.full,
     },
 });
 

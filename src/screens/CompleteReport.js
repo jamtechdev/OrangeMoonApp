@@ -103,9 +103,9 @@ function CompleteReport({ navigation, user, token, route }) {
 
   return (
     <ScrollView style={styles.container}>
+      <View style={styles.container}>
       <Text style={globalStyles.subtitle}> Reports</Text>
       <Divider style={globalStyles.divider} />
-      <View style={styles.container}>
         <Searchbar
           placeholder="Search"
           style={styles.Searchbar}
@@ -154,7 +154,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    padding: 10,
+    paddingVertical: 2,
+    marginBottom: 15,
+    paddingHorizontal:10,
   },
   card: {
     marginBottom: 16,

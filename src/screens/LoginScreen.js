@@ -139,7 +139,7 @@ function LoginScreen({ navigation, user, login }) {
             />
             <Text > Remember me</Text>
           </View>
-          <View style={{ flex: 1, marginLeft: 50, }}>
+          <View style={globalStyles.linkView}>
             {/* need to set use this ====>>>>> params: {id: 'jane' } */}
             <Link to={{ screen: 'ForgetPassword' }}>
               <Text style={globalStyles.linkStyle}> ForgetPassword ?</Text>

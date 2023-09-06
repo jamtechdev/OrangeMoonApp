@@ -26,10 +26,10 @@ function BookingDetails({ navigation, route, user, value, token }) {
             <List.Section>
               {bookingDetails && (
                 <Card style={styles.card}>
-                  <Card.Title titleVariant='titleMedium' title='Reservation Details' />
+                  <Card.Title  titleVariant='titleMedium' title='Reservation Details' />
                   <Card.Content>
                     <View style={styles.detailsContainer}>
-                      <InputLabelView label="Group Name" value={bookingDetails?.booking?.group_name} />
+                      <InputLabelView label="Group Name" value={bookingDetails?.booking?.group_name} multiline={true}/>
                       <InputLabelView label="Number Of Students" value={bookingDetails?.booking?.no_of_student.toString()} />
                       <InputLabelView label="Floor" value={bookingDetails?.booking?.no_of_floor.toString()} />
                       <InputLabelView label="TD/GL Name" value={bookingDetails?.booking?.gl_name} />
@@ -38,12 +38,12 @@ function BookingDetails({ navigation, route, user, value, token }) {
                       <InputLabelView label="End Date" value={bookingDetails?.booking?.end_date} />
                       <InputLabelView label="Start Time" value={bookingDetails?.booking?.start_time} />
                       <InputLabelView label="End Time" value={bookingDetails?.booking?.end_time} />
-                      <InputLabelView label="Hotel Name" value={bookingDetails?.booking?.hotel?.name} />
-                      <InputLabelView label="Hotel Address" value={bookingDetails?.booking?.hotel?.address} />
+                      <InputLabelView label="Hotel Name" value={bookingDetails?.booking?.hotel?.name} multiline={true}/>
+                      <InputLabelView label="Hotel Address" value={bookingDetails?.booking?.hotel?.address} multiline={true}/>
                       <InputLabelView label="Hotel State" value={bookingDetails?.booking?.hotel?.state?.state_name} />
                       <InputLabelView label="Hotel City" value={bookingDetails?.booking?.hotel?.city?.city_name} />
                       <InputLabelView label="Hotel Zipcode" value={bookingDetails?.booking?.hotel?.zip_code} />
-                      <InputLabelView label="Hotel Location" value={bookingDetails?.booking?.location?.name} />
+                      <InputLabelView label="Hotel Location" value={bookingDetails?.booking?.location?.name} multiline={true}/>
                     </View>
                   </Card.Content>
                 </Card>

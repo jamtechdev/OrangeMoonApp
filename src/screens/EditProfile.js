@@ -18,6 +18,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { monitorService } from '../utils/_services';
 import { transformedStateData, transformedCityData, phoneRegExp, socialSecurity, numberArray, formatPhoneNumber, formatSocialSecurity } from '../utils/_helpers';
 import { authService } from '../utils/_services/authService';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 function EditProfileScreen({ user, token, navigation, login }) {
     const { first_name, last_name, email, monitor, password, userEmail } = user;
@@ -198,13 +199,17 @@ function EditProfileScreen({ user, token, navigation, login }) {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
         >
-            <ScrollView style={styles.container} nestedScrollEnabled={true}>
-                <Card style={styles.card}>
+            <ScrollView style={globalStyles.cardContainer} nestedScrollEnabled={true}>
+                <Card style={globalStyles.card}>
                     <Card.Content >
                         <View style={styles.content}>
+                            <View style={globalStyles.imageRow}>
+                            {/* <Icon color={AppStyles.color?.tint} style={globalStyles.leftImageIcon} name='image' size={22} /> */}
                             <Avatar.Image size={150} source={{ uri: imageSrc }} style={styles.profileImage} />
+                            {/* <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='camera' size={22} /> */}
+                            </View>
                         </View>
-                        <Text style={styles.heading} onPress={() => navigation.navigate('CompleteReportStack')}> Edit Profile </Text>
+                        <Text style={styles.heading} > Edit Profile </Text>
                         <Divider style={globalStyles.divider} />
                         <View style={styles.detailsContainer}>
                             <FormTextInput control={control} errors={errors} name="first_name" label="First Name" />
@@ -233,14 +238,14 @@ function EditProfileScreen({ user, token, navigation, login }) {
                                 <FormDropdown
                                     control={control}
                                     name="state_id"
-                                    label="State"
+                                    label="State "
                                     options={stateList}
                                     setDropdownName={setDropdownName}
                                     dropdownName={dropdownName}
                                     searchable={true}
                                     updateValue={setValue}
                                     defaultValue={monitor?.state_id || ''}
-                                    Index={70000}
+                                    Index={75000}
                                     error={!!errors.state_id} // Check if the field has errors
                                     helperText="Select one or more options"
                                 />
@@ -288,7 +293,7 @@ function EditProfileScreen({ user, token, navigation, login }) {
                 </Card>
                 <Portal>
                     <FAB.Group
-                        style={styles.fabGroup}
+                        style={globalStyles.fabGroup}
                         open={open}
                         backdropColor={'#1f1f1f0a'}
                         icon={open ? 'cogs' : 'plus'}
@@ -318,12 +323,6 @@ function EditProfileScreen({ user, token, navigation, login }) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        paddingHorizontal: 20,
-        paddingVertical: 2,
-    },
     card: {
         marginBottom: 16,
     },
@@ -343,12 +342,6 @@ const styles = StyleSheet.create({
     buttonContainer: {
         marginTop: 20,
         alignItems: 'center',
-    },
-    fabGroup: {
-        position: 'absolute',
-        margin: 16,
-        right: 0,
-        bottom: 0,
     },
 });
 

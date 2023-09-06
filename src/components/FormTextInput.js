@@ -4,7 +4,7 @@ import { Controller } from 'react-hook-form';
 import globalStyles from '../utils/_css/globalStyle';
 import { View, StyleSheet, } from 'react-native';
 import { Text, TextInput, HelperText } from 'react-native-paper';
-
+import { AppStyles } from '../utils/AppStyles';
 const FormTextInput = ({ control, name, label, password, multiline, errors, ...rest }) => {
     const [showPassword, setShowPassword] = useState(false);
     return (
@@ -74,7 +74,8 @@ const styles = StyleSheet.create({
     valueInput: {
         flex: 1,
         fontSize: 15,
-        marginBottom: 10
+        marginBottom: 10,
+        width: AppStyles.textInputWidth.full,
     },
 });
 
