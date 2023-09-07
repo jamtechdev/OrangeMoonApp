@@ -21,12 +21,14 @@ const FormDateInput = ({ control, setValue, name, label, defaultValue, errors })
     return (
         <View style={styles.detailItem}>
             <Text style={styles.labelText}>{label} : </Text>
+            <Pressable onPress={() => setShowPicker(true)}>
                 <TextInput
                     value={selectedDate.toDateString()}
                     editable={false}
-                    onPressIn={()=>setShowPicker(true)}
+                    onPressIn={() => setShowPicker(true)}
                     style={styles.valueInput} // Add custom styling to the input
                 />
+            </Pressable>
             <Controller
                 control={control}
                 name={name}
