@@ -43,7 +43,7 @@ function CompleteReport({ navigation, user, token, route }) {
       console.log(error);
       setIsLoading(false);
     })
-  }, [])
+  }, [token])
 
   const navigateDetails = (booking) => {
     route(booking);
@@ -102,7 +102,7 @@ function CompleteReport({ navigation, user, token, route }) {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} scrollIndicatorInsets={{top: 0, left: 0, bottom: 0, right: 0}}>
       <View style={styles.container}>
       <Text style={globalStyles.subtitle}> Reports</Text>
       <Divider style={globalStyles.divider} />

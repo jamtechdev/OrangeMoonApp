@@ -17,15 +17,18 @@ const FormDateInput = ({ control, setValue, name, label, defaultValue, errors })
             setValue(name, formatDateToString(selected));
         }
     };
+    const toggleDatePicker=()=>{
+        setShowPicker(!showPicker)
+    }
 
     return (
         <View style={styles.detailItem}>
             <Text style={styles.labelText}>{label} : </Text>
-            <Pressable onPress={() => setShowPicker(true)}>
+            <Pressable onPress={() => toggleDatePicker()}>
                 <TextInput
                     value={selectedDate.toDateString()}
                     editable={false}
-                    onPressIn={() => setShowPicker(true)}
+                    onPressIn={() => toggleDatePicker()}
                     style={styles.valueInput} // Add custom styling to the input
                 />
             </Pressable>
