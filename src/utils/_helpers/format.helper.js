@@ -1,8 +1,12 @@
 /* eslint-disable prettier/prettier */
 export const formatDate = (dateString) => {
+    if (dateString == null){
+        const date = new Date()
+        return date.toLocaleDateString([], options);
+    }
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
     const date = new Date(dateString);
-    if (isNaN(date) || dateString == null) {
+    if (isNaN(date) ) {
         return '-';
     }
     console.log( dateString)
@@ -38,4 +42,18 @@ export function createdDate(inputDate) {
     const seconds = String(date.getUTCSeconds()).padStart(2, '0');
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+export const formatDateNew = (dateString) => {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    let date = '';
+    if (dateString == null){
+         date = new Date();   
+    } else {
+        date = new Date(dateString);
+    }
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Add leading zero if needed
+    const day = String(date.getDate()).padStart(2, '0'); // Add leading zero if needed
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
 }

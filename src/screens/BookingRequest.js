@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { AppStyles } from '../utils/AppStyles';
 import { monitorService } from '../utils/_services';
 import { routeValue } from '../redux/actions/authActions';
-import { formatDate, sortingHelper } from '../utils/_helpers';
+import { formatDate, sortingHelper, formatDateNew } from '../utils/_helpers';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LoadingContainer from '../components/LoadingContainer';
 import globalStyles from '../utils/_css/globalStyle';
@@ -178,7 +178,7 @@ function BookingRequest({ navigation, user, token, route }) {
               <DataTable.Row key={item.id}>
                 <DataTable.Cell style={globalStyles.tableCellId}>{item.booking_id}</DataTable.Cell>
                 <DataTable.Cell style={globalStyles.tableCellGroup}>{item.group_name}</DataTable.Cell>
-                <DataTable.Cell style={globalStyles.tableCell}>{formatDate(item.dates)}</DataTable.Cell>
+                <DataTable.Cell style={globalStyles.tableCell}>{formatDateNew(item.dates)}</DataTable.Cell>
                 <DataTable.Cell style={globalStyles.tableCell}>{item.status}</DataTable.Cell>
                 <DataTable.Cell style={globalStyles.tableCellAction} >
                   {item?.status !== 'REJECTED' && item?.status !== 'CANCEL' ? (
