@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useLayoutEffect, useState , useEffect } from 'react';
+import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Text } from 'react-native';
 import { List, Card, Button, Divider, Searchbar, DataTable } from 'react-native-paper';
 import { connect } from 'react-redux';
@@ -11,7 +11,7 @@ import { formatDate } from '../utils/_helpers';
 import { Calendar } from 'react-native-big-calendar';
 import Icon from 'react-native-vector-icons/FontAwesome'
 
-function Scheduling({ navigation, user , token, route}) {
+function Scheduling({ navigation, user, token, route }) {
   const [archiveData, setArchiveData] = useState([])
   const [archiveDataBkp, setArchiveDataBkp] = useState([])
   const [isLoading, setIsLoading] = useState(true);
@@ -35,9 +35,9 @@ function Scheduling({ navigation, user , token, route}) {
     setPage(0);
   }, [itemsPerPage]);
 
-  useEffect(()=>{
-    monitorService.archivesBooking(token).then(res=>{
-      console.log(res,"here my console res");
+  useEffect(() => {
+    monitorService.archivesBooking(token).then(res => {
+      console.log(res, "here my console res");
       setArchiveData(res?.data?.data);
       setArchiveDataBkp(res?.data?.data);
       setIsLoading(false);
@@ -134,132 +134,132 @@ function Scheduling({ navigation, user , token, route}) {
     setSelectedDate(newDate);
   };
   return (
-    <ScrollView style={styles.container} scrollIndicatorInsets={{top: 0, left: 0, bottom: 0, right: 0}}>
-    <View style={styles.container}>
-    <Text style={globalStyles.subtitle}> Manage Schedule </Text>
-    <Divider style={globalStyles.divider} />
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 15 }}>
-    <Button title="Today" onPress={goToToday} ><Text style={{ color:AppStyles.color?.tint , fontWeight: '700'}}> Today</Text></Button>
-        <Text style={{ textAlign: 'center',  color:AppStyles.color?.tint , fontWeight: '700'}}>
-          {selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-        </Text>
-       <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
-         <Icon color={AppStyles.color?.tint} style={{marginHorizontal: 15}} name='angle-left' size={30}  onPress={goToPreviousMonth}/> 
-         <Icon color={AppStyles.color?.tint}  style={{marginHorizontal: 15}} name='angle-right' size={30} onPress={goToNextMonth}  />
-       </View>
-      </View>
-    <Calendar
-      events={events}
-      mode='month'
-      height={400} 
-      date={selectedDate}
-      showAllDayEventCell={true}
-      onChangeDate={onChangeDate} 
-      onPressDateHeader={(e)=>console.log('onPressDateHeader date here ',e)}
-      onPressCell={(e)=>console.log('onPressCell date here ',e)}
-      onPressEvent={(e)=>console.log('onPressEvent date here ', e)}
-      />
+    <ScrollView style={styles.container} scrollIndicatorInsets={{ top: 0, left: 0, bottom: 0, right: 0 }}>
+      <View style={styles.container}>
+        <Text style={globalStyles.subtitle}> Manage Schedule </Text>
+        <Divider style={globalStyles.divider} />
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 15 }}>
+          <Button title="Today" onPress={goToToday} ><Text style={{ color: AppStyles.color?.tint, fontWeight: '700' }}> Today</Text></Button>
+          <Text style={{ textAlign: 'center', color: AppStyles.color?.black, fontWeight: '700' }}>
+            {selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Icon color={AppStyles.color?.tint} style={{ marginHorizontal: 15 }} name='angle-left' size={30} onPress={goToPreviousMonth} />
+            <Icon color={AppStyles.color?.tint} style={{ marginHorizontal: 15 }} name='angle-right' size={30} onPress={goToNextMonth} />
+          </View>
+        </View>
+        <Calendar
+          events={events}
+          mode='month'
+          height={400}
+          date={selectedDate}
+          showAllDayEventCell={true}
+          onChangeDate={onChangeDate}
+          onPressDateHeader={(e) => console.log('onPressDateHeader date here ', e)}
+          onPressCell={(e) => console.log('onPressCell date here ', e)}
+          onPressEvent={(e) => console.log('onPressEvent date here ', e)}
+        />
 
-    <View style={styles.nextDiv}>
-    <Text style={globalStyles.subtitle}> Open Assignments</Text>
-    <Divider style={globalStyles.divider} />
-      <Searchbar
-        placeholder="Search"
-        style={styles.Searchbar}
-        onChangeText={handleSearch}
-        value={searchQuery}
-      />
-      <ScrollView horizontal >
-        <DataTable style={styles.DataTable}>
-          <DataTable.Header style={styles.header}>
-            <DataTable.Title sortDirection={sortDirections.id} onPress={() => handleSort('id')}> ID </DataTable.Title>
-            <DataTable.Title sortDirection={sortDirections.group_name} onPress={() => handleSort('group_name')} style={styles.headerCell}> Group Name </DataTable.Title>
-            <DataTable.Title sortDirection={sortDirections.start_date} onPress={() => handleSort('start_date')}>Start Date </DataTable.Title>
-            <DataTable.Title sortDirection={sortDirections.end_date} onPress={() => handleSort('end_date')}> End Date  </DataTable.Title>
-            <DataTable.Title sortDirection={sortDirections.status} onPress={() => handleSort('status')}>Status </DataTable.Title>
-          </DataTable.Header>
-          {isLoading && (<LoadingContainer />)}
-          {archiveData?.slice(from, to).map((item) => (
-            <DataTable.Row key={item.id} >
-              <DataTable.Cell >{item.id} </DataTable.Cell>
-              <DataTable.Cell style={styles.cell} >{item.booking.group_name}</DataTable.Cell>
-              <DataTable.Cell >{formatDate(item.booking.start_date)} </DataTable.Cell>
-              <DataTable.Cell >{formatDate(item.booking.end_date)} </DataTable.Cell>
-              <DataTable.Cell > {item?.status} </DataTable.Cell>
-            </DataTable.Row>
-          ))}
-          {!archiveData?.length && !isLoading && (<Text style={globalStyles.emptyData}> Data not found</Text>)}
-          <DataTable.Pagination
-            page={page}
-            numberOfPages={Math.ceil(archiveData.length / itemsPerPage)}
-            onPageChange={(page) => setPage(page)}
-            label={`${from + 1}-${to} of ${archiveData.length}`}
-            numberOfItemsPerPageList={numberOfItemsPerPageList}
-            numberOfItemsPerPage={itemsPerPage}
-            onItemsPerPageChange={onItemsPerPageChange}
-            showFastPaginationControls
-            selectPageDropdownLabel={'Rows per page'}
+        <View style={styles.nextDiv}>
+          <Text style={globalStyles.subtitle}> Open Assignments</Text>
+          <Divider style={globalStyles.divider} />
+          <Searchbar
+            placeholder="Search"
+            style={styles.Searchbar}
+            onChangeText={handleSearch}
+            value={searchQuery}
           />
-        </DataTable>
-      </ScrollView>
+          <ScrollView horizontal >
+            <DataTable style={styles.DataTable}>
+              <DataTable.Header style={styles.header}>
+                <DataTable.Title sortDirection={sortDirections.id} onPress={() => handleSort('id')}> ID </DataTable.Title>
+                <DataTable.Title sortDirection={sortDirections.group_name} onPress={() => handleSort('group_name')} style={styles.headerCell}> Group Name </DataTable.Title>
+                <DataTable.Title sortDirection={sortDirections.start_date} onPress={() => handleSort('start_date')}>Start Date </DataTable.Title>
+                <DataTable.Title sortDirection={sortDirections.end_date} onPress={() => handleSort('end_date')}> End Date  </DataTable.Title>
+                <DataTable.Title sortDirection={sortDirections.status} onPress={() => handleSort('status')}>Status </DataTable.Title>
+              </DataTable.Header>
+              {isLoading && (<LoadingContainer />)}
+              {archiveData?.slice(from, to).map((item) => (
+                <DataTable.Row key={item.id} >
+                  <DataTable.Cell >{item.id} </DataTable.Cell>
+                  <DataTable.Cell style={styles.cell} >{item.booking.group_name}</DataTable.Cell>
+                  <DataTable.Cell >{formatDate(item.booking.start_date)} </DataTable.Cell>
+                  <DataTable.Cell >{formatDate(item.booking.end_date)} </DataTable.Cell>
+                  <DataTable.Cell > {item?.status} </DataTable.Cell>
+                </DataTable.Row>
+              ))}
+              {!archiveData?.length && !isLoading && (<Text style={globalStyles.emptyData}> Data not found</Text>)}
+              <DataTable.Pagination
+                page={page}
+                numberOfPages={Math.ceil(archiveData.length / itemsPerPage)}
+                onPageChange={(page) => setPage(page)}
+                label={`${from + 1}-${to} of ${archiveData.length}`}
+                numberOfItemsPerPageList={numberOfItemsPerPageList}
+                numberOfItemsPerPage={itemsPerPage}
+                onItemsPerPageChange={onItemsPerPageChange}
+                showFastPaginationControls
+                selectPageDropdownLabel={'Rows per page'}
+              />
+            </DataTable>
+          </ScrollView>
+        </View>
       </View>
-    </View>
-  </ScrollView>
-);
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
-container: {
-  flex: 1,
-  backgroundColor: '#fff',
-  paddingVertical: 2,
-  marginBottom: 15,
-  paddingHorizontal:10,
-},
-card: {
-  marginBottom: 16,
-},
-DataTable: {
-  marginTop: 20,
-},
-header: {
-  paddingHorizontal: 6,
-  backgroundColor: AppStyles.color.background,
-  borderBottomWidth: 1,
-  color: AppStyles.color.white,
-},
-headerCell: {
-  width: 200,
-  height: 50,
-},
-cell: {
-  width: 200,
-  height: 55
-},
-iconCell: {
-  flexDirection: 'row',
-  alignItems: 'center',
-},
-icon: {
-  marginHorizontal: 10, // Adjust the margin between each icon
-},
-iconGap: {
-  width: 20, // Adjust the gap width as needed
-},
-hederGap: {
-  width: 20,
-},
-Searchbar: {
-  marginTop: 10,
-},
-nextDiv:{
-  marginVertical: 15,
-}
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingVertical: 2,
+    marginBottom: 15,
+    paddingHorizontal: 10,
+  },
+  card: {
+    marginBottom: 16,
+  },
+  DataTable: {
+    marginTop: 20,
+  },
+  header: {
+    paddingHorizontal: 6,
+    backgroundColor: AppStyles.color.background,
+    borderBottomWidth: 1,
+    color: AppStyles.color.white,
+  },
+  headerCell: {
+    width: 200,
+    height: 50,
+  },
+  cell: {
+    width: 200,
+    height: 55
+  },
+  iconCell: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    marginHorizontal: 10, // Adjust the margin between each icon
+  },
+  iconGap: {
+    width: 20, // Adjust the gap width as needed
+  },
+  hederGap: {
+    width: 20,
+  },
+  Searchbar: {
+    marginTop: 10,
+  },
+  nextDiv: {
+    marginVertical: 15,
+  }
 });
 
 const mapStateToProps = (state) => ({
-user: state.auth.user,
-token: state.auth.token,
+  user: state.auth.user,
+  token: state.auth.token,
 });
 
 

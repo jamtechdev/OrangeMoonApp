@@ -120,7 +120,7 @@ function ForgetPasswordScreen({ navigation, user, login }) {
                     {errors?.password?.message}
                 </HelperText>
             )}
-              <Controller
+            <Controller
                 control={control}
                 name="confirmPassword"
                 render={({ field: { onChange, onBlur, value } }) => (

@@ -102,10 +102,10 @@ function CompleteReport({ navigation, user, token, route }) {
   };
 
   return (
-    <ScrollView style={styles.container} scrollIndicatorInsets={{top: 0, left: 0, bottom: 0, right: 0}}>
+    <ScrollView style={styles.container} scrollIndicatorInsets={{ top: 0, left: 0, bottom: 0, right: 0 }}>
       <View style={styles.container}>
-      <Text style={globalStyles.subtitle}> Reports</Text>
-      <Divider style={globalStyles.divider} />
+        <Text style={globalStyles.subtitle}> Reports</Text>
+        <Divider style={globalStyles.divider} />
         <Searchbar
           placeholder="Search"
           style={styles.Searchbar}
@@ -113,25 +113,53 @@ function CompleteReport({ navigation, user, token, route }) {
           value={searchQuery}
         />
         <ScrollView horizontal >
-          <DataTable style={styles.DataTable}>
-            <DataTable.Header style={styles.header}>
-              <DataTable.Title sortDirection={sortDirections.id} onPress={() => handleSort('id')}> ID </DataTable.Title>
-              <DataTable.Title sortDirection={sortDirections.group_name} onPress={() => handleSort('group_name')} style={styles.headerCell}> Group Name </DataTable.Title>
-              <DataTable.Title sortDirection={sortDirections.start_date} onPress={() => handleSort('start_date')}>Start Date </DataTable.Title>
-              <DataTable.Title sortDirection={sortDirections.end_date} onPress={() => handleSort('end_date')}> End Date  </DataTable.Title>
-              <DataTable.Title >Action </DataTable.Title>
+          <DataTable style={globalStyles.DataTable}>
+            <DataTable.Header style={globalStyles.header}>
+              <DataTable.Title
+                sortDirection={sortDirections.id}
+                onPress={() => handleSort('id')}
+                style={globalStyles.tableCellId}
+              >
+                ID
+              </DataTable.Title>
+              <DataTable.Title
+                sortDirection={sortDirections.group_name}
+                onPress={() => handleSort('group_name')}
+                style={globalStyles.tableCellGroup}
+              >
+                Group Name
+              </DataTable.Title>
+              <DataTable.Title
+                sortDirection={sortDirections.start_date}
+                onPress={() => handleSort('start_date')}
+                style={globalStyles.tableCell}
+              >
+                Start Date
+              </DataTable.Title>
+              <DataTable.Title
+                sortDirection={sortDirections.end_date}
+                onPress={() => handleSort('end_date')}
+                style={globalStyles.tableCell}
+              >
+                End Date
+              </DataTable.Title>
+              <DataTable.Title style={globalStyles.tableSingleAction}>Action</DataTable.Title>
             </DataTable.Header>
-            {isLoading && (<LoadingContainer />)}
+            {isLoading && <LoadingContainer />}
             {completeData?.slice(from, to).map((item) => (
               <DataTable.Row key={item.id} onPress={() => navigateDetails(item)}>
-                <DataTable.Cell >{item.id} </DataTable.Cell>
-                <DataTable.Cell style={styles.cell} >{item.booking.group_name}</DataTable.Cell>
-                <DataTable.Cell >{formatDate(item.booking.start_date)} </DataTable.Cell>
-                <DataTable.Cell >{formatDate(item.booking.end_date)} </DataTable.Cell>
-                <DataTable.Cell >  <Icon name='eye' size={20} color={AppStyles.color.tint} style={styles.icon} /> </DataTable.Cell>
+                <DataTable.Cell style={globalStyles.tableCellId}>{item.id}</DataTable.Cell>
+                <DataTable.Cell style={globalStyles.tableCellGroup}>{item.booking.group_name}</DataTable.Cell>
+                <DataTable.Cell style={globalStyles.tableCell}>{formatDate(item.booking.start_date)}</DataTable.Cell>
+                <DataTable.Cell style={globalStyles.tableCell}>{formatDate(item.booking.end_date)}</DataTable.Cell>
+                <DataTable.Cell style={globalStyles.tableSingleAction}>
+                  <Icon name='eye' size={20} color={AppStyles.color.tint} style={globalStyles.icon} />
+                </DataTable.Cell>
               </DataTable.Row>
             ))}
-            {!completeData?.length && !isLoading && (<Text style={globalStyles.emptyData}> Data not found</Text>)}
+            {!completeData?.length && !isLoading && (
+              <Text style={globalStyles.emptyData}>Data not found</Text>
+            )}
             <DataTable.Pagination
               page={page}
               numberOfPages={Math.ceil(completeData.length / itemsPerPage)}
@@ -156,7 +184,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingVertical: 2,
     marginBottom: 15,
-    paddingHorizontal:10,
+    paddingHorizontal: 10,
   },
   card: {
     marginBottom: 16,

@@ -224,25 +224,71 @@ function HomeScreen({ navigation, user, token }) {
         <ScrollView horizontal >
           <DataTable style={globalStyles.DataTable}>
             <DataTable.Header style={globalStyles.header}>
-              <DataTable.Title sortDirection={sortDirections.group_name} onPress={() => handleSort('group_name')} style={globalStyles.headerCellTwo}> Group Name </DataTable.Title>
-              <DataTable.Title sortDirection={sortDirections.date} onPress={() => handleSort('date')} style={globalStyles.headerCellOne}> Date </DataTable.Title>
-              <DataTable.Title sortDirection={sortDirections.start_time} onPress={() => handleSort('start_time')} style={globalStyles.headerCellOne}> Start Time {' '} </DataTable.Title>
-              <DataTable.Title sortDirection={sortDirections.end_time} onPress={() => handleSort('end_time')} style={globalStyles.headerCellOne}> End Time {' '}  </DataTable.Title>
-              <DataTable.Title sortDirection={sortDirections.status} onPress={() => handleSort('status')} style={globalStyles.headerCellOne}> Status </DataTable.Title>
-              <DataTable.Title style={globalStyles.headerCellOne}> Action </DataTable.Title>
+              <DataTable.Title
+                sortDirection={sortDirections.group_name}
+                onPress={() => handleSort('group_name')}
+                style={globalStyles.tableCellGroup}
+              >
+                Group Name
+              </DataTable.Title>
+              <DataTable.Title
+                sortDirection={sortDirections.date}
+                onPress={() => handleSort('date')}
+                style={globalStyles.tableCell} // Adjust width as needed
+              >
+                Date
+              </DataTable.Title>
+              <DataTable.Title
+                sortDirection={sortDirections.start_time}
+                onPress={() => handleSort('start_time')}
+                style={globalStyles.tableCell} // Adjust width as needed
+              >
+                Start Time
+              </DataTable.Title>
+              <DataTable.Title
+                sortDirection={sortDirections.end_time}
+                onPress={() => handleSort('end_time')}
+                style={globalStyles.tableCell} // Adjust width as needed
+              >
+                End Time
+              </DataTable.Title>
+              <DataTable.Title
+                sortDirection={sortDirections.status}
+                onPress={() => handleSort('status')}
+                style={globalStyles.tableCell}
+              >
+                Status
+              </DataTable.Title>
+              <DataTable.Title
+                style={globalStyles.tableCellAction}
+              >
+                Action
+              </DataTable.Title>
             </DataTable.Header>
             {isLoading && (<LoadingContainer />)}
             {dashboardData.slice(from, to).map((item) => {
               if (item.booking_day?.end_time) {
                 return (
 
-                  <DataTable.Row key={item.id} >
-                    <DataTable.Cell style={globalStyles.CellTwo} >{item?.booking_day?.booking?.group_name}</DataTable.Cell>
-                    <DataTable.Cell style={globalStyles.cellOne}> {formatDate(item?.booking_day?.date)} </DataTable.Cell>
-                    <DataTable.Cell style={globalStyles.cellOne}>{formatTime(item?.booking_day?.start_time)}</DataTable.Cell>
-                    <DataTable.Cell style={globalStyles.cellOne}>{formatTime(item?.booking_day?.end_time)}</DataTable.Cell>
-                    <DataTable.Cell style={globalStyles.cellOne}>{item?.monitor_booking_day_report == null ? "NOT STARTED" : "IN PROGRESS"}</DataTable.Cell>
-                    <DataTable.Cell style={globalStyles.cellOne}>
+                  <DataTable.Row key={item.id}>
+                    <DataTable.Cell style={globalStyles.tableCellGroup}>
+                      {item?.booking_day?.booking?.group_name}
+                    </DataTable.Cell>
+                    <DataTable.Cell style={globalStyles.tableCell}>
+                      {formatDate(item?.booking_day?.date)}
+                    </DataTable.Cell>
+                    <DataTable.Cell style={globalStyles.tableCell}>
+                      {formatTime(item?.booking_day?.start_time)}
+                    </DataTable.Cell>
+                    <DataTable.Cell style={globalStyles.tableCell}>
+                      {formatTime(item?.booking_day?.end_time)}
+                    </DataTable.Cell>
+                    <DataTable.Cell style={globalStyles.tableCell}>
+                      {item?.monitor_booking_day_report == null
+                        ? "NOT STARTED"
+                        : "IN PROGRESS"}
+                    </DataTable.Cell>
+                    <DataTable.Cell style={globalStyles.tableCellAction}>
                       {!item?.monitor_booking_day_report && item?.booking_day?.date <= checkActive(item) && (
                         <Icon name='hospital-o' onPress={() => openActionDialog(item)} size={20} color={AppStyles.color.tint} />
                       )}

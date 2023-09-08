@@ -7,12 +7,21 @@ import axios from "axios";
 const API_URL = 'https://staging.orangemoonsss.com/api/v1'
 export const stripeService = {
     checkStripeConnection,
-    storeStripeAccount
+    storeStripeAccount,
+    stripePayoutDetails
 };
 
 async function checkStripeConnection(token) {
     return await axios.get(
         `${API_URL}/check-stripe-connect`,
+        {
+            headers: { 'Authorization': 'Bearer ' + token },
+        }
+    );
+}
+async function stripePayoutDetails(token) {
+    return await axios.get(
+        `${API_URL}/stripe/payout`,
         {
             headers: { 'Authorization': 'Bearer ' + token },
         }

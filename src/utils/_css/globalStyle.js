@@ -27,7 +27,7 @@ const globalStyles = StyleSheet.create({
     errorMsg: {
         color: AppStyles.color.error,
     },
-    linkView :{
+    linkView: {
         flex: 1,
         marginLeft: Platform.OS === 'android' ? 50 : 25,
     },
@@ -36,31 +36,15 @@ const globalStyles = StyleSheet.create({
         textDecorationLine: 'underline',
         fontWeight: 600,
     },
-    DataTable: {
-        marginTop: 20,
-    },
-    header: {
-        paddingHorizontal: 6,
-        backgroundColor: AppStyles.color.background,
-        borderBottomWidth: 1,
-        color: AppStyles.color.white,
-    },
-    headerCell: {
-        width: 200,
-        height: 50,
-    },
-    headerCellDate: {
-        width: 120,
-        height: 50,
-    },
-    CellDate: {
-        width: 100,
-        height: 50,
-    },
-    cell: {
-        width: 200,
-        height: 55
-    },
+    // DataTable: {
+    //     marginTop: 20,
+    // },
+    // header: {
+    //     paddingHorizontal: 6,
+    //     backgroundColor: AppStyles.color.background,
+    //     borderBottomWidth: 1,
+    //     color: AppStyles.color.white,
+    // },
     emptyData: {
         padding: 20
     },
@@ -87,40 +71,72 @@ const globalStyles = StyleSheet.create({
         marginBottom: Platform.OS === 'android' ? 0 : 15,
     },
     imageRow: {
-        flex: 1, 
+        flex: 1,
         alignItems: 'flex-end',
         flexDirection: 'row',
-     
+
     },
-    leftImageIcon :{
+    leftImageIcon: {
         paddingBottom: 30,
-        left : 25,
+        left: 25,
         zIndex: 100,
-        
+
     },
     rightImageIcon: {
         paddingBottom: 30,
-        right : 25,
+        right: 25,
         zIndex: 100,
     },
     fabGroup: {
         position: 'absolute',
-        margin:  Platform.OS === 'android' ? 16 : 0,
+        margin: Platform.OS === 'android' ? 16 : 0,
         right: 0,
         bottom: 0,
     },
-    flexOne:{
-        flex:1,
-        padding :3,
+    DataTable: {
+        marginTop: 20,
+
     },
-    flexTwo:{
-        flex:1,
-        padding :3,
+    header: {
+        backgroundColor: AppStyles.color.background,
     },
-    flexThree:{
-        flex:1,
-        padding :3,
+    tableCellId: {
+        flex: 1,
+        width: 50,
     },
+    tableCell: {
+        flex: 1,
+        width: 100,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    tableCellGroup: {
+        flex: 2,
+        width: 200,
+    },
+    tableSingleAction: {
+        flex: 1,
+        width: 50,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    tableCellAction: {
+        flex: 2,
+        width: 200,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    icon: {
+        alignSelf: 'center',
+    },
+    emptyDataTable: {
+        textAlign: 'center',
+        marginTop: 10,
+    },
+    alignCenter: {
+        alignItems: 'center',
+        justifyContent: 'center'
+    }
 });
 
 export default globalStyles;

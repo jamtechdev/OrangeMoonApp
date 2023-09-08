@@ -109,27 +109,31 @@ function SubReports({ navigation, user, token, route, value }) {
                     value={searchQuery}
                 />
                 <ScrollView horizontal >
-                    <DataTable style={styles.DataTable}>
-                        <DataTable.Header style={styles.header}>
-                            <DataTable.Title sortDirection={sortDirections.id} onPress={() => handleSort('id')}> ID </DataTable.Title>
-                            <DataTable.Title sortDirection={sortDirections.date} onPress={() => handleSort('date')} > Date </DataTable.Title>
-                            <DataTable.Title sortDirection={sortDirections.start_time} onPress={() => handleSort('start_time')}>Start Time </DataTable.Title>
-                            <DataTable.Title sortDirection={sortDirections.end_time} onPress={() => handleSort('end_time')}> End Time  </DataTable.Title>
-                            <DataTable.Title sortDirection={sortDirections.temperature} onPress={() => handleSort('temperature')}> Wellness Check Status </DataTable.Title>
-                            <DataTable.Title > Action </DataTable.Title>
+                    <DataTable style={globalStyles.DataTable}>
+                        <DataTable.Header style={globalStyles.header}>
+                            <DataTable.Title sortDirection={sortDirections.id} onPress={() => handleSort('id')} style={globalStyles.tableCellId}>ID</DataTable.Title>
+                            <DataTable.Title sortDirection={sortDirections.date} onPress={() => handleSort('date')} style={globalStyles.tableCell}>Date</DataTable.Title>
+                            <DataTable.Title sortDirection={sortDirections.start_time} onPress={() => handleSort('start_time')} style={globalStyles.tableCell}>Start Time</DataTable.Title>
+                            <DataTable.Title sortDirection={sortDirections.end_time} onPress={() => handleSort('end_time')} style={globalStyles.tableCell}>End Time</DataTable.Title>
+                            <DataTable.Title sortDirection={sortDirections.temperature} onPress={() => handleSort('temperature')} style={[globalStyles.tableCellGroup, globalStyles.alignCenter]}>Wellness Check Status</DataTable.Title>
+                            <DataTable.Title style={globalStyles.tableSingleAction}>Action</DataTable.Title>
                         </DataTable.Header>
-                        {isLoading && (<LoadingContainer />)}
+                        {isLoading && <LoadingContainer />}
                         {subReport?.slice(from, to).map((item) => (
                             <DataTable.Row key={item.id} onPress={() => navigateDetails(item)}>
-                                <DataTable.Cell >{item.id} </DataTable.Cell>
-                                <DataTable.Cell >{item?.date}</DataTable.Cell>
-                                <DataTable.Cell >{formatTime(item?.start_time)} </DataTable.Cell>
-                                <DataTable.Cell >{formatTime(item?.end_time)} </DataTable.Cell>
-                                <DataTable.Cell > {item?.temperature} </DataTable.Cell>
-                                <DataTable.Cell >  <Icon name='eye' size={20} color={AppStyles.color.tint} style={styles.icon} /> </DataTable.Cell>
+                                <DataTable.Cell style={globalStyles.tableCellId}>{item.id}</DataTable.Cell>
+                                <DataTable.Cell style={globalStyles.tableCell}>{item?.date}</DataTable.Cell>
+                                <DataTable.Cell style={globalStyles.tableCell}>{formatTime(item?.start_time)}</DataTable.Cell>
+                                <DataTable.Cell style={globalStyles.tableCell}>{formatTime(item?.end_time)}</DataTable.Cell>
+                                <DataTable.Cell style={[globalStyles.tableCellGroup, globalStyles.alignCenter]}>{item?.temperature}</DataTable.Cell>
+                                <DataTable.Cell style={globalStyles.tableSingleAction}>
+                                    <Icon name='eye' size={20} color={AppStyles.color.tint} style={styles.icon} />
+                                </DataTable.Cell>
                             </DataTable.Row>
                         ))}
-                        {!subReport?.length && !isLoading && (<Text style={globalStyles.emptyData}> Data not found</Text>)}
+                        {!subReport?.length && !isLoading && (
+                            <Text style={globalStyles.emptyData}>Data not found</Text>
+                        )}
                         <DataTable.Pagination
                             page={page}
                             numberOfPages={Math.ceil(subReport.length / itemsPerPage)}
@@ -143,8 +147,8 @@ function SubReports({ navigation, user, token, route, value }) {
                         />
                     </DataTable>
                 </ScrollView>
-            </View>
-        </ScrollView>
+            </View >
+        </ScrollView >
     );
 }
 
@@ -154,7 +158,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         paddingVertical: 5,
         marginBottom: 15,
-        paddingHorizontal:10,
+        paddingHorizontal: 10,
     },
     card: {
         marginBottom: 16,

@@ -2,25 +2,27 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Linking } from 'react-native';
-import { Divider, Button, Text, DataTable } from 'react-native-paper';
+import { Divider, Button, Text, DataTable, Searchbar } from 'react-native-paper';
 import { connect } from 'react-redux';
 import globalStyles from '../utils/_css/globalStyle';
 import { AppStyles } from '../utils/AppStyles';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { formatDate, formatTime, } from '../utils/_helpers';
+import { formatDate, formatTime, createdDate } from '../utils/_helpers';
 import { stripeService } from '../utils/_services/stripeService';
 import LoadingContainer from '../components/LoadingContainer';
 function PaymentScreen({ navigation, user, token }) {
   const [stripeData, setStripeData] = useState([])
   const [stripeTableData, setStripeTableData] = useState([])
+  const [stripeTableDataBkp, setStripeTableDataBkp] = useState([])
   const [stripeShowData, setStripeShowData] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [sortDirections, setSortDirections] = useState({
-    group_name: 'none',
-    date: 'none',
-    start_time: 'none',
-    end_time: 'none',
+    transfer_id: 'none',
+    transfer_account_id: 'none',
+    amount: 'none',
+    created_at: 'none',
   });
+  const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [numberOfItemsPerPageList] = useState([10, 25, 50, 100]);
   const [itemsPerPage, onItemsPerPageChange] = useState(
@@ -39,6 +41,13 @@ function PaymentScreen({ navigation, user, token }) {
       setStripeShowData(res?.data?.stripe_connection.account_detail.external_accounts.data[0])
       setIsLoading(false)
     }).catch(error => { setIsLoading(false); console.log(error); })
+
+    stripeService.stripePayoutDetails(token).then(res => {
+      setStripeTableData(res?.data?.payment_records);
+      setStripeTableDataBkp(res?.data?.payment_records);
+      setIsLoading(false);
+    }).catch(error => { setIsLoading(false); console.log(error); })
+
   }, [token])
 
   const handlePayment = async () => {
@@ -61,37 +70,59 @@ function PaymentScreen({ navigation, user, token }) {
       [columnKey]: nextSortDirection,
     });
     let sortDataType = '';
-    // const sortedData = [...stripeTableData].sort((a, b) => {
-    //   let aValue = '';
-    //   let bValue = '';
-    //   if (columnKey == 'group_name') {
-    //     sortDataType = typeof stripeTableData[0]?.booking_day?.booking?.group_name
-    //     aValue = a?.booking_day?.booking?.group_name;
-    //     bValue = b?.booking_day?.booking?.group_name;
-    //   } else if (columnKey == 'status') {
-    //     sortDataType = typeof stripeTableData[0][columnKey]
-    //     aValue = a?.status;
-    //     bValue = b?.status;
-    //   } else {
-    //     sortDataType = typeof stripeTableData[0]['booking_day'][columnKey]
-    //     aValue = a?.booking_day[columnKey];
-    //     bValue = b?.booking_day[columnKey];
-    //   }
-    //   switch (sortDataType) {
-    //     case 'number':
-    //       return nextSortDirection === 'ascending' ? aValue - bValue : bValue - aValue;
-    //     case 'string':
-    //       return nextSortDirection === 'ascending' ? aValue?.localeCompare(bValue) : bValue?.localeCompare(aValue);
-    //     case 'object': // Assuming the data type is Date
-    //       return nextSortDirection === 'ascending' ? aValue?.getTime() - bValue?.getTime() : bValue?.getTime() - aValue?.getTime();
-    //     default:
-    //       return 0; // Return 0 for unknown data types or if sortKey is not found
-    //   }
-    // });
-    // console.log(sortDirections, columnKey, sortDataType, sortedData)
-    // setStripeTableData(sortedData);
-    setStripeTableData(sortDataType);
+    const sortedData = [...stripeTableData].sort((a, b) => {
+      let aValue = a?.[columnKey];
+      let bValue = b?.[columnKey];
+
+      switch (sortDataType) {
+        case 'number':
+          return nextSortDirection === 'ascending' ? aValue - bValue : bValue - aValue;
+        case 'string':
+          return nextSortDirection === 'ascending' ? aValue?.localeCompare(bValue) : bValue?.localeCompare(aValue);
+        case 'object': // Assuming the data type is Date
+          return nextSortDirection === 'ascending' ? aValue?.getTime() - bValue?.getTime() : bValue?.getTime() - aValue?.getTime();
+        default:
+          return 0; // Return 0 for unknown data types or if sortKey is not found
+      }
+    });
+    console.log(sortDirections, columnKey, sortDataType, sortedData)
+    setStripeTableData(sortedData);
   };
+  const handleSearch = (query) => {
+    const lowerCaseQuery = query.toLowerCase();
+    const filteredData = stripeTableData.filter((item) =>
+      item?.amount?.toString()?.toLowerCase()?.includes(lowerCaseQuery) ||
+      item?.transfer_account_id?.toLowerCase()?.includes(lowerCaseQuery) ||
+      createdDate(item?.created_at)?.toLowerCase()?.includes(lowerCaseQuery) ||
+      item?.transfer_id?.toLowerCase()?.includes(lowerCaseQuery)
+    );
+    if (filteredData.length == 0 || query == '') {
+      setStripeTableData(stripeTableDataBkp)
+    } else {
+      setStripeTableData(filteredData)
+    }
+    setSearchQuery(query);
+  };
+  const renderStripeAccountStatus = () => {
+    let status = stripeData?.status;
+    if (status === 'connected') {
+      return <Text style={{ color: 'green' }}>Connected</Text>;
+    } else if (status === 'pending') {
+      return <Text style={{ color: 'red' }}>Pending</Text>;
+    } else if (status === 'kyc_needed') {
+      return (
+        <Text
+          style={{ color: 'orange', cursor: 'pointer' }}
+          onPress={handlePayment}
+        >
+          KYC Needed
+        </Text>
+      );
+    } else {
+      return '-';
+    }
+  }
+
   return (
     <>
       {isLoading && (
@@ -100,9 +131,18 @@ function PaymentScreen({ navigation, user, token }) {
       {!isLoading && (
         <ScrollView style={styles.main}>
           <View style={styles.container}>
-          <Text style={globalStyles.subtitle}> Stripe Connect </Text>
+            <Text style={globalStyles.subtitle}> Stripe Connect </Text>
             <Divider style={globalStyles.divider} />
-            {stripeShowData?.length !== 0 && stripeData && (
+            {stripeData?.status == 'bank_not_connected' ? (
+              <Button
+                mode="contained"
+                onPress={handlePayment}
+                style={styles.button}
+                contentStyle={styles.buttonContent}
+              >
+                + Connect Stripe
+              </Button>
+            ) : (
               <View style={styles.accountDetailsContainer}>
                 <View style={styles.detailRow} >
                   <Text style={styles.keyText} >Connected Via </Text>
@@ -138,7 +178,7 @@ function PaymentScreen({ navigation, user, token }) {
                 </View>
                 <View style={styles.detailRow} >
                   <Text style={styles.keyText} >Status </Text>
-                  <Text style={styles.valueText}>{stripeShowData?.status}  </Text>
+                  <Text style={styles.valueText}>{renderStripeAccountStatus()}  </Text>
                 </View>
                 <Button
                   mode="contained"
@@ -150,36 +190,34 @@ function PaymentScreen({ navigation, user, token }) {
                 </Button>
               </View>
             )}
-            {stripeShowData?.length === 0 && stripeData && (
-              <Button
-                mode="contained"
-                onPress={handlePayment}
-                style={styles.button}
-                contentStyle={styles.buttonContent}
-              >
-                + Connect Stripe
-              </Button>
-            )}
-             <Divider style={globalStyles.divider} />
-            <View style={styles.DataTable}>
+            <Divider style={globalStyles.divider} />
+            <View style={globalStyles.DataTable}>
+              <Searchbar
+                placeholder="Search"
+                style={styles.Searchbar}
+                onChangeText={handleSearch}
+                value={searchQuery}
+              />
               <ScrollView horizontal >
                 <DataTable style={globalStyles.DataTable}>
                   <DataTable.Header style={globalStyles.header}>
-                    <DataTable.Title sortDirection={sortDirections.group_name} onPress={() => handleSort('group_name')} style={globalStyles.headerCellDate}> Account ID </DataTable.Title>
-                    <DataTable.Title sortDirection={sortDirections.date} onPress={() => handleSort('date')} style={globalStyles.headerCellDate}> Transfer ID </DataTable.Title>
-                    <DataTable.Title sortDirection={sortDirections.start_time} onPress={() => handleSort('start_time')} style={globalStyles.headerCellCommon}> Amount </DataTable.Title>
-                    <DataTable.Title sortDirection={sortDirections.end_time} onPress={() => handleSort('end_time')} style={globalStyles.headerCellCommon}> Created </DataTable.Title>
+                    <DataTable.Title sortDirection={sortDirections.transfer_id} onPress={() => handleSort('transfer_id')} style={styles.tableCellTwo}> Account ID </DataTable.Title>
+                    <DataTable.Title sortDirection={sortDirections.transfer_account_id} onPress={() => handleSort('transfer_account_id')} style={globalStyles.tableCellGroup}> Transfer ID </DataTable.Title>
+                    <DataTable.Title sortDirection={sortDirections.amount} onPress={() => handleSort('amount')} style={globalStyles.tableCell}> Amount </DataTable.Title>
+                    <DataTable.Title sortDirection={sortDirections.created_at} onPress={() => handleSort('created_at')} style={styles.tableCellOne}> Created </DataTable.Title>
                   </DataTable.Header>
                   {isLoading && (<LoadingContainer />)}
                   {stripeTableData.slice(from, to).map((item) => (
                     <DataTable.Row key={item.id} >
-                      <DataTable.Cell style={globalStyles.CellDate} >{item?.booking_day?.booking?.group_name}</DataTable.Cell>
-                      <DataTable.Cell style={globalStyles.CellDate}> {formatDate(item?.booking_day?.date)} </DataTable.Cell>
-                      <DataTable.Cell >{formatTime(item?.booking_day?.start_time)}</DataTable.Cell>
-                      <DataTable.Cell >{formatTime(item?.booking_day?.end_time)}</DataTable.Cell>
+                      <DataTable.Cell style={styles.tableCellTwo}> {item?.transfer_id}</DataTable.Cell>
+                      <DataTable.Cell style={globalStyles.tableCellGroup}> {item?.transfer_account_id} </DataTable.Cell>
+                      <DataTable.Cell style={globalStyles.tableCell}>{item?.amount}</DataTable.Cell>
+                      <DataTable.Cell style={styles.tableCellOne}>{createdDate(item?.created_at)}</DataTable.Cell>
                     </DataTable.Row>
                   ))}
-                  {!stripeTableData?.length && !isLoading && (<Text style={globalStyles.emptyData}> Data not found</Text>)}
+                  {!stripeTableData?.length && !isLoading && (
+                    <Text style={globalStyles.emptyData}>Data not found</Text>
+                  )}
                   <DataTable.Pagination
                     page={page}
                     numberOfPages={Math.ceil(stripeTableData.length / itemsPerPage)}
@@ -192,17 +230,8 @@ function PaymentScreen({ navigation, user, token }) {
                     selectPageDropdownLabel={'Rows per page'}
                   />
                 </DataTable>
-                    </ScrollView>
+              </ScrollView>
             </View>
-
-            {/* <Button
-              mode="contained"
-              onPress={() => navigation.navigate('HomeStack')}
-              style={styles.button}
-              contentStyle={styles.buttonContent}
-            >
-              + Connect Stripe
-            </Button> */}
           </View>
         </ScrollView>
       )}
@@ -247,23 +276,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
     marginHorizontal: 15,
-    padding : 1,
+    padding: 1,
   },
   keyText: {
     flex: 1,
     fontWeight: '700',
     color: '#777',
-    marginRight: 4, 
+    marginRight: 4,
     fontSize: 12
-},
-valueText: {
+  },
+  valueText: {
     flex: 1,
     marginLeft: 8,
     fontSize: 12
-},
-  DataTable: {
-    marginTop: 20
-  }
+  },
+  tableCellOne: {
+    flex: 1,
+    width: 150,
+  },
+  tableCellTwo: {
+    flex: 3,
+    width: 250,
+  },
+
 });
 
 const mapStateToProps = (state) => ({

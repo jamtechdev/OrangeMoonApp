@@ -204,9 +204,9 @@ function EditProfileScreen({ user, token, navigation, login }) {
                     <Card.Content >
                         <View style={styles.content}>
                             <View style={globalStyles.imageRow}>
-                            {/* <Icon color={AppStyles.color?.tint} style={globalStyles.leftImageIcon} name='image' size={22} /> */}
-                            <Avatar.Image size={150} source={{ uri: imageSrc }} style={styles.profileImage} />
-                            {/* <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='camera' size={22} /> */}
+                                {/* <Icon color={AppStyles.color?.tint} style={globalStyles.leftImageIcon} name='image' size={22} /> */}
+                                <Avatar.Image size={150} source={{ uri: imageSrc }} style={styles.profileImage} />
+                                {/* <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='camera' size={22} /> */}
                             </View>
                         </View>
                         <Text style={styles.heading} > Edit Profile </Text>
