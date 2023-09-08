@@ -140,44 +140,72 @@ function BookingRequest({ navigation, user, token, route }) {
         />
         <ScrollView horizontal >
           <DataTable style={styles.DataTable}>
-            <DataTable.Header style={styles.header}>
-              <DataTable.Title sortDirection={sortDirections.booking_id} onPress={() => handleSort('booking_id')}> ID </DataTable.Title>
-              <DataTable.Title sortDirection={sortDirections.group_name} onPress={() => handleSort('group_name')} style={styles.headerCell}> Group Name </DataTable.Title>
-              <DataTable.Title sortDirection={sortDirections.dates} onPress={() => handleSort('dates')}> Date </DataTable.Title>
-              <DataTable.Title sortDirection={sortDirections.status} onPress={() => handleSort('status')}> <View style={styles.hederGap} /> Status </DataTable.Title>
-              <DataTable.Title > <View style={styles.hederGap} /> Action</DataTable.Title>
-              <DataTable.Title > <View style={styles.hederGap} /> </DataTable.Title>
-              <DataTable.Title > <View style={styles.hederGap} /> </DataTable.Title>
-            </DataTable.Header>
+          <DataTable.Header style={styles.header}>
+  <DataTable.Title
+    sortDirection={sortDirections.booking_id}
+    onPress={() => handleSort('booking_id')}
+    style={{ flex: 1, width: 100 }}
+  >
+    ID
+  </DataTable.Title>
+  <DataTable.Title
+    sortDirection={sortDirections.group_name}
+    onPress={() => handleSort('group_name')}
+    style={{ flex: 2, width: 200 }}
+  >
+    Group Name
+  </DataTable.Title>
+  <DataTable.Title
+    sortDirection={sortDirections.dates}
+    onPress={() => handleSort('dates')}
+    style={{ flex: 1, width: 100 }}
+  >
+    Date
+  </DataTable.Title>
+  <DataTable.Title
+    sortDirection={sortDirections.status}
+    onPress={() => handleSort('status')}
+    style={{ flex: 1, width: 100 }}
+  >
+    Status
+  </DataTable.Title>
+  <DataTable.Title style={{ flex: 2, width: 200 }}>Action</DataTable.Title>
+</DataTable.Header>
+
+
             {isLoading && (<LoadingContainer />)}
             {bookingData?.slice(from, to).map((item) => (
-              <DataTable.Row key={item.id} >
-                <DataTable.Cell >{item.booking_id} <View style={styles.iconGap} /></DataTable.Cell>
-                <DataTable.Cell style={styles.cell} >{item.group_name}</DataTable.Cell>
-                <DataTable.Cell >{formatDate(item.dates)} <View style={styles.hederGap} /> </DataTable.Cell>
-                <DataTable.Cell >{item.status} <View style={styles.iconGap} /></DataTable.Cell>
-                <DataTable.Cell style={styles.iconCell} onPress={() => navigateDetails(item)} >
-                  <View style={styles.iconGap} />
-                  {item?.status !== "REJECTED" && item?.status !== "CANCEL" ? (<Icon name='eye' size={20} color={AppStyles.color.tint} style={styles.icon} />
-                  ) : ''}
-                  <View style={styles.iconGap} />
-                </DataTable.Cell>
-                <DataTable.Cell style={styles.iconCell} >
-                  {item?.status === "PENDING" ? (
-                    <Pressable onPress={() => { toggleDialogAccept(); setUpdateId(item.id); }}>
-                      <Icon name='check' size={20} color={AppStyles.color.tint} style={styles.icon} />
-                    </Pressable>
-                  ) : <View style={styles.iconGap} />}
-                  <View style={styles.iconGap} />
-                </DataTable.Cell>
-                <DataTable.Cell style={styles.iconCell} >
-                  {item?.status === "PENDING" ? (
-                    <Pressable onPress={() => { toggleDialogReject(); setUpdateId(item.id); }} >
-                      <Icon name='close' size={20} color={AppStyles.color.tint} style={styles.icon} />
-                    </Pressable>
-                  ) : <View style={styles.iconGap} />}
-                </DataTable.Cell>
-              </DataTable.Row>
+              <DataTable.Row key={item.id}>
+  <DataTable.Cell style={{ flex: 1, width: 100 }}>{item.booking_id}</DataTable.Cell>
+  <DataTable.Cell style={{ flex: 2, width: 200 }}>{item.group_name}</DataTable.Cell>
+  <DataTable.Cell style={{ flex: 1, width: 100 ,justifyContent: 'center', alignItems: 'center'}}>{formatDate(item.dates)}</DataTable.Cell>
+  <DataTable.Cell style={{ flex: 1, width: 100 }}>{item.status}</DataTable.Cell>
+  <DataTable.Cell style={{ flex: 2, width: 200, alignItems: 'center' }} onPress={() => navigateDetails(item)}>
+    <View style={styles.iconGap} />
+    {item?.status !== 'REJECTED' && item?.status !== 'CANCEL' ? (
+      <Icon name="eye" size={20} color={AppStyles.color.tint} style={styles.icon} />
+    ) : (
+      ''
+    )}
+    <View style={styles.iconGap} />
+    {item?.status === 'PENDING' ? (
+      <Pressable onPress={() => { toggleDialogAccept(); setUpdateId(item.id); }}>
+        <Icon name="check" size={20} color={AppStyles.color.tint} style={styles.icon} />
+      </Pressable>
+    ) : (
+      <View style={styles.iconGap} />
+    )}
+    <View style={styles.iconGap} />
+    {item?.status === 'PENDING' ? (
+      <Pressable onPress={() => { toggleDialogReject(); setUpdateId(item.id); }}>
+        <Icon name="close" size={20} color={AppStyles.color.tint} style={styles.icon} />
+      </Pressable>
+    ) : (
+      <View style={styles.iconGap} />
+    )}
+  </DataTable.Cell>
+</DataTable.Row>
+
             ))}
             {!bookingData?.length && !isLoading && (<Text style={globalStyles.emptyData}> Data not found</Text>)}
             <DataTable.Pagination
@@ -237,19 +265,22 @@ const styles = StyleSheet.create({
     backgroundColor: AppStyles.color.background,
     borderBottomWidth: 1,
     color: AppStyles.color.white,
+    flexDirection: 'row', // Ensure header cells are in a row
+    alignItems: 'center', // Center header text vertically
   },
+  
   headerCell: {
     width: 200,
     height: 50,
   },
   cell: {
-    width: 200,
-    height: 55
+    height: 55,
   },
   iconCell: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
+    justifyContent: 'center',
+  },  
   icon: {
     marginHorizontal: 10, // Adjust the margin between each icon
   },

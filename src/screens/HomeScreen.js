@@ -224,12 +224,12 @@ function HomeScreen({ navigation, user, token }) {
         <ScrollView horizontal >
           <DataTable style={globalStyles.DataTable}>
             <DataTable.Header style={globalStyles.header}>
-              <DataTable.Title sortDirection={sortDirections.group_name} onPress={() => handleSort('group_name')} style={globalStyles.headerCell}> Group Name </DataTable.Title>
-              <DataTable.Title sortDirection={sortDirections.date} onPress={() => handleSort('date')} style={globalStyles.headerCellDate}> Date </DataTable.Title>
-              <DataTable.Title sortDirection={sortDirections.start_time} onPress={() => handleSort('start_time')} style={globalStyles.headerCellCommon}> Start Time {' '} </DataTable.Title>
-              <DataTable.Title sortDirection={sortDirections.end_time} onPress={() => handleSort('end_time')} style={globalStyles.headerCellCommon}> End Time {' '}  </DataTable.Title>
-              <DataTable.Title sortDirection={sortDirections.status} onPress={() => handleSort('status')} style={globalStyles.headerCellCommon}> Status </DataTable.Title>
-              <DataTable.Title style={globalStyles.headerCellCommon}> Action </DataTable.Title>
+              <DataTable.Title sortDirection={sortDirections.group_name} onPress={() => handleSort('group_name')} style={globalStyles.headerCellTwo}> Group Name </DataTable.Title>
+              <DataTable.Title sortDirection={sortDirections.date} onPress={() => handleSort('date')} style={globalStyles.headerCellOne}> Date </DataTable.Title>
+              <DataTable.Title sortDirection={sortDirections.start_time} onPress={() => handleSort('start_time')} style={globalStyles.headerCellOne}> Start Time {' '} </DataTable.Title>
+              <DataTable.Title sortDirection={sortDirections.end_time} onPress={() => handleSort('end_time')} style={globalStyles.headerCellOne}> End Time {' '}  </DataTable.Title>
+              <DataTable.Title sortDirection={sortDirections.status} onPress={() => handleSort('status')} style={globalStyles.headerCellOne}> Status </DataTable.Title>
+              <DataTable.Title style={globalStyles.headerCellOne}> Action </DataTable.Title>
             </DataTable.Header>
             {isLoading && (<LoadingContainer />)}
             {dashboardData.slice(from, to).map((item) => {
@@ -237,12 +237,12 @@ function HomeScreen({ navigation, user, token }) {
                 return (
 
                   <DataTable.Row key={item.id} >
-                    <DataTable.Cell style={globalStyles.cell} >{item?.booking_day?.booking?.group_name}</DataTable.Cell>
-                    <DataTable.Cell style={globalStyles.CellDate}> {formatDate(item?.booking_day?.date)} </DataTable.Cell>
-                    <DataTable.Cell >{formatTime(item?.booking_day?.start_time)}</DataTable.Cell>
-                    <DataTable.Cell >{formatTime(item?.booking_day?.end_time)}</DataTable.Cell>
-                    <DataTable.Cell >{item?.monitor_booking_day_report == null ? "NOT STARTED" : "IN PROGRESS"}</DataTable.Cell>
-                    <DataTable.Cell >
+                    <DataTable.Cell style={globalStyles.CellTwo} >{item?.booking_day?.booking?.group_name}</DataTable.Cell>
+                    <DataTable.Cell style={globalStyles.cellOne}> {formatDate(item?.booking_day?.date)} </DataTable.Cell>
+                    <DataTable.Cell style={globalStyles.cellOne}>{formatTime(item?.booking_day?.start_time)}</DataTable.Cell>
+                    <DataTable.Cell style={globalStyles.cellOne}>{formatTime(item?.booking_day?.end_time)}</DataTable.Cell>
+                    <DataTable.Cell style={globalStyles.cellOne}>{item?.monitor_booking_day_report == null ? "NOT STARTED" : "IN PROGRESS"}</DataTable.Cell>
+                    <DataTable.Cell style={globalStyles.cellOne}>
                       {!item?.monitor_booking_day_report && item?.booking_day?.date <= checkActive(item) && (
                         <Icon name='hospital-o' onPress={() => openActionDialog(item)} size={20} color={AppStyles.color.tint} />
                       )}

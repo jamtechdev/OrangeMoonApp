@@ -109,7 +109,18 @@ const globalStyles = StyleSheet.create({
         right: 0,
         bottom: 0,
     },
-
+    flexOne:{
+        flex:1,
+        padding :3,
+    },
+    flexTwo:{
+        flex:1,
+        padding :3,
+    },
+    flexThree:{
+        flex:1,
+        padding :3,
+    },
 });
 
 export default globalStyles;

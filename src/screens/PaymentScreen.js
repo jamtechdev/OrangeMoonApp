@@ -30,6 +30,9 @@ function PaymentScreen({ navigation, user, token }) {
   const to = Math.min((page + 1) * itemsPerPage, stripeTableData?.length);
 
   useEffect(() => {
+    setPage(0);
+  }, [itemsPerPage]);
+  useEffect(() => {
     stripeService.checkStripeConnection(token).then(res => {
       setStripeData(res?.data?.stripe_connection)
       console.log(res);
@@ -189,7 +192,7 @@ function PaymentScreen({ navigation, user, token }) {
                     selectPageDropdownLabel={'Rows per page'}
                   />
                 </DataTable>
-              </ScrollView>
+                    </ScrollView>
             </View>
 
             {/* <Button
