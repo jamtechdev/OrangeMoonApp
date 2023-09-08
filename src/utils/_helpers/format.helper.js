@@ -2,9 +2,10 @@
 export const formatDate = (dateString) => {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
     const date = new Date(dateString);
-    if (isNaN(date)) {
+    if (isNaN(date) || dateString == null) {
         return '-';
     }
+    console.log( dateString)
     return date.toLocaleDateString([], options);
 };
 

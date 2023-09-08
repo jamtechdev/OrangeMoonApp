@@ -123,11 +123,11 @@ function ArchiveBooking({ navigation, user, token, route }) {
             {archiveData?.slice(from, to).map((item) => (
               <DataTable.Row key={item.id}>
                 <DataTable.Cell style={globalStyles.tableCellId}>{item.id}</DataTable.Cell>
-                <DataTable.Cell style={globalStyles.tableCellGroup}>{item.booking.group_name}</DataTable.Cell>
+                <DataTable.Cell style={globalStyles.tableCellGroup}>{item.group_name}</DataTable.Cell>
                 <DataTable.Cell style={globalStyles.tableCell}>{formatDate(item.booking.start_date)}</DataTable.Cell>
                 <DataTable.Cell style={globalStyles.tableCell}>{formatDate(item.booking.end_date)}</DataTable.Cell>
                 <DataTable.Cell style={globalStyles.tableCell}>
-                  <Chip>{item?.status}</Chip>
+                  <Chip>{item?.booking.status}</Chip>
                 </DataTable.Cell>
               </DataTable.Row>
             ))}
