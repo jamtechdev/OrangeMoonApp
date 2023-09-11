@@ -98,6 +98,7 @@ function SubReports({ navigation, user, token, route, value }) {
     };
 
     return (
+        <>
         <ScrollView style={styles.container}>
             <Text style={globalStyles.subtitle}> Sub-Reports</Text>
             <Divider style={globalStyles.divider} />
@@ -118,7 +119,6 @@ function SubReports({ navigation, user, token, route, value }) {
                             <DataTable.Title sortDirection={sortDirections.temperature} onPress={() => handleSort('temperature')} style={[globalStyles.tableCellGroup, globalStyles.alignCenter]}>Wellness Check Status</DataTable.Title>
                             <DataTable.Title style={globalStyles.tableSingleAction}>Action</DataTable.Title>
                         </DataTable.Header>
-                        {isLoading && <LoadingContainer />}
                         {subReport?.slice(from, to).map((item) => (
                             <DataTable.Row key={item.id} onPress={() => navigateDetails(item)}>
                                 <DataTable.Cell style={globalStyles.tableCellId}>{item.id}</DataTable.Cell>
@@ -147,8 +147,13 @@ function SubReports({ navigation, user, token, route, value }) {
                         />
                     </DataTable>
                 </ScrollView>
-            </View >
-        </ScrollView >
+            </View>
+        </ScrollView>
+        {isLoading && (
+        <Portal>
+        <LoadingContainer />
+        </Portal>)}
+        </>
     );
 }
 

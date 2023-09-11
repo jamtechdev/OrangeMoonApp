@@ -44,7 +44,7 @@ function BookingRequest({ navigation, user, token, route }) {
   const SegmentedButtonsValue = [
     { value: 'All', label: 'All' },
     { value: 'PENDING', label: 'Pending' },
-    { value: 'ACCEPTED', label: 'Accepted' },
+    { value: 'Accept', label: 'Accepted' },
     { value: 'COMPLETED', label: 'Completed' },
     { value: 'REJECTED', label: 'Rejected' },
     { value: 'CANCEL', label: 'Cancelled' },
