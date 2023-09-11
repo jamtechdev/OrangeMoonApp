@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import { List, Card, Divider, Button, TextInput, Text, Title, DataTable, Paragraph, PaperText } from 'react-native-paper';
+import { List, Card, Divider, Button, TextInput, Text, Title, DataTable, Paragraph, PaperText, Portal } from 'react-native-paper';
 import { connect } from 'react-redux';
 import InputLabelView from '../components/InputLabelView';
 import { monitorService } from '../utils/_services';
@@ -40,9 +40,11 @@ function DetailsReport({ navigation, route, user, token }) {
     }, [route, token])
     return (
         <>
-            {isLoading && (
-                <LoadingContainer />
-            )}
+      {isLoading && 
+      <Portal>
+        <LoadingContainer />
+      </Portal>
+      }
             {!isLoading && reportDetails && (
                 <ScrollView style={styles.main}>
                     <View style={styles.container}>

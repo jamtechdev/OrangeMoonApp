@@ -112,7 +112,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   view: {
-    paddingVertical: 20,
+    paddingVertical: 15,
+    paddingLeft: 10,
+    paddingTop:35,
     flexDirection: 'row',
     alignItems: 'center',
     // justifyContent: 'space-between',

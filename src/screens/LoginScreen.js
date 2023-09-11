@@ -32,9 +32,9 @@ function LoginScreen({ navigation, user, login }) {
   });
   const formOptions = { resolver: yupResolver(validationSchema), mode: 'onChange' };
   const { control, handleSubmit, formState: { errors }, setValue } = useForm(formOptions);
-  useEffect(() => {
-    setValue('email', 'testMonitor@gmail.com')
-  }, [])
+  // useEffect(() => {
+  //   setValue('email', 'testMonitor@gmail.com')
+  // }, [])
   const onSubmit = (data) => {
     setLoading(true);
     authService.login({ email: data.email, password: data.password })

@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Text } from 'react-native';
-import { List, Searchbar, Divider, Chip, Paragraph, DataTable } from 'react-native-paper';
+import { List, Searchbar, Divider, Chip, Portal, DataTable } from 'react-native-paper';
 import { connect } from 'react-redux';
 import { monitorService } from '../utils/_services';
 import { AppStyles } from '../utils/AppStyles';
@@ -90,6 +90,7 @@ function ArchiveBooking({ navigation, user, token, route }) {
 
 
   return (
+    <>
     <ScrollView style={styles.container}>
       <View style={styles.container}>
         <Text style={globalStyles.subtitle}> Archiving Bookings</Text>
@@ -119,7 +120,6 @@ function ArchiveBooking({ navigation, user, token, route }) {
                 Status
               </DataTable.Title>
             </DataTable.Header>
-            {isLoading && <LoadingContainer />}
             {archiveData?.slice(from, to).map((item) => (
               <DataTable.Row key={item.id}>
                 <DataTable.Cell style={globalStyles.tableCellId}>{item.id}</DataTable.Cell>
@@ -149,6 +149,12 @@ function ArchiveBooking({ navigation, user, token, route }) {
         </ScrollView>
       </View>
     </ScrollView>
+       {isLoading && 
+        <Portal>
+          <LoadingContainer />
+        </Portal>
+        }
+    </>
   );
 }
 

@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Pressable } from 'react-native';
-import { Portal, Dialog, Button, Text, DataTable, Divider, Searchbar, } from 'react-native-paper';
+import { Portal, Dialog, Button, Text, DataTable, Divider, Searchbar } from 'react-native-paper';
 import { connect } from 'react-redux';
 import { AppStyles } from '../utils/AppStyles';
 import { monitorService } from '../utils/_services';
@@ -102,6 +102,7 @@ function CompleteReport({ navigation, user, token, route }) {
   };
 
   return (
+    <>
     <ScrollView style={styles.container} scrollIndicatorInsets={{ top: 0, left: 0, bottom: 0, right: 0 }}>
       <View style={styles.container}>
         <Text style={globalStyles.subtitle}> Reports</Text>
@@ -145,7 +146,6 @@ function CompleteReport({ navigation, user, token, route }) {
               </DataTable.Title>
               <DataTable.Title style={globalStyles.tableSingleAction}>Action</DataTable.Title>
             </DataTable.Header>
-            {isLoading && <LoadingContainer />}
             {completeData?.slice(from, to).map((item) => (
               <DataTable.Row key={item.id} onPress={() => navigateDetails(item)}>
                 <DataTable.Cell style={globalStyles.tableCellId}>{item.id}</DataTable.Cell>
@@ -175,6 +175,12 @@ function CompleteReport({ navigation, user, token, route }) {
         </ScrollView>
       </View>
     </ScrollView>
+    {isLoading && 
+      <Portal>
+        <LoadingContainer />
+      </Portal>
+      }
+    </>
   );
 }
 

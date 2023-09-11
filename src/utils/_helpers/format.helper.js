@@ -44,13 +44,16 @@ export function createdDate(inputDate) {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-export const formatDateNew = (dateString) => {
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+export const formatDateNew = (dateStr) => {
+    const dateString = dateStr.split(" ,")[0];
     let date = '';
     if (dateString == null){
-         date = new Date();   
+         date = new Date();
     } else {
         date = new Date(dateString);
+        if (isNaN(date) ) {
+            return '-';
+        }
     }
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Add leading zero if needed
     const day = String(date.getDate()).padStart(2, '0'); // Add leading zero if needed

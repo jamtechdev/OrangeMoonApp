@@ -18,6 +18,7 @@ export const monitorService = {
     editProfile,
     BookingReportActionCheck,
     getAllDetailsReport,
+    getAllSchedulingEvent,
 };
 
 async function dashboard(token) {
@@ -124,6 +125,15 @@ async function BookingReportActionCheck(token, data) {
 async function getAllDetailsReport(token, data) {
     return await axios.get(
         `${API_URL}/monitor-booking-day-report/${data?.id}/continue/${data?.start_Time}/${data?.end_Time}`,
+        {
+            headers: { 'Authorization': 'Bearer ' + token },
+        }
+    );
+}
+
+async function getAllSchedulingEvent(token) {
+    return await axios.get(
+        `${API_URL}/monitor-scheduling`,
         {
             headers: { 'Authorization': 'Bearer ' + token },
         }

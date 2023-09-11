@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Text } from 'react-native';
-import { List, Card, TextInput, Title, Paragraph, PaperText } from 'react-native-paper';
+import { List, Card, TextInput, Title, Paragraph, Portal } from 'react-native-paper';
 import { connect } from 'react-redux';
 import InputLabelView from '../components/InputLabelView';
 import { monitorService } from '../utils/_services';
@@ -17,9 +17,11 @@ function BookingDetails({ navigation, route, user, value, token }) {
   }, [value])
   return (
     <>
-      {isLoading && (
+   {isLoading && 
+      <Portal>
         <LoadingContainer />
-      )}
+      </Portal>
+      }
       {!isLoading && bookingDetails && (
         <ScrollView style={styles.container}>
           <View style={styles.container}>

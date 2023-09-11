@@ -122,6 +122,7 @@ function BookingRequest({ navigation, user, token, route }) {
   };
 
   return (
+    <>
     <ScrollView style={styles.container}>
       <View style={styles.container}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -172,8 +173,6 @@ function BookingRequest({ navigation, user, token, route }) {
               <DataTable.Title style={globalStyles.tableCellAction}>Action</DataTable.Title>
             </DataTable.Header>
 
-
-            {isLoading && (<LoadingContainer />)}
             {bookingData?.slice(from, to).map((item) => (
               <DataTable.Row key={item.id}>
                 <DataTable.Cell style={globalStyles.tableCellId}>{item.booking_id}</DataTable.Cell>
@@ -244,6 +243,12 @@ function BookingRequest({ navigation, user, token, route }) {
         </Dialog>
       </Portal>
     </ScrollView>
+    {isLoading && 
+      <Portal>
+        <LoadingContainer />
+      </Portal>
+      }
+    </>
   );
 }
 

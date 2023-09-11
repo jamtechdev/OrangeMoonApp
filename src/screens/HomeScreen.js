@@ -212,6 +212,7 @@ function HomeScreen({ navigation, user, token }) {
     return currentDate
   }
   return (
+    <>
     <ScrollView style={styles.container}>
       <Text style={globalStyles.subtitle}>Today's Booking</Text>
       <Divider style={globalStyles.divider} />
@@ -265,7 +266,6 @@ function HomeScreen({ navigation, user, token }) {
                 Action
               </DataTable.Title>
             </DataTable.Header>
-            {isLoading && (<LoadingContainer />)}
             {dashboardData.slice(from, to).map((item) => {
               if (item.booking_day?.end_time) {
                 return (
@@ -402,6 +402,12 @@ function HomeScreen({ navigation, user, token }) {
         </Portal>
       </View>
     </ScrollView>
+    {isLoading && 
+      <Portal>
+        <LoadingContainer />
+      </Portal>
+      }
+    </>
   );
 }
 

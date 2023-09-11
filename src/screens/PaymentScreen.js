@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Linking } from 'react-native';
-import { Divider, Button, Text, DataTable, Searchbar } from 'react-native-paper';
+import { Divider, Button, Text, DataTable, Searchbar,Portal } from 'react-native-paper';
 import { connect } from 'react-redux';
 import globalStyles from '../utils/_css/globalStyle';
 import { AppStyles } from '../utils/AppStyles';
@@ -125,9 +125,11 @@ function PaymentScreen({ navigation, user, token }) {
 
   return (
     <>
-      {isLoading && (
+      {isLoading && 
+      <Portal>
         <LoadingContainer />
-      )}
+      </Portal>
+      }
       {!isLoading && (
         <ScrollView style={styles.main}>
           <View style={styles.container}>

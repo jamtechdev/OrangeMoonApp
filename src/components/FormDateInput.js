@@ -7,7 +7,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { formatDateToString } from '../utils/_helpers/format.helper';
 const FormDateInput = ({ control, setValue, name, label, defaultValue, errors }) => {
     const [showPicker, setShowPicker] = React.useState(false);
-    const defaultDate = defaultValue || control.defaultValuesRef.current[name] || new Date();
+    const defaultDate = defaultValue || new Date();
     const [selectedDate, setSelectedDate] = React.useState(new Date(defaultDate));
 
     const onDateChange = (event, selected) => {
@@ -29,7 +29,7 @@ const FormDateInput = ({ control, setValue, name, label, defaultValue, errors })
                     value={selectedDate.toDateString()}
                     editable={false}
                     onPressIn={() => toggleDatePicker()}
-                    style={styles.valueInput} // Add custom styling to the input
+                    // style={styles.valueInput}
                 />
             </Pressable>
             <Controller

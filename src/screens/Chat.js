@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useLayoutEffect, useState, useCallback, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity,  } from 'react-native';
 import { connect, useSelector } from 'react-redux';
 import { AppIcon, AppStyles } from '../utils/AppStyles';
 import { Configuration } from '../utils/Configuration';

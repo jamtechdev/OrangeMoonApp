@@ -4,9 +4,7 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { Avatar, Text, Divider, Card, Button, HelperText, RadioButton } from 'react-native-paper';
 import { connect } from 'react-redux';
 import globalStyles from '../utils/_css/globalStyle';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from "yup";
-import { useForm, Controller } from "react-hook-form";
+
 import { AppStyles, AppIcon } from '../utils/AppStyles';
 import InputLabelView from '../components/InputLabelView';
 import { monitorService } from '../utils/_services';
@@ -21,9 +19,9 @@ function ProfileScreen({ user, navigation, token }) {
     }, [user])
     const imageSrc = 'https://staging.orangemoonsss.com/images/' + profileData?.monitor?.photo;
     useEffect(() => {
-        monitorService.getStateList(token).then(res => {
+        monitorService.getStateList(token).then(async res => {
             setStateList(res.data.states);
-            let stateData = getStateNamesByIds(profileData?.monitor?.preferred_location, stateList)
+            let stateData = await getStateNamesByIds(profileData?.monitor?.preferred_location, stateList)
             setState(stateData);
             console.log(typeof stateData, "data")
         }).catch(error => {
