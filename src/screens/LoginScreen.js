@@ -3,7 +3,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-trailing-spaces */
 import React, { useEffect, useState } from 'react';
-import { View, KeyboardAvoidingView } from 'react-native';
+import { View, KeyboardAvoidingView,  TouchableWithoutFeedback, Keyboard} from 'react-native';
 import { TextInput, Text, Checkbox, Button, Snackbar, HelperText } from 'react-native-paper';
 import { useForm, Controller } from "react-hook-form";
 import { AppStyles, AppIcon } from '../utils/AppStyles';
@@ -15,10 +15,13 @@ import * as Yup from "yup";
 import FastImage from 'react-native-fast-image';
 import globalStyles from '../utils/_css/globalStyle';
 import { Link } from '@react-navigation/native';
+import { useColorScheme } from 'react-native';
 function LoginScreen({ navigation, user, login }) {
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const themeMode = useColorScheme();
+  const inputBackgroundColor = themeMode === 'dark' ? 'white' : '#fff'; // Adjust as needed
 
   const validationSchema = Yup.object().shape({
     email: Yup.string().required("Email is required").email("Email is invalid"),
@@ -67,6 +70,7 @@ function LoginScreen({ navigation, user, login }) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
     >
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={globalStyles.container}>
         <FastImage
           style={globalStyles.logo}
@@ -78,7 +82,7 @@ function LoginScreen({ navigation, user, login }) {
           name="email"
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              style={globalStyles.inputStyle}
+            style={[globalStyles.inputStyle, { backgroundColor: inputBackgroundColor }]}
               mode='outlined'
               label='Email'
               activeOutlineColor={AppStyles.color.secondaryColor}
@@ -104,7 +108,7 @@ function LoginScreen({ navigation, user, login }) {
             <TextInput
               secureTextEntry={!showPassword}
               placeholder="Enter your Password"
-              style={globalStyles.inputStyle}
+              style={[globalStyles.inputStyle, { backgroundColor: inputBackgroundColor }]}
               mode='outlined'
               label='Password'
               activeOutlineColor={AppStyles.color.secondaryColor}
@@ -164,6 +168,7 @@ function LoginScreen({ navigation, user, login }) {
           Email & Password does not match with our record
         </Snackbar>
       </View>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 }

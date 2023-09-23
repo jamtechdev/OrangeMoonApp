@@ -1,13 +1,14 @@
 /* eslint-disable prettier/prettier */
 import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Text } from 'react-native';
-import { List, Searchbar, Divider, Chip, Portal, DataTable } from 'react-native-paper';
+import { List, Divider, Chip, Portal, DataTable } from 'react-native-paper';
 import { connect } from 'react-redux';
 import { monitorService } from '../utils/_services';
 import { AppStyles } from '../utils/AppStyles';
 import globalStyles from '../utils/_css/globalStyle';
 import { formatDate, sortingHelper } from '../utils/_helpers';
 import LoadingContainer from '../components/LoadingContainer';
+import SearchBox from '../components/SearchBox';
 
 function ArchiveBooking({ navigation, user, token, route }) {
   const [archiveData, setArchiveData] = useState([])
@@ -95,11 +96,10 @@ function ArchiveBooking({ navigation, user, token, route }) {
       <View style={styles.container}>
         <Text style={globalStyles.subtitle}> Archiving Bookings</Text>
         <Divider style={globalStyles.divider} />
-        <Searchbar
-          placeholder="Search"
-          style={styles.Searchbar}
+        <SearchBox
           onChangeText={handleSearch}
           value={searchQuery}
+          style={styles.Searchbar}
         />
         <ScrollView horizontal >
           <DataTable style={globalStyles.DataTable}>

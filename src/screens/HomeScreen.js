@@ -5,16 +5,20 @@ import { connect } from 'react-redux';
 import { AppStyles } from '../utils/AppStyles';
 import { Configuration } from '../utils/Configuration';
 import { monitorService } from '../utils/_services';
-import { Divider, Text, Portal, Button, Dialog, RadioButton, DataTable, Searchbar, HelperText } from 'react-native-paper';
+import { Divider, Text, Portal, Button, Dialog, RadioButton, DataTable, HelperText } from 'react-native-paper';
 import { formatDate, formatTime, sortingHelper } from '../utils/_helpers';
 import globalStyles from '../utils/_css/globalStyle';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LoadingContainer from '../components/LoadingContainer';
+import Geolocation from '@react-native-community/geolocation';
+import SearchBox from '../components/SearchBox';
+
 function HomeScreen({ navigation, user, token }) {
   const [dashboardData, setDashboardData] = useState([])
   const [dashboardDataBkp, setDashboardDataBkp] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('');
+  const [location, setLocation] = useState(null);
   const [sortDirections, setSortDirections] = useState({
     group_name: 'none',
     date: 'none',
@@ -208,19 +212,33 @@ function HomeScreen({ navigation, user, token }) {
     const getBookingTimeZone = monitorBookingDayRequest.booking_day.booking?.hotel?.state?.time_zone || 'EST'; // here i don't get the hotel state timezone 
     const timeZone = new Date().toLocaleString('en-US', { timeZone: getBookingTimeZone });
     const currentDate = new Date(timeZone).toISOString().split('T')[0];
-
     return currentDate
   }
+
+  const getGeoLocation = ()=>{
+    Geolocation.requestAuthorization();
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setLocation(position.coords);
+        console.log(latitude, longitude);
+      },
+      (error) => {
+        console.error(error.message);
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+  }
+
   return (
     <>
     <ScrollView style={styles.container}>
-      <Text style={globalStyles.subtitle}>Today's Booking</Text>
+      <Text style={globalStyles.subtitle} onPress={()=> getGeoLocation()}>Today's Booking</Text>
       <Divider style={globalStyles.divider} />
       <View style={styles.container}>
-        <Searchbar
-          placeholder="Search"
-          onChangeText={handleSearch}
-          value={searchQuery}
+        <SearchBox
+          handleSearch={handleSearch}
+          searchQuery={searchQuery}
         />
         <ScrollView horizontal >
           <DataTable style={globalStyles.DataTable}>

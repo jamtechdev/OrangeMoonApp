@@ -1,34 +1,44 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable prettier/prettier */
 import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Text, Pressable } from 'react-native';
-import { List, Card, Button, Divider, Snackbar, Searchbar, DataTable , Portal, Modal, Dialog} from 'react-native-paper';
+import { List, Card, ActivityIndicator, Button, Divider, Snackbar, DataTable , Portal, Modal, Dialog} from 'react-native-paper';
 import { connect } from 'react-redux';
 import { monitorService } from '../utils/_services';
 import { AppStyles } from '../utils/AppStyles';
 import globalStyles from '../utils/_css/globalStyle';
 import LoadingContainer from '../components/LoadingContainer';
-import { formatDate } from '../utils/_helpers';
+import { formatDate , formatTime} from '../utils/_helpers';
 import { Calendar } from 'react-native-big-calendar';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { useForm, Controller } from "react-hook-form";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import FormDateInput from '../components/FormDateInput';
-
+import SearchBox from '../components/SearchBox';
 function Scheduling({ navigation, user, token, route }) {
   const [eventData, setEventData] = useState([])
-  const [archiveData, setArchiveData] = useState([])
-  const [archiveDataBkp, setArchiveDataBkp] = useState([])
+  const [assignableData, setAssignableData] = useState([])
+  const [assignableDataBkp, setAssignableDataBkp] = useState([])
   const [isLoading, setIsLoading] = useState(true);
   const [visibleToast, setVisibleToast] = useState(false);
   const [visibleModel, setVisibleModel] = useState(false);
   const [visibleDialog, setVisibleDialog] = useState(false);
+  const [showAlert, setShowAlert] = useState();
+  const [startDate , setStartDate]= useState()
+  const [textShow , setTextShow]=useState('')
+  const [status ,setStatus] = useState()
+  const [endDate , setEndDate]= useState()
+  const [bookingDetails, setBookingDetails] = useState([])
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
+  const [modelType , setModelType]=useState();
   const [sortDirections, setSortDirections] = useState({
-    id: 'none', // Initialize with 'none' as the default
+    booking_id: 'none', // Initialize with 'none' as the default
     group_name: 'none',
-    start_date: 'none',
-    end_date: 'none',
-    status: 'none',
+    location: 'none',
+    date: 'none',
+    start_time: 'none',
+    end_time: 'none',
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
@@ -36,22 +46,41 @@ function Scheduling({ navigation, user, token, route }) {
   const [itemsPerPage, onItemsPerPageChange] = useState(
     numberOfItemsPerPageList[0]
   );
-
   const { control, handleSubmit, setValue, watch, formState: { errors } }  = useForm()
-
-
+    let changeStarDate = watch("start_Date")
+    let changeEndDate = watch("end_Date")
+    useEffect(()=>{
+      setStartDate(changeStarDate);
+      setEndDate(changeEndDate);
+    },[changeEndDate, changeStarDate])
   const from = page * itemsPerPage;
-  const to = Math.min((page + 1) * itemsPerPage, archiveData?.length);
+  const to = Math.min((page + 1) * itemsPerPage, assignableData?.length);
   const showModal = () => setVisibleModel(true);
   const hideModal = () => setVisibleModel(false);
   const hideDialog = () =>setVisibleDialog(false);
+  const hideAlert= () =>setShowAlert(false);
   React.useEffect(() => {
     setPage(0);
   }, [itemsPerPage]);
 
   useEffect(() => {
+    getdayList();
+    getAssignList();
+  }, [token]);
+  const getAssignList=()=>{
+    // setIsLoading(true);
+    monitorService.getSchedulingAssignableBooking(token).then(res => {
+      setAssignableData(res?.data?.assingnable_bookings)
+      setAssignableDataBkp(res?.data?.assingnable_bookings)
+      setIsLoading(false);
+    }).catch(error => {
+      console.log(error);
+      setIsLoading(false);
+    });
+  }
+ const getdayList = ()=> {
     monitorService.getAllSchedulingEvent(token).then(res => {
-      console.log(res.data?.monitor_availability[0], "here my console res");
+
       for (const item of res.data.monitor_availability) {
         const date = new Date(item.date);
         item.start = date;
@@ -63,17 +92,7 @@ function Scheduling({ navigation, user, token, route }) {
       console.log(error);
       setIsLoading(false);
     });
-    // monitorService.archivesBooking(token).then(res => {
-    //   // console.log(res, "here my console res");
-    //   setArchiveData(res?.data?.data);
-    //   setArchiveDataBkp(res?.data?.data);
-    //   setIsLoading(false);
-    // }).catch(error => {
-    //   console.log(error);
-    //   setIsLoading(false);
-    // });
-  }, [token]);
-
+  }
   const handleSort = async (columnKey) => {
     const nextSortDirection =
       sortDirections[columnKey] === 'ascending'
@@ -84,8 +103,8 @@ function Scheduling({ navigation, user, token, route }) {
       [columnKey]: nextSortDirection,
     });
 
-    let sortDataType = typeof archiveData[0][columnKey];
-    const sortedData = [...archiveData].sort((a, b) => {
+    let sortDataType = typeof assignableData[0][columnKey];
+    const sortedData = [...assignableData].sort((a, b) => {
       let aValue = a[columnKey];
       let bValue = b[columnKey];
       switch (sortDataType) {
@@ -99,20 +118,22 @@ function Scheduling({ navigation, user, token, route }) {
           return 0;
       }
     });
-    setArchiveData(sortedData);
+    setAssignableData(sortedData);
   };
   const handleSearch = (query) => {
     const lowerCaseQuery = query.toLowerCase();
-    const filteredData = archiveData.filter((item) =>
-      item?.id?.toString()?.toLowerCase()?.includes(lowerCaseQuery) ||
-      item?.booking?.group_name?.toLowerCase()?.includes(lowerCaseQuery) ||
-      formatDate(item?.booking?.start_date)?.toLowerCase()?.includes(lowerCaseQuery) ||
-      formatDate(item?.booking?.end_date)?.toLowerCase()?.includes(lowerCaseQuery)
+    const filteredData = assignableData.filter((item) =>
+      item?.booking_id?.toString()?.toLowerCase()?.includes(lowerCaseQuery) ||
+      item?.group_name?.toLowerCase()?.includes(lowerCaseQuery) ||
+      item?.location?.toLowerCase()?.includes(lowerCaseQuery) ||
+      formatDate(item?.date)?.toLowerCase()?.includes(lowerCaseQuery) ||
+      formatDate(item?.end_date)?.toLowerCase()?.includes(lowerCaseQuery) ||
+      formatDate(item?.end_date)?.toLowerCase()?.includes(lowerCaseQuery)
     );
     if (filteredData.length == 0 || query == '') {
-      setArchiveData(archiveDataBkp)
+      setAssignableData(assignableDataBkp)
     } else {
-      setArchiveData(filteredData)
+      setAssignableData(filteredData)
     }
     setSearchQuery(query);
   };
@@ -149,28 +170,131 @@ function Scheduling({ navigation, user, token, route }) {
   };
 
   const CustomEvent = ({ event , touchableOpacityProps}) => (
-    <Pressable {...touchableOpacityProps} onPress={() => onEventPress(event)} style={[styles.customEventContainer, { backgroundColor: event.color }]}>
-      <Text style={styles.eventText}>{event.title}</Text>
+    <Pressable {...touchableOpacityProps} onPress={() => onEventPress(event)} style={[styles.customEventContainer, { backgroundColor: event.color }]} key={event?.id}>
+    {event.color !== 'yellow' ? ( <Text style={styles.eventText}>{event.title}</Text>)
+    :
+    ( <Text style={[styles.eventText,{color: AppStyles.color.black}]}>{event.title}</Text>)
+    }
     </Pressable>
   );
+
+  const isDateWithin30Days=(dateString)=> {
+    const inputDate = new Date(dateString);
+    const currentDate = new Date();
+    const differenceInMilliseconds = inputDate - currentDate;
+    const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
+    return differenceInDays <= 30;
+  }
   const onEventPress = (event) => {
     const eventDate = new Date(event.date);
     const currentDate = new Date();
     if(event.status === "OFFERED" || event.status === "BOOKED" ){
-      setVisibleModel(true)
+     if(!isDateWithin30Days(event.date)){
+      setVisibleToast(true);
       return;
-    } else if( event.status === "AVAILABLE"){
-      setVisibleToast(true)
+     }
+      if(event){
+        setIsLoading(true)
+        monitorService.bookingDetails(token, event?.monitor_booking_request_id).then(res => {
+       
+          setBookingDetails(res?.data?.data);
+          setModelType(event?.status);
+          showModal();
+          setIsLoading(false);
+        }).catch(error => { setIsLoading(false); console.log(error); })
+      }
       return;
-    }
-    else if (eventDate >= currentDate.setHours(0, 0, 0, 0) && event.status === "NOT AVAILABLE") {
-      setVisibleDialog(true)
+    } 
+    else if (eventDate >= currentDate.setHours(0, 0, 0, 0) && (event.status === "NOT AVAILABLE" || event.status == "AVAILABLE" )) {
+      setVisibleDialog(true);
+      setStartDate(event.date)
+      setEndDate(event.date)
       return;
     } else {
-      setVisibleToast(true)
+      setVisibleToast(true);
     }
   };
-  const bookingDayDetails= [];
+  const changeFormat = (startData) =>{
+    let parts = startData.split("-");
+    let day = parts[0];
+    let month = parts[1];
+    let year = parts[2];
+    return year + "-" + month + "-" + day;
+  }
+
+  const isWithin48Hours = (targetDate)=>{
+    const targetDateTime = new Date(targetDate);
+    const currentDate = new Date();
+    const timeDifference = targetDateTime - currentDate;
+    const hoursIn48Hours = 48 * 60 * 60 * 1000;
+    return timeDifference <= hoursIn48Hours;
+  }
+
+  const updateAvailability=(status)=>{
+
+    let data = {
+      start_date : startDate,
+      end_date: endDate,
+      status: status,
+      start_time: '00:00:00',
+      end_time: '23:59:00'
+    }
+    setIsButtonLoading(true);
+    monitorService.setMonitorAvailablity(token, data).then(res => {
+      if(res.data.status){
+        getdayList();
+        setTimeout(() => {
+          hideDialog();
+        }, 1000);
+      }
+      setIsButtonLoading(false);
+    }).catch(error => {
+      setIsButtonLoading(false);
+      console.log(error);
+    })
+
+  }
+  const updateRequestStatus = (id) => {
+    setIsLoading(true);
+    let data = {
+      monitor_id : user.monitor.id,
+      booking_day_id : id
+    }
+    monitorService.setSelfBooking(token,data).then(res => {
+      setIsLoading(false);
+      getAssignList()
+    }).catch(error => {
+      setIsLoading(false);
+      console.log(error);
+    });
+  }
+  const updateBookingStatus = (id , status) =>{
+    setIsLoading(true)
+    monitorService.bookingChangeStatus(token,id , status ).then(res => {
+      console.log(res)
+      setIsLoading(false);
+      hideAlert();
+      getdayList()
+      hideModal()
+    }).catch(error => {
+      setIsLoading(false);
+      console.log(error);
+    });
+  }
+  const showConfirmFunction =(status)=>{
+    setShowAlert(true)
+    if(status == 1){
+      setStatus('ACCEPTED')
+      setTextShow('By Accepting, I agree to the payment terms outlined in my Seasonal Contractor agreement between myself and Orange Moon. I further agree to abide by the dresscode and conduct requirements established by Orange Moon of which I have read and maintain a copy of for my records.')
+    }else{
+      if(status == 3){
+        setStatus('CANCEL');
+      }else{
+        setStatus('REJECTED');
+      }
+      setTextShow('You would not be able to undo.');
+    }
+  }
 
   return (
     <>
@@ -207,37 +331,83 @@ function Scheduling({ navigation, user, token, route }) {
         <View style={styles.nextDiv}>
           <Text style={globalStyles.subtitle}> Open Assignments</Text>
           <Divider style={globalStyles.divider} />
-          <Searchbar
-            placeholder="Search"
-            style={styles.Searchbar}
-            onChangeText={handleSearch}
-            value={searchQuery}
+          <SearchBox
+            handleSearch={handleSearch}
+            searchQuery={searchQuery}
           />
           <ScrollView horizontal >
             <DataTable style={styles.DataTable}>
               <DataTable.Header style={styles.header}>
-                <DataTable.Title sortDirection={sortDirections.id} onPress={() => handleSort('id')}> ID </DataTable.Title>
-                <DataTable.Title sortDirection={sortDirections.group_name} onPress={() => handleSort('group_name')} style={styles.headerCell}> Group Name </DataTable.Title>
-                <DataTable.Title sortDirection={sortDirections.start_date} onPress={() => handleSort('start_date')}>Start Date </DataTable.Title>
-                <DataTable.Title sortDirection={sortDirections.end_date} onPress={() => handleSort('end_date')}> End Date  </DataTable.Title>
-                <DataTable.Title sortDirection={sortDirections.status} onPress={() => handleSort('status')}>Status </DataTable.Title>
-              </DataTable.Header>
+              <DataTable.Title
+                sortDirection={sortDirections.booking_id}
+                onPress={() => handleSort('booking_id')}
+                style={globalStyles.tableCellId}
+              >
+                 ID
+              </DataTable.Title>
+              <DataTable.Title
+                sortDirection={sortDirections.group_name}
+                onPress={() => handleSort('group_name')}
+                style={globalStyles.tableCellGroup}
+              >
+                Group Name
+              </DataTable.Title>
+              <DataTable.Title
+                sortDirection={sortDirections.location}
+                onPress={() => handleSort('location')}
+                style={styles.tableAddress}
+              >
+                Hotel Address 
+              </DataTable.Title>
+              <DataTable.Title
+                sortDirection={sortDirections.date}
+                onPress={() => handleSort('date')}
+                style={globalStyles.tableCell}
+              >
+                Job Date
+              </DataTable.Title>
+              <DataTable.Title
+                sortDirection={sortDirections.start_time}
+                onPress={() => handleSort('start_time')}
+                style={globalStyles.tableCell}
+              >
+                Start Time
+              </DataTable.Title>
+              <DataTable.Title
+                sortDirection={sortDirections.end_time}
+                onPress={() => handleSort('end_time')}
+                style={globalStyles.tableCell}
+              >
+                End Time
+              </DataTable.Title>
+              <DataTable.Title
+                style={styles.tableAction}
+              >
+                Action
+              </DataTable.Title>
+            </DataTable.Header>
               {isLoading && (<LoadingContainer />)}
-              {archiveData?.slice(from, to).map((item) => (
+              {assignableData?.slice(from, to).map((item) => (
                 <DataTable.Row key={item.id} >
-                  <DataTable.Cell >{item.id} </DataTable.Cell>
-                  <DataTable.Cell style={styles.cell} >{item.booking.group_name}</DataTable.Cell>
-                  <DataTable.Cell >{formatDate(item.booking.start_date)} </DataTable.Cell>
-                  <DataTable.Cell >{formatDate(item.booking.end_date)} </DataTable.Cell>
-                  <DataTable.Cell > {item?.status} </DataTable.Cell>
+                  <DataTable.Cell  style={globalStyles.tableCellId}>{item.booking_id} </DataTable.Cell>
+                  <DataTable.Cell  style={globalStyles.tableCellGroup} >{item?.group_name}</DataTable.Cell>
+                  <DataTable.Cell  style={styles.tableAddress} >{item?.location}</DataTable.Cell>
+                  <DataTable.Cell  style={globalStyles.tableCell}>{formatDate(item?.date)} </DataTable.Cell>
+                  <DataTable.Cell  style={globalStyles.tableCell}>{formatTime(item?.start_time)} </DataTable.Cell>
+                  <DataTable.Cell  style={globalStyles.tableCell}>{formatTime(item?.end_time)} </DataTable.Cell>
+                  <DataTable.Cell  style={styles.tableAction}> 
+                  <Button  mode="contained"  style={styles.actionButton} onPress={() =>updateRequestStatus(item?.booking_day_id)}>
+                    Request
+                  </Button>
+                  </DataTable.Cell>
                 </DataTable.Row>
               ))}
-              {!archiveData?.length && !isLoading && (<Text style={globalStyles.emptyData}> Data not found</Text>)}
+              {!assignableData?.length && !isLoading && (<Text style={globalStyles.emptyData}> Data not found</Text>)}
               <DataTable.Pagination
                 page={page}
-                numberOfPages={Math.ceil(archiveData.length / itemsPerPage)}
+                numberOfPages={Math.ceil(assignableData.length / itemsPerPage)}
                 onPageChange={(page) => setPage(page)}
-                label={`${from + 1}-${to} of ${archiveData.length}`}
+                label={`${from + 1}-${to} of ${assignableData.length}`}
                 numberOfItemsPerPageList={numberOfItemsPerPageList}
                 numberOfItemsPerPage={itemsPerPage}
                 onItemsPerPageChange={onItemsPerPageChange}
@@ -254,7 +424,7 @@ function Scheduling({ navigation, user, token, route }) {
           onDismiss={() => setVisibleToast(false)}
           duration={1000}
         >
-     Not a valid date, Click on another date  
+      You are not able to take action on this date
         </Snackbar>
         <Portal>
         <Dialog visible={visibleDialog} onDismiss={hideDialog}>
@@ -265,13 +435,14 @@ function Scheduling({ navigation, user, token, route }) {
             <Divider style={globalStyles.divider} />
             <Dialog.Content>
             <View style={styles.input}>
-            <FormDateInput control={control} name="start_Date" label="Start Date" setValue={setValue} errors={errors}  />
-            <FormDateInput control={control} name="end_Date" label="End Date" setValue={setValue} errors={errors}  />
+            <FormDateInput control={control} name="start_Date" label="Start Date" defaultValue={startDate} setValue={setValue} errors={errors}  />
+            <FormDateInput control={control} name="end_Date" label="End Date" defaultValue={endDate} setValue={setValue} errors={errors}  />
             </View>
+            <ActivityIndicator animating={isButtonLoading} color={AppStyles.color.tint} />
             </Dialog.Content>
             <Dialog.Actions>
-              <Button onPress={hideDialog}>NOT AVAILABLE </Button>
-              <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={hideDialog}>AVAILABLE</Button>
+              <Button  onPress={()=>updateAvailability('NOT AVAILABLE')}>NOT AVAILABLE </Button>
+              <Button  textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={()=>{updateAvailability('AVAILABLE')}}>AVAILABLE</Button>
             </Dialog.Actions>
           </Dialog>
       </Portal>
@@ -287,75 +458,102 @@ function Scheduling({ navigation, user, token, route }) {
       <View style={styles.accountDetailsContainer}>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >Group Name :</Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.temperature || '-'}  </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.group_name || '-'}  </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >Number Of Students:</Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.no_of_students || '-'}  </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.no_of_student || '-'}  </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >Floor: </Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.date || '-'} </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.no_of_floor || '-'} </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >TD/GL Name: </Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.temperature || '-'}  </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.gl_name || '-'}  </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >TD/GL Contact No: </Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.group_name || '-'}  </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.gl_contact_no || '-'}  </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >Start Date: </Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.no_of_floor || '-'}  </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.start_date || '-'}  </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >End Date:</Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.gl_name || '-'}  </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.end_date || '-'}  </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >Start Time: </Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.gl_phone || '-'}  </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.start_time || '-'}  </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >End Time: </Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.start_time || '-'}  </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.end_time || '-'}  </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >Hotel Name:</Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.end_time || '-'}  </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.hotel?.name || '-'}  </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >Hotel Address: </Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.start_location_addr || '-'}  </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.hotel?.address || '-'}  </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >Hotel Phone:</Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.end_location_addr || '-'}  </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.hotel?.phone || '-'}  </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >Hotel State:</Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.end_location_addr || '-'}  </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.hotel?.state.state_name || '-'}  </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >Hotel City:</Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.end_location_addr || '-'}  </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.hotel?.city?.city_name || '-'}  </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >Hotel Zipcode:</Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.end_location_addr || '-'}  </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.hotel?.zip_code || '-'}  </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >Location:</Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.end_location_addr || '-'}  </Text>
+                                            <Text style={styles.valueText}>{bookingDetails?.booking?.location?.name || '-'}  </Text>
                                         </View>
                                     </View>
                                     <Divider style={globalStyles.divider} />
-                                    <Button onPress={hideModal}> Cancel </Button>
+                                    { modelType == 'OFFERED' && (
+                                      <View style={globalStyles.buttonRow}>
+                                        <Button onPress={()=>{ showConfirmFunction(1)}}> Accept</Button>
+                                        <Button onPress={()=>{showConfirmFunction(2)}}> Reject  </Button>
+                                       </View>
+                                    )}
+                                    { modelType == 'BOOKED' && (
+                                      <>{
+                                        !isWithin48Hours(bookingDetails?.booking?.start_date,bookingDetails?.booking?.start_time) ?
+                                        <Button onPress={()=>{ showConfirmFunction(3)}}> Cancel</Button>
+                                        :  <Button> Late Cancel </Button>
+                                      }
+                                      </>
+                                    )}
                                     </View>
                                     </ScrollView>
         </Modal>
       </Portal>
+      <Portal>
+        <Dialog visible={showAlert} onDismiss={hideAlert}>
+          <Dialog.Title>Are you sure?</Dialog.Title>
+          <Dialog.Content>
+            <Text>{textShow}</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button mode="contained" loading={isButtonLoading} onPress={() => { updateBookingStatus(bookingDetails.id,status) }}>Yes </Button>
+            <Button mode="contained" onPress={hideAlert}>No</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+
+
       {isLoading && 
       <Portal>
         <LoadingContainer />
@@ -406,9 +604,6 @@ const styles = StyleSheet.create({
   hederGap: {
     width: 20,
   },
-  Searchbar: {
-    marginTop: 10,
-  },
   nextDiv: {
     marginVertical: 15,
   },
@@ -441,7 +636,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   eventText: {
-    color: AppStyles.color.black,
+    color: AppStyles.color.white,
     fontSize: 8,
     fontWeight: '600',
   },
@@ -489,7 +684,24 @@ valueText: {
 closeIcon :{
   right: 0,
   top: 15
+},
+tableAddress:{
+  flex: 3,
+  width: 300,
+},
+tableAction:{
+  flex: 2,
+  width: 150,
+  alignItems: 'center',
+  justifyContent: 'center'
+
+},
+actionButton:{
+  color : AppStyles.color.white,
+  backgroundColor: AppStyles.color.tint,
+  fontSize: 8,
 }
+
 });
 
 const mapStateToProps = (state) => ({

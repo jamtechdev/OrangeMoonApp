@@ -2,7 +2,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Pressable } from 'react-native';
-import { Portal, Dialog, Button, Text, DataTable, SegmentedButtons, Searchbar, } from 'react-native-paper';
+import { Portal, Dialog, Button, Text, DataTable, SegmentedButtons, } from 'react-native-paper';
 import { connect } from 'react-redux';
 import { AppStyles } from '../utils/AppStyles';
 import { monitorService } from '../utils/_services';
@@ -11,6 +11,7 @@ import { formatDate, sortingHelper, formatDateNew } from '../utils/_helpers';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LoadingContainer from '../components/LoadingContainer';
 import globalStyles from '../utils/_css/globalStyle';
+import SearchBox from '../components/SearchBox';
 function BookingRequest({ navigation, user, token, route }) {
   const [bookingData, setBookingData] = useState([]);
   const [bookingDataBkp, setBookingDataBkp] = useState([]);
@@ -44,7 +45,7 @@ function BookingRequest({ navigation, user, token, route }) {
   const SegmentedButtonsValue = [
     { value: 'All', label: 'All' },
     { value: 'PENDING', label: 'Pending' },
-    { value: 'Accept', label: 'Accepted' },
+    { value: 'ACCEPTED', label: 'Accepted' },
     { value: 'COMPLETED', label: 'Completed' },
     { value: 'REJECTED', label: 'Rejected' },
     { value: 'CANCEL', label: 'Cancelled' },
@@ -56,7 +57,6 @@ function BookingRequest({ navigation, user, token, route }) {
 
   const monitorDataCall = () => {
     monitorService.bookingRequest(token, segmentedValue).then(res => {
-      console.log(res, "here my console res");
       setBookingData(res?.data?.data)
       setBookingDataBkp(res?.data?.data)
       setIsLoading(false)
@@ -133,11 +133,9 @@ function BookingRequest({ navigation, user, token, route }) {
             buttons={SegmentedButtonsValue}
           />
         </ScrollView>
-        <Searchbar
-          style={styles.Searchbar}
-          placeholder="Search"
-          onChangeText={handleSearch}
-          value={searchQuery}
+        <SearchBox
+          handleSearch={handleSearch}
+          searchQuery={searchQuery}
         />
         <ScrollView horizontal >
           <DataTable style={styles.DataTable}>
@@ -294,9 +292,6 @@ const styles = StyleSheet.create({
   hederGap: {
     width: 20,
   },
-  Searchbar: {
-    marginTop: 20,
-  }
 
 });
 

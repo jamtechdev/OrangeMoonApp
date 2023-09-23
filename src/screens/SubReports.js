@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Pressable } from 'react-native';
-import { Portal, Dialog, Button, Text, DataTable, Divider, Searchbar, } from 'react-native-paper';
+import { Portal, Dialog, Button, Text, DataTable, Divider, } from 'react-native-paper';
 import { connect } from 'react-redux';
 import { AppStyles } from '../utils/AppStyles';
 import { monitorService } from '../utils/_services';
@@ -10,6 +10,7 @@ import { formatDate, formatTime } from '../utils/_helpers';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LoadingContainer from '../components/LoadingContainer';
 import globalStyles from '../utils/_css/globalStyle';
+import SearchBox from '../components/SearchBox';
 
 function SubReports({ navigation, user, token, route, value }) {
     const [subReport, setSubReportData] = useState([]);
@@ -103,11 +104,9 @@ function SubReports({ navigation, user, token, route, value }) {
             <Text style={globalStyles.subtitle}> Sub-Reports</Text>
             <Divider style={globalStyles.divider} />
             <View style={styles.container}>
-                <Searchbar
-                    placeholder="Search"
-                    style={styles.Searchbar}
-                    onChangeText={handleSearch}
-                    value={searchQuery}
+                <SearchBox
+                    handleSearch={handleSearch}
+                    searchQuery={searchQuery}
                 />
                 <ScrollView horizontal >
                     <DataTable style={globalStyles.DataTable}>
@@ -198,9 +197,6 @@ const styles = StyleSheet.create({
     hederGap: {
         width: 20,
     },
-    Searchbar: {
-        marginTop: 10,
-    }
 
 });
 

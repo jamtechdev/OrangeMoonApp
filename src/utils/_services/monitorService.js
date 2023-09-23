@@ -19,6 +19,9 @@ export const monitorService = {
     BookingReportActionCheck,
     getAllDetailsReport,
     getAllSchedulingEvent,
+    getSchedulingAssignableBooking,
+    setMonitorAvailablity,
+    setSelfBooking,
 };
 
 async function dashboard(token) {
@@ -134,6 +137,34 @@ async function getAllDetailsReport(token, data) {
 async function getAllSchedulingEvent(token) {
     return await axios.get(
         `${API_URL}/monitor-scheduling`,
+        {
+            headers: { 'Authorization': 'Bearer ' + token },
+        }
+    );
+}
+
+async function getSchedulingAssignableBooking(token) {
+    return await axios.get(
+        `${API_URL}/monitor/assignable-bookings`,
+        {
+            headers: { 'Authorization': 'Bearer ' + token },
+        }
+    );
+}
+async function setMonitorAvailablity(token, data) {
+    return await axios.post(
+        `${API_URL}/set-monitor-availability`,
+        data,
+        {
+            headers: { 'Authorization': 'Bearer ' + token },
+        }
+    );
+}
+
+async function setSelfBooking(token, data) {
+    return await axios.post(
+        `${API_URL}/self-booking/assign-to-monitor`,
+        data,
         {
             headers: { 'Authorization': 'Bearer ' + token },
         }

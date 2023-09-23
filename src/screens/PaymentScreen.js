@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Linking } from 'react-native';
-import { Divider, Button, Text, DataTable, Searchbar,Portal } from 'react-native-paper';
+import { Divider, Button, Text, DataTable,Portal } from 'react-native-paper';
 import { connect } from 'react-redux';
 import globalStyles from '../utils/_css/globalStyle';
 import { AppStyles } from '../utils/AppStyles';
@@ -10,6 +10,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { formatDate, formatTime, createdDate } from '../utils/_helpers';
 import { stripeService } from '../utils/_services/stripeService';
 import LoadingContainer from '../components/LoadingContainer';
+import SearchBox from '../components/SearchBox';
 function PaymentScreen({ navigation, user, token }) {
   const [stripeData, setStripeData] = useState([])
   const [stripeTableData, setStripeTableData] = useState([])
@@ -194,11 +195,9 @@ function PaymentScreen({ navigation, user, token }) {
             )}
             <Divider style={globalStyles.divider} />
             <View style={globalStyles.DataTable}>
-              <Searchbar
-                placeholder="Search"
-                style={styles.Searchbar}
-                onChangeText={handleSearch}
-                value={searchQuery}
+              <SearchBox
+                handleSearch={handleSearch}
+                searchQuery={searchQuery}
               />
               <ScrollView horizontal >
                 <DataTable style={globalStyles.DataTable}>

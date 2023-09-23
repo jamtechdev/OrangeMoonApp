@@ -9,7 +9,6 @@ export const formatDate = (dateString) => {
     if (isNaN(date) ) {
         return '-';
     }
-    console.log( dateString)
     return date.toLocaleDateString([], options);
 };
 

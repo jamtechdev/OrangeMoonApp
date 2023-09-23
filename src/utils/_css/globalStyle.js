@@ -136,7 +136,13 @@ const globalStyles = StyleSheet.create({
     alignCenter: {
         alignItems: 'center',
         justifyContent: 'center'
-    }
+    },
+    buttonRow: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between' 
+
+    },
 });
 
 export default globalStyles;
