@@ -387,8 +387,8 @@ function Scheduling({ navigation, user, token, route }) {
               </DataTable.Title>
             </DataTable.Header>
               {isLoading && (<LoadingContainer />)}
-              {assignableData?.slice(from, to).map((item) => (
-                <DataTable.Row key={item.id} >
+              {assignableData?.slice(from, to).map((item, index) => (
+                <DataTable.Row key={index} >
                   <DataTable.Cell  style={globalStyles.tableCellId}>{item.booking_id} </DataTable.Cell>
                   <DataTable.Cell  style={globalStyles.tableCellGroup} >{item?.group_name}</DataTable.Cell>
                   <DataTable.Cell  style={styles.tableAddress} >{item?.location}</DataTable.Cell>
@@ -530,7 +530,7 @@ function Scheduling({ navigation, user, token, route }) {
                                     )}
                                     { modelType == 'BOOKED' && (
                                       <>{
-                                        !isWithin48Hours(bookingDetails?.booking?.start_date,bookingDetails?.booking?.start_time) ?
+                                        !isWithin48Hours(bookingDetails?.booking?.end_date,bookingDetails?.booking?.end_time) ?
                                         <Button onPress={()=>{ showConfirmFunction(3)}}> Cancel</Button>
                                         :  <Button> Late Cancel </Button>
                                       }

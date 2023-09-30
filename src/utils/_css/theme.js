@@ -3,7 +3,7 @@ import { MD3LightTheme } from 'react-native-paper';
 
 const theme = {
     ...MD3LightTheme,
-    // ...MD3LightTheme.colors,
+    ...MD3LightTheme.colors,
     // Specify a custom property in nested object
     "colors": {
       ...MD3LightTheme.colors,
