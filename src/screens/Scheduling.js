@@ -72,13 +72,14 @@ function Scheduling({ navigation, user, token, route }) {
     monitorService.getSchedulingAssignableBooking(token).then(res => {
       setAssignableData(res?.data?.assingnable_bookings)
       setAssignableDataBkp(res?.data?.assingnable_bookings)
-      setIsLoading(false);
+      // setIsLoading(false);
     }).catch(error => {
       console.log(error);
       setIsLoading(false);
     });
   }
  const getdayList = ()=> {
+  setIsLoading(true);
     monitorService.getAllSchedulingEvent(token).then(res => {
 
       for (const item of res.data.monitor_availability) {
