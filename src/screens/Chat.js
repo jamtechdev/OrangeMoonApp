@@ -1,51 +1,80 @@
 /* eslint-disable prettier/prettier */
 import React, { useLayoutEffect, useState, useCallback, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity,  } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, } from 'react-native';
 import { connect, useSelector } from 'react-redux';
 import { AppIcon, AppStyles } from '../utils/AppStyles';
 import { Configuration } from '../utils/Configuration';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { chatService } from '../utils/_services';
-
+import io from 'socket.io-client';
+import { v4 as uuidv4 } from 'uuid';
 function ChatScreen({ navigation, user, token }) {
     const [messages, setMessages] = useState([])
-    const [page , setPage] = useState(1)
+    const [page, setPage] = useState(1)
+    const socket = io('https://dev.orangemoonsss.com');
     // useLayoutEffect(() => {
     //     navigation.setOptions({
     //         title: 'Chat',
     //     });
     // }, [navigation]);
 
-    useEffect(()=>{
+    useEffect(() => {
 
-        chatService.getConversation(token, user.id, 1,page).then(res=>{
-          console.log(res,"here my console res");
-          let response = res?.data?.data
-          if(response){
-            const transformedData = response.map(item => {
-                return {
-                    _id: item.id,             // Use receiver_id as _id
-                    text: item.message,              // Use message as text
-                    createdAt: new Date(item.date_time), // Convert date_time to a Date object
-                    user: {
-                        _id: item.sender_id,         // Use receiver_id as _id for the user
-                        name: item.sender_name,      // Use sender_name as name
-                        avatar: 'https://staging.orangemoonsss.com/images/'+item.sender_img,     // Use sender_img as avatar
-                    },
-                };
-            });
-            setMessages(transformedData)
-          }
+        chatService.getConversation(token, user.id, 1, page).then(res => {
+            console.log(res, "here my console res");
+            let response = res?.data?.data
+            if (response) {
+                const transformedData = response.map(item => {
+                    return {
+                        _id: item.id,             // Use receiver_id as _id
+                        text: item.message,              // Use message as text
+                        createdAt: new Date(item.date_time), // Convert date_time to a Date object
+                        user: {
+                            _id: item.sender_id,         // Use receiver_id as _id for the user
+                            name: item.sender_name,      // Use sender_name as name
+                            avatar: 'https://staging.orangemoonsss.com/images/' + item.sender_img,     // Use sender_img as avatar
+                        },
+                    };
+                });
+                setMessages(transformedData)
+            }
 
-        }).catch(error=>console.log(error))
-        chatService.updateUnreadMassage(token).then(res=>{
-            console.log(res,"here my console res");
-          }).catch(error=>console.log(error))
-          chatService.updateUnreadMassage(token).then(res=>{
-            console.log(res,"here my console res");
-          }).catch(error=>console.log(error))
+        }).catch(error => console.log(error))
+        chatService.updateUnreadMassage(token).then(res => {
+            console.log(res, "here my console res");
+        }).catch(error => console.log(error))
 
-      },[])
+
+    }, [])
+    useEffect(() => {
+        // Listen for incoming messages
+        socket.on('new-message', (message) => {
+            console.log(message, "new message")
+            if (message.sender_id != user.id) {
+                let newMessages = [
+                    {
+                        "text": message.msg,
+                        "user": {
+                            "_id": message.sender_id,
+                            "name": message.sender_name,
+                            "avatar": "https://staging.orangemoonsss.com/images/" + message.sender_image
+                        },
+                        "createdAt": new Date().toISOString(),
+                        "_id": uuidv4(),
+                    }
+                ];
+                setMessages((previousMessages) =>
+                    GiftedChat.append(previousMessages, newMessages)
+                );
+            }
+
+        });
+
+        // Clean up the socket connection on unmount
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
 
     const handleSend = (newMessages) => {
         console.log(newMessages)
@@ -59,12 +88,23 @@ function ChatScreen({ navigation, user, token }) {
             receiver_img: 'site-logo.png',
             status: 'unread'
         }
-        chatService.postConversation(token, sendData).then(res=>{
-            console.log(res,"here my console res");
+        const newMessagesData = {
+            msg: newMessages[0]?.text,
+            sender_id: user.id,
+            receiver_id: 1,
+            sender_name: newMessages[0]?.user?.name,
+            receiver_name: 'Orangemoon',
+            sender_img: '1672486286.jpg',
+            receiver_img: 'site-logo.png',
+            status: 'unread'
+        }
+        socket.emit('new-message', newMessagesData);
+        chatService.postConversation(token, sendData).then(res => {
+            console.log(res, "here my console res");
             setMessages((previousMessages) =>
-          GiftedChat.append(previousMessages, newMessages)
-           );
-          }).catch(error=>console.log(error))
+                GiftedChat.append(previousMessages, newMessages)
+            );
+        }).catch(error => console.log(error))
     };
 
 
@@ -76,8 +116,8 @@ function ChatScreen({ navigation, user, token }) {
                 onSend={handleSend}
                 user={{
                     _id: user?.id,
-                    name: user?.first_name +' ' + user?.last_name,
-                    avatar:'https://staging.orangemoonsss.com/images/'+ '1672486286.jpg',
+                    name: user?.first_name + ' ' + user?.last_name,
+                    avatar: 'https://staging.orangemoonsss.com/images/' + '1672486286.jpg',
                 }}
                 renderUsernameOnMessage={true}
                 showUserAvatar={true}
@@ -101,8 +141,8 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
-  user: state.auth.user,
-  token : state.auth.token
+    user: state.auth.user,
+    token: state.auth.token
 });
 
 export default connect(mapStateToProps)(ChatScreen);

@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable prettier/prettier */
-import React, {useMemo, useState, useEffect} from 'react';
-import {View, ScrollView, StyleSheet, Text, Pressable} from 'react-native';
+import React, { useMemo, useState, useEffect } from 'react';
+import { View, ScrollView, StyleSheet, Text, Pressable } from 'react-native';
 import {
   List,
   Card,
@@ -15,21 +15,21 @@ import {
   Modal,
   Dialog,
 } from 'react-native-paper';
-import {connect} from 'react-redux';
-import {monitorService} from '../utils/_services';
-import {AppStyles} from '../utils/AppStyles';
+import { connect } from 'react-redux';
+import { monitorService } from '../utils/_services';
+import { AppStyles } from '../utils/AppStyles';
 import globalStyles from '../utils/_css/globalStyle';
 import LoadingContainer from '../components/LoadingContainer';
-import {formatDate, formatTime} from '../utils/_helpers';
-import {Calendar} from 'react-native-big-calendar';
+import { formatDate, formatTime } from '../utils/_helpers';
+import { Calendar } from 'react-native-big-calendar';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {useForm, Controller} from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import FormDateInput from '../components/FormDateInput';
 import SearchBox from '../components/SearchBox';
 import SchedulingModel from '../components/model/SchedulingModel';
 import SchedulingDateDialog from '../components/dialog/SchedulingDateDialog';
-function Scheduling({navigation, user, token, route}) {
+function Scheduling({ navigation, user, token, route }) {
   const [eventData, setEventData] = useState([]);
   const [assignableData, setAssignableData] = useState([]);
   const [assignableDataBkp, setAssignableDataBkp] = useState([]);
@@ -102,6 +102,8 @@ function Scheduling({navigation, user, token, route}) {
         }
         setEventData(res.data?.monitor_availability);
         setIsLoading(false);
+        setIsButtonLoading(false)
+        hideDialog();
       })
       .catch(error => {
         console.log(error);
@@ -189,16 +191,16 @@ function Scheduling({navigation, user, token, route}) {
     };
   };
 
-  const CustomEvent = ({event, touchableOpacityProps}) => (
+  const CustomEvent = ({ event, touchableOpacityProps }) => (
     <Pressable
       {...touchableOpacityProps}
       onPress={() => onEventPress(event)}
-      style={[styles.customEventContainer, {backgroundColor: event.color}]}
+      style={[styles.customEventContainer, { backgroundColor: event.color }]}
       key={event?.id}>
       {event.color !== 'yellow' ? (
         <Text style={styles.eventText}>{event.title}</Text>
       ) : (
-        <Text style={[styles.eventText, {color: AppStyles.color.black}]}>
+        <Text style={[styles.eventText, { color: AppStyles.color.black }]}>
           {event.title}
         </Text>
       )}
@@ -248,13 +250,6 @@ function Scheduling({navigation, user, token, route}) {
       setVisibleToast(true);
     }
   };
-  const changeFormat = startData => {
-    let parts = startData.split('-');
-    let day = parts[0];
-    let month = parts[1];
-    let year = parts[2];
-    return year + '-' + month + '-' + day;
-  };
 
   const isWithin48Hours = targetDate => {
     const targetDateTime = new Date(targetDate);
@@ -264,8 +259,8 @@ function Scheduling({navigation, user, token, route}) {
     return timeDifference <= hoursIn48Hours;
   };
 
-  const updateAvailability = (start,end,status) => {
-console.log(start, end);
+  const updateAvailability = (start, end, status) => {
+    console.log(start, end);
     let data = {
       start_date: start,
       end_date: end,
@@ -281,11 +276,11 @@ console.log(start, end);
           console.log(res)
           if (res.data.status) {
             getdayList();
-            setTimeout(() => {
-              hideDialog();
-            }, 1000);
+            // setTimeout(() => {
+            //   hideDialog();
+            // }, 1000);
           }
-          setIsButtonLoading(false);
+          // setIsButtonLoading(false);
         })
         .catch(error => {
           setIsButtonLoading(false);
@@ -347,7 +342,7 @@ console.log(start, end);
     <>
       <ScrollView
         style={styles.container}
-        scrollIndicatorInsets={{top: 0, left: 0, bottom: 0, right: 0}}>
+        scrollIndicatorInsets={{ top: 0, left: 0, bottom: 0, right: 0 }}>
         <View style={styles.container}>
           <Text style={globalStyles.subtitle}> Manage Schedule </Text>
           <Divider style={globalStyles.divider} />
@@ -515,6 +510,7 @@ console.log(start, end);
         endDate={endDate}
         setStartDate={setStartDate}
         setEndDate={setEndDate}
+        setIsButtonLoading={setIsButtonLoading}
       />
       <SchedulingModel
         visibleModel={visibleModel}

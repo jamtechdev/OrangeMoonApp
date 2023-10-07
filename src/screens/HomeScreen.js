@@ -10,7 +10,7 @@ import { formatDate, formatTime, sortingHelper } from '../utils/_helpers';
 import globalStyles from '../utils/_css/globalStyle';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LoadingContainer from '../components/LoadingContainer';
-import Geolocation from '@react-native-community/geolocation';
+// import Geolocation from '@react-native-community/geolocation';
 import SearchBox from '../components/SearchBox';
 
 function HomeScreen({ navigation, user, token }) {
@@ -215,215 +215,215 @@ function HomeScreen({ navigation, user, token }) {
     return currentDate
   }
 
-  const getGeoLocation = ()=>{
-    Geolocation.requestAuthorization();
-    Geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setLocation(position.coords);
-        console.log(latitude, longitude);
-      },
-      (error) => {
-        console.error(error.message);
-      },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-    );
-  }
+  // const getGeoLocation = () => {
+  //   Geolocation.requestAuthorization();
+  //   Geolocation.getCurrentPosition(
+  //     (position) => {
+  //       const { latitude, longitude } = position.coords;
+  //       setLocation(position.coords);
+  //       console.log(latitude, longitude);
+  //     },
+  //     (error) => {
+  //       console.error(error.message);
+  //     },
+  //     { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+  //   );
+  // }
 
   return (
     <>
-    <ScrollView style={styles.container}>
-      <Text style={globalStyles.subtitle} onPress={()=> getGeoLocation()}>Today's Booking</Text>
-      <Divider style={globalStyles.divider} />
-      <View style={styles.container}>
-        <SearchBox
-          handleSearch={handleSearch}
-          searchQuery={searchQuery}
-        />
-        <ScrollView horizontal >
-          <DataTable style={globalStyles.DataTable}>
-            <DataTable.Header style={globalStyles.header}>
-              <DataTable.Title
-                sortDirection={sortDirections.group_name}
-                onPress={() => handleSort('group_name')}
-                style={globalStyles.tableCellGroup}
-              >
-                Group Name
-              </DataTable.Title>
-              <DataTable.Title
-                sortDirection={sortDirections.date}
-                onPress={() => handleSort('date')}
-                style={globalStyles.tableCell} // Adjust width as needed
-              >
-                Date
-              </DataTable.Title>
-              <DataTable.Title
-                sortDirection={sortDirections.start_time}
-                onPress={() => handleSort('start_time')}
-                style={globalStyles.tableCell} // Adjust width as needed
-              >
-                Start Time
-              </DataTable.Title>
-              <DataTable.Title
-                sortDirection={sortDirections.end_time}
-                onPress={() => handleSort('end_time')}
-                style={globalStyles.tableCell} // Adjust width as needed
-              >
-                End Time
-              </DataTable.Title>
-              <DataTable.Title
-                sortDirection={sortDirections.status}
-                onPress={() => handleSort('status')}
-                style={globalStyles.tableCell}
-              >
-                Status
-              </DataTable.Title>
-              <DataTable.Title
-                style={globalStyles.tableCellAction}
-              >
-                Action
-              </DataTable.Title>
-            </DataTable.Header>
-            {dashboardData.slice(from, to).map((item) => {
-              if (item.booking_day?.end_time) {
-                return (
+      <ScrollView style={styles.container}>
+        {/* <Text style={globalStyles.subtitle} onPress={() => getGeoLocation()}>Today's Booking</Text> */}
+        <Divider style={globalStyles.divider} />
+        <View style={styles.container}>
+          <SearchBox
+            handleSearch={handleSearch}
+            searchQuery={searchQuery}
+          />
+          <ScrollView horizontal >
+            <DataTable style={globalStyles.DataTable}>
+              <DataTable.Header style={globalStyles.header}>
+                <DataTable.Title
+                  sortDirection={sortDirections.group_name}
+                  onPress={() => handleSort('group_name')}
+                  style={globalStyles.tableCellGroup}
+                >
+                  Group Name
+                </DataTable.Title>
+                <DataTable.Title
+                  sortDirection={sortDirections.date}
+                  onPress={() => handleSort('date')}
+                  style={globalStyles.tableCell} // Adjust width as needed
+                >
+                  Date
+                </DataTable.Title>
+                <DataTable.Title
+                  sortDirection={sortDirections.start_time}
+                  onPress={() => handleSort('start_time')}
+                  style={globalStyles.tableCell} // Adjust width as needed
+                >
+                  Start Time
+                </DataTable.Title>
+                <DataTable.Title
+                  sortDirection={sortDirections.end_time}
+                  onPress={() => handleSort('end_time')}
+                  style={globalStyles.tableCell} // Adjust width as needed
+                >
+                  End Time
+                </DataTable.Title>
+                <DataTable.Title
+                  sortDirection={sortDirections.status}
+                  onPress={() => handleSort('status')}
+                  style={globalStyles.tableCell}
+                >
+                  Status
+                </DataTable.Title>
+                <DataTable.Title
+                  style={globalStyles.tableCellAction}
+                >
+                  Action
+                </DataTable.Title>
+              </DataTable.Header>
+              {dashboardData.slice(from, to).map((item) => {
+                if (item.booking_day?.end_time) {
+                  return (
 
-                  <DataTable.Row key={item.id}>
-                    <DataTable.Cell style={globalStyles.tableCellGroup}>
-                      {item?.booking_day?.booking?.group_name}
-                    </DataTable.Cell>
-                    <DataTable.Cell style={globalStyles.tableCell}>
-                      {formatDate(item?.booking_day?.date)}
-                    </DataTable.Cell>
-                    <DataTable.Cell style={globalStyles.tableCell}>
-                      {formatTime(item?.booking_day?.start_time)}
-                    </DataTable.Cell>
-                    <DataTable.Cell style={globalStyles.tableCell}>
-                      {formatTime(item?.booking_day?.end_time)}
-                    </DataTable.Cell>
-                    <DataTable.Cell style={globalStyles.tableCell}>
-                      {item?.monitor_booking_day_report == null
-                        ? "NOT STARTED"
-                        : "IN PROGRESS"}
-                    </DataTable.Cell>
-                    <DataTable.Cell style={globalStyles.tableCellAction}>
-                      {!item?.monitor_booking_day_report && item?.booking_day?.date <= checkActive(item) && (
-                        <Icon name='hospital-o' onPress={() => openActionDialog(item)} size={20} color={AppStyles.color.tint} />
-                      )}
-                      {item?.monitor_booking_day_report && (
-                        <Icon name='eye' onPress={() => console.log("create a page for show the data ")} size={20} color={AppStyles.color.tint} />
-                      )}
-                      {item?.monitor_booking_day_report && item?.precheckCount === 0 && (
-                        <Icon name='play' onPress={() => openActionDialog(item)} size={20} color={AppStyles.color.tint} />
-                      )}
-                      {item?.monitor_booking_day_report && item?.precheckCount > 0 && (
-                        <Icon name='plus' onPress={() => openActionDialog(item)} size={20} color={AppStyles.color.tint} />
-                      )}
-                      {item?.monitor_booking_day_report && item?.precheckCount > 0 && item.monitor_booking_day_report?.end_time == null && (
-                        <Icon name='stop' onPress={() => openActionDialog(item)} size={20} color={AppStyles.color.tint} />
-                      )}
-                    </DataTable.Cell>
-                  </DataTable.Row>
-                )
+                    <DataTable.Row key={item.id}>
+                      <DataTable.Cell style={globalStyles.tableCellGroup}>
+                        {item?.booking_day?.booking?.group_name}
+                      </DataTable.Cell>
+                      <DataTable.Cell style={globalStyles.tableCell}>
+                        {formatDate(item?.booking_day?.date)}
+                      </DataTable.Cell>
+                      <DataTable.Cell style={globalStyles.tableCell}>
+                        {formatTime(item?.booking_day?.start_time)}
+                      </DataTable.Cell>
+                      <DataTable.Cell style={globalStyles.tableCell}>
+                        {formatTime(item?.booking_day?.end_time)}
+                      </DataTable.Cell>
+                      <DataTable.Cell style={globalStyles.tableCell}>
+                        {item?.monitor_booking_day_report == null
+                          ? "NOT STARTED"
+                          : "IN PROGRESS"}
+                      </DataTable.Cell>
+                      <DataTable.Cell style={globalStyles.tableCellAction}>
+                        {!item?.monitor_booking_day_report && item?.booking_day?.date <= checkActive(item) && (
+                          <Icon name='hospital-o' onPress={() => openActionDialog(item)} size={20} color={AppStyles.color.tint} />
+                        )}
+                        {item?.monitor_booking_day_report && (
+                          <Icon name='eye' onPress={() => console.log("create a page for show the data ")} size={20} color={AppStyles.color.tint} />
+                        )}
+                        {item?.monitor_booking_day_report && item?.precheckCount === 0 && (
+                          <Icon name='play' onPress={() => openActionDialog(item)} size={20} color={AppStyles.color.tint} />
+                        )}
+                        {item?.monitor_booking_day_report && item?.precheckCount > 0 && (
+                          <Icon name='plus' onPress={() => openActionDialog(item)} size={20} color={AppStyles.color.tint} />
+                        )}
+                        {item?.monitor_booking_day_report && item?.precheckCount > 0 && item.monitor_booking_day_report?.end_time == null && (
+                          <Icon name='stop' onPress={() => openActionDialog(item)} size={20} color={AppStyles.color.tint} />
+                        )}
+                      </DataTable.Cell>
+                    </DataTable.Row>
+                  )
+                }
+                return null;
               }
-              return null;
-            }
-            )}
-            {!dashboardData?.length && !isLoading && (<Text style={globalStyles.emptyData}> Data not found</Text>)}
-            <DataTable.Pagination
-              page={page}
-              numberOfPages={Math.ceil(dashboardData.length / itemsPerPage)}
-              onPageChange={(page) => setPage(page)}
-              label={`${from + 1}-${to} of ${dashboardData.length}`}
-              numberOfItemsPerPageList={numberOfItemsPerPageList}
-              numberOfItemsPerPage={itemsPerPage}
-              onItemsPerPageChange={onItemsPerPageChange}
-              showFastPaginationControls
-              selectPageDropdownLabel={'Rows per page'}
-            />
-          </DataTable>
-        </ScrollView>
+              )}
+              {!dashboardData?.length && !isLoading && (<Text style={globalStyles.emptyData}> Data not found</Text>)}
+              <DataTable.Pagination
+                page={page}
+                numberOfPages={Math.ceil(dashboardData.length / itemsPerPage)}
+                onPageChange={(page) => setPage(page)}
+                label={`${from + 1}-${to} of ${dashboardData.length}`}
+                numberOfItemsPerPageList={numberOfItemsPerPageList}
+                numberOfItemsPerPage={itemsPerPage}
+                onItemsPerPageChange={onItemsPerPageChange}
+                showFastPaginationControls
+                selectPageDropdownLabel={'Rows per page'}
+              />
+            </DataTable>
+          </ScrollView>
+          <Portal>
+            <Dialog visible={isDialogVisible} onDismiss={closeActionDialog}>
+              <Dialog.Title>Wellness Check{ }</Dialog.Title>
+              <Dialog.Content>
+                {askQuestion.question1 === true && (
+                  <View>
+                    <Text>Within the last 10 days have you been diagnosed with COVID-19 or had a test confirming you have the virus?</Text>
+                    <RadioButton.Group onValueChange={handleRadioSelect} value={selectedRadio}>
+                      <RadioButton.Item label="yes" value="yes" />
+                      <RadioButton.Item label="No" value="No" />
+                    </RadioButton.Group>
+                    <HelperText type="error" visible={selectedRadio == 'yes' ? true : false}>
+                      Please contact the Night Auditor on duty
+                    </HelperText>
+                  </View>
+                )}
+                {askQuestion.question2 === true && (
+                  <View>
+                    <Text>Do you live in the same household with, or have you had close contact with someone who in the past 14 days has been in isolation for COVID-19 or had a test confirming they have the virus?</Text>
+                    <RadioButton.Group onValueChange={handleRadioSelect} value={selectedRadio}>
+                      <RadioButton.Item label="yes" value="yes" />
+                      <RadioButton.Item label="No" value="No" />
+                    </RadioButton.Group>
+                    <HelperText type="error" visible={selectedRadio == 'yes' ? true : false}>
+                      Please contact the Night Auditor on duty
+                    </HelperText>
+                  </View>
+                )}
+                {askQuestion.question3 === true && (
+                  <View>
+                    <Text>Have you experienced any of these symptoms today or within the past 24 hours, which is new or not explained by another reason?</Text>
+                    <Text>Fever, chills, or repeated shaking/shivering</Text>
+                    <Text> Cough</Text>
+                    <Text> Shortness of breath or difficulty breathing</Text>
+                    <Text> Feeling unusually weak or fatigue</Text>
+                    <Text> Muscle or body aches</Text>
+                    <Text> Headache</Text>
+                    <Text> Loss of taste or smell</Text>
+                    <Text> Sore throat</Text>
+                    <Text> Congestion or runny nose</Text>
+                    <Text> Nausea or vomiting</Text>
+                    <Text> Diarrhea</Text>
+                    <RadioButton.Group onValueChange={handleRadioSelect} value={selectedRadio}>
+                      <RadioButton.Item label="yes" value="yes" />
+                      <RadioButton.Item label="No" value="No" />
+                    </RadioButton.Group>
+                    <HelperText type="error" visible={selectedRadio == 'No' ? true : false}>
+                      Symptoms & Exposure: Passed, Click Submit button to continue
+                    </HelperText>
+                  </View>
+                )}
+                {askQuestion.question4 === true && (
+                  <View>
+                    <Text>Are all of the symptoms you're experiencing related to a known chronic condition?</Text>
+                    <RadioButton.Group onValueChange={handleRadioSelect} value={selectedRadio}>
+                      <RadioButton.Item label="yes" value="yes" />
+                      <RadioButton.Item label="No" value="No" />
+                    </RadioButton.Group>
+                    <HelperText type="error" visible={selectedRadio == 'yes' ? true : false}>
+                      Please contact the Night Auditor on duty
+                    </HelperText>
+                    <HelperText type="error" visible={selectedRadio == 'No' ? true : false}>
+                      Symptoms & Exposure: Passed, Click Submit button to continue
+                    </HelperText>
+                  </View>
+                )}
+              </Dialog.Content>
+              <Dialog.Actions>
+                {selectedRadio && (
+                  <Button mode="contained" onPress={() => actionCheckSubmit()}>Submit</Button>
+                )}
+                <Button mode="contained" onPress={() => closeActionDialog()} >Cancel</Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
+        </View>
+      </ScrollView>
+      {isLoading &&
         <Portal>
-          <Dialog visible={isDialogVisible} onDismiss={closeActionDialog}>
-            <Dialog.Title>Wellness Check{ }</Dialog.Title>
-            <Dialog.Content>
-              {askQuestion.question1 === true && (
-                <View>
-                  <Text>Within the last 10 days have you been diagnosed with COVID-19 or had a test confirming you have the virus?</Text>
-                  <RadioButton.Group onValueChange={handleRadioSelect} value={selectedRadio}>
-                    <RadioButton.Item label="yes" value="yes" />
-                    <RadioButton.Item label="No" value="No" />
-                  </RadioButton.Group>
-                  <HelperText type="error" visible={selectedRadio == 'yes' ? true : false}>
-                    Please contact the Night Auditor on duty
-                  </HelperText>
-                </View>
-              )}
-              {askQuestion.question2 === true && (
-                <View>
-                  <Text>Do you live in the same household with, or have you had close contact with someone who in the past 14 days has been in isolation for COVID-19 or had a test confirming they have the virus?</Text>
-                  <RadioButton.Group onValueChange={handleRadioSelect} value={selectedRadio}>
-                    <RadioButton.Item label="yes" value="yes" />
-                    <RadioButton.Item label="No" value="No" />
-                  </RadioButton.Group>
-                  <HelperText type="error" visible={selectedRadio == 'yes' ? true : false}>
-                    Please contact the Night Auditor on duty
-                  </HelperText>
-                </View>
-              )}
-              {askQuestion.question3 === true && (
-                <View>
-                  <Text>Have you experienced any of these symptoms today or within the past 24 hours, which is new or not explained by another reason?</Text>
-                  <Text>Fever, chills, or repeated shaking/shivering</Text>
-                  <Text> Cough</Text>
-                  <Text> Shortness of breath or difficulty breathing</Text>
-                  <Text> Feeling unusually weak or fatigue</Text>
-                  <Text> Muscle or body aches</Text>
-                  <Text> Headache</Text>
-                  <Text> Loss of taste or smell</Text>
-                  <Text> Sore throat</Text>
-                  <Text> Congestion or runny nose</Text>
-                  <Text> Nausea or vomiting</Text>
-                  <Text> Diarrhea</Text>
-                  <RadioButton.Group onValueChange={handleRadioSelect} value={selectedRadio}>
-                    <RadioButton.Item label="yes" value="yes" />
-                    <RadioButton.Item label="No" value="No" />
-                  </RadioButton.Group>
-                  <HelperText type="error" visible={selectedRadio == 'No' ? true : false}>
-                    Symptoms & Exposure: Passed, Click Submit button to continue
-                  </HelperText>
-                </View>
-              )}
-              {askQuestion.question4 === true && (
-                <View>
-                  <Text>Are all of the symptoms you're experiencing related to a known chronic condition?</Text>
-                  <RadioButton.Group onValueChange={handleRadioSelect} value={selectedRadio}>
-                    <RadioButton.Item label="yes" value="yes" />
-                    <RadioButton.Item label="No" value="No" />
-                  </RadioButton.Group>
-                  <HelperText type="error" visible={selectedRadio == 'yes' ? true : false}>
-                    Please contact the Night Auditor on duty
-                  </HelperText>
-                  <HelperText type="error" visible={selectedRadio == 'No' ? true : false}>
-                    Symptoms & Exposure: Passed, Click Submit button to continue
-                  </HelperText>
-                </View>
-              )}
-            </Dialog.Content>
-            <Dialog.Actions>
-              {selectedRadio && (
-                <Button mode="contained" onPress={() => actionCheckSubmit()}>Submit</Button>
-              )}
-              <Button mode="contained" onPress={() => closeActionDialog()} >Cancel</Button>
-            </Dialog.Actions>
-          </Dialog>
+          <LoadingContainer />
         </Portal>
-      </View>
-    </ScrollView>
-    {isLoading && 
-      <Portal>
-        <LoadingContainer />
-      </Portal>
       }
     </>
   );
