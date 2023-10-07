@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
@@ -183,20 +182,20 @@ function BookingRequest({navigation, user, token, route}) {
               setUpdateId={setUpdateId}
             />
             )}
-            ListFooterComponent={() => (
+            // onEndReached={()=>setPage(page + 1)}
+            // onEndReachedThreshold={0.1}
+          />
           <DataTable.Pagination
-            page={page}
-            numberOfPages={Math.ceil(bookingData.length / itemsPerPage)}
-            onPageChange={(newPage) => setPage(newPage)}
-            label={`${from + 1}-${to} of ${bookingData.length}`}
-            numberOfItemsPerPageList={numberOfItemsPerPageList}
-            numberOfItemsPerPage={itemsPerPage}
-            onItemsPerPageChange={onItemsPerPageChange}
-            showFastPaginationControls
-            selectPageDropdownLabel={'Rows per page'}
-          />
-        )}
-          />
+                page={page}
+                numberOfPages={Math.ceil(bookingData.length / itemsPerPage)}
+                onPageChange={page => setPage(page)}
+                label={`${from + 1}-${to} of ${bookingData.length}`}
+                numberOfItemsPerPageList={numberOfItemsPerPageList}
+                numberOfItemsPerPage={itemsPerPage}
+                onItemsPerPageChange={onItemsPerPageChange}
+                showFastPaginationControls
+                selectPageDropdownLabel={'Rows per page'}
+              />
         </View>
         <Portal>
           <Dialog
