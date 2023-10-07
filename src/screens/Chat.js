@@ -9,6 +9,7 @@ import { chatService } from '../utils/_services';
 import io from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
 function ChatScreen({ navigation, user, token }) {
+    console.log(user)
     const [messages, setMessages] = useState([])
     const [page, setPage] = useState(1)
     const socket = io('https://dev.orangemoonsss.com');
@@ -49,7 +50,7 @@ function ChatScreen({ navigation, user, token }) {
     useEffect(() => {
         // Listen for incoming messages
         socket.on('new-message', (message) => {
-            console.log(message, "new message")
+            console.log(message, "new message", messages)
             if (message.sender_id != user.id) {
                 let newMessages = [
                     {
@@ -84,7 +85,7 @@ function ChatScreen({ navigation, user, token }) {
             receiver_id: 1,
             sender_name: newMessages[0]?.user?.name,
             receiver_name: 'Orangemoon',
-            sender_img: '1672486286.jpg',
+            sender_img: user.monitor.photo,
             receiver_img: 'site-logo.png',
             status: 'unread'
         }
@@ -120,7 +121,7 @@ function ChatScreen({ navigation, user, token }) {
                     avatar: 'https://staging.orangemoonsss.com/images/' + '1672486286.jpg',
                 }}
                 renderUsernameOnMessage={true}
-                showUserAvatar={true}
+                showUserAvatar={false}
                 // isTyping={true}
                 scrollToBottom={true}
                 alwaysShowSend={true}
