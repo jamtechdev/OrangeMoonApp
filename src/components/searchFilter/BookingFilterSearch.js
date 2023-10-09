@@ -3,19 +3,51 @@
 import {View, StyleSheet, Pressable} from 'react-native';
 import {Avatar,Searchbar, Button, Card, Text} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { AppStyles } from '../utils/AppStyles';
+import { AppStyles } from '../../utils/AppStyles';
 import { useState } from 'react';
+import { formatDate, sortingHelper } from '../../utils/_helpers';
 
-
-export default function FilterSearch({handleSearch, searchQuery, sortDirections, handleSort}) {
+export default function FilterSearch({ bookingDataBkp, setBookingData, searchQuery, setSearchQuery, sortDirections, setSortDirections, bookingData}) {
     const [showFilter, setShowFilter] = useState(false);
     const [activeFilter, setActiveFilter] = useState('')
     const toggleFilter = ()=>setShowFilter(!showFilter);
+
+    const handleSearch = query => {
+      const lowerCaseQuery = query.toLowerCase();
+      const filteredData = bookingDataBkp.filter(
+        item =>
+          item?.booking_id?.toString()?.toLowerCase()?.includes(lowerCaseQuery) ||
+          item?.group_name?.toLowerCase()?.includes(lowerCaseQuery) ||
+          formatDate(item?.dates)?.toLowerCase()?.includes(lowerCaseQuery) ||
+          item?.status?.toLowerCase()?.includes(lowerCaseQuery),
+      );
+      if (filteredData.length == 0 || query == '') {
+        setBookingData(bookingDataBkp);
+      } else {
+        setBookingData(filteredData);
+      }
+      setSearchQuery(query);
+    };
+
+    const handleSort = async columnKey => {
+      const nextSortDirection =
+        sortDirections[columnKey] === 'ascending' ? 'descending' : 'ascending';
+      setSortDirections({
+        ...sortDirections,
+        [columnKey]: nextSortDirection,
+      });
+      const value = await sortingHelper(
+        bookingData,
+        columnKey,
+        nextSortDirection,
+      );
+      console.log(value);
+      setBookingData(value);
+    };
   return (
     <>
     <View style={styles.box}>
       <Searchbar
-        // placeholder="Search"
         onChangeText={handleSearch}
         value={searchQuery}
         style={styles.searchBox}

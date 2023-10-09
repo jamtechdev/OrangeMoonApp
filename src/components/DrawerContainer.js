@@ -5,7 +5,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import MenuButton from '../components/MenuButton';
+import MenuButton from './MenuButton';
 import { AppIcon } from '../utils/AppStyles';
 import { connect } from 'react-redux';
 import { logoutSuccess } from '../redux/actions/authActions';

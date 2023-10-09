@@ -22,6 +22,9 @@ export const monitorService = {
     getSchedulingAssignableBooking,
     setMonitorAvailablity,
     setSelfBooking,
+    bookingdayActivity,
+    prechecksResponse,
+    precheckquestion,
 };
 
 async function dashboard(token) {
@@ -165,6 +168,33 @@ async function setSelfBooking(token, data) {
     return await axios.post(
         `${API_URL}/self-booking/assign-to-monitor`,
         data,
+        {
+            headers: { 'Authorization': 'Bearer ' + token },
+        }
+    );
+}
+async function bookingdayActivity(token, data) {
+    return await axios.post(
+        `${API_URL}/monitor-booking-day-report/activity`,
+        data,
+        {
+            headers: { 'Authorization': 'Bearer' + token }
+        }
+    );
+}
+async function prechecksResponse(token , data) {
+    console.log("token, data", token , data)
+    return await axios.post(
+        `${API_URL}/monitor-booking-day-report/prechecks`,
+        data,
+        {
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'multipart/form-data' },
+        }
+    )
+}
+async function precheckquestion(token) {
+    return await axios.get(
+        `${API_URL}/monitor/precheck-questions`,
         {
             headers: { 'Authorization': 'Bearer ' + token },
         }

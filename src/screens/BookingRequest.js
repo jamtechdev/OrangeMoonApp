@@ -18,8 +18,9 @@ import {formatDate, sortingHelper, formatDateNew} from '../utils/_helpers';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LoadingContainer from '../components/LoadingContainer';
 import globalStyles from '../utils/_css/globalStyle';
-import FilterSearch from '../components/FilterSearch';
+import FilterSearch from '../components/searchFilter/BookingFilterSearch';
 import BookingCardList from '../components/cards/BookingCardList';
+
 function BookingRequest({navigation, user, token, route}) {
   const [bookingData, setBookingData] = useState([]);
   const [bookingDataBkp, setBookingDataBkp] = useState([]);
@@ -88,21 +89,7 @@ function BookingRequest({navigation, user, token, route}) {
     });
   };
 
-  const handleSort = async columnKey => {
-    const nextSortDirection =
-      sortDirections[columnKey] === 'ascending' ? 'descending' : 'ascending';
-    setSortDirections({
-      ...sortDirections,
-      [columnKey]: nextSortDirection,
-    });
-    const value = await sortingHelper(
-      bookingData,
-      columnKey,
-      nextSortDirection,
-    );
-    console.log(value);
-    setBookingData(value);
-  };
+
 
   const updateBookingStatus = status => {
     setIsButtonLoading(true);
@@ -123,22 +110,6 @@ function BookingRequest({navigation, user, token, route}) {
         setIsButtonLoading(false);
         console.log(error);
       });
-  };
-  const handleSearch = query => {
-    const lowerCaseQuery = query.toLowerCase();
-    const filteredData = bookingDataBkp.filter(
-      item =>
-        item?.booking_id?.toString()?.toLowerCase()?.includes(lowerCaseQuery) ||
-        item?.group_name?.toLowerCase()?.includes(lowerCaseQuery) ||
-        formatDate(item?.dates)?.toLowerCase()?.includes(lowerCaseQuery) ||
-        item?.status?.toLowerCase()?.includes(lowerCaseQuery),
-    );
-    if (filteredData.length == 0 || query == '') {
-      setBookingData(bookingDataBkp);
-    } else {
-      setBookingData(filteredData);
-    }
-    setSearchQuery(query);
   };
 
   return (
@@ -161,10 +132,13 @@ function BookingRequest({navigation, user, token, route}) {
             />
           </ScrollView>
           <FilterSearch
-            handleSearch={handleSearch}
+            bookingDataBkp={bookingDataBkp}
+            setBookingData={setBookingData}
             searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
             sortDirections={sortDirections}
-            handleSort={handleSort}
+            setSortDirections={setSortDirections}
+            bookingData={bookingData}
           />
           <FlatList
             data={bookingData?.slice(from, to)}
