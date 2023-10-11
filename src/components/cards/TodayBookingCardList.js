@@ -79,7 +79,7 @@ const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog}) => {
         </View>
 
         <View style={[globalStyles.buttonRow, {marginTop: 10}]}>
-          <View style={styles.action}>
+        <View style={styles.action}>
             {!item?.monitor_booking_day_report &&
               item?.booking_day?.date <= checkActive(item) && (
                 <Icon
@@ -92,7 +92,7 @@ const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog}) => {
             {item?.monitor_booking_day_report && (
               <Icon
                 name="eye"
-                onPress={() => console.log('create a page for show the data ')}
+                // onPress={() => detailHandler(item)}
                 size={20}
                 color={AppStyles.color.tint}
               />
@@ -109,13 +109,15 @@ const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog}) => {
               <>
               <Icon
                 name="plus"
-                onPress={() => openActionDialog(item)}
+                // onPress={() => openActionDialog(item)}
+                onPress={() => openPrecheckDialog(item,"plus")}
                 size={20}
                 color={AppStyles.color.tint}
               />
                <Icon
                 name="plus-circle"
-                onPress={() => openActionDialog(item)}
+                // onPress={() => openActionDialog(item)}
+                onPress={() => openPrecheckDialog(item, "plus-circle" )}
                 size={20}
                 color={AppStyles.color.tint}
               />
@@ -126,7 +128,7 @@ const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog}) => {
               item.monitor_booking_day_report?.end_time == null && (
                 <Icon
                   name="stop"
-                  onPress={() => openActionDialog(item)}
+                  onPress={() => openActionDialog(item, "stop")}
                   size={20}
                   color={AppStyles.color.tint}
                 />

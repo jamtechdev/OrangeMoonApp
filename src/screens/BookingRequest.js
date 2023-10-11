@@ -8,8 +8,10 @@ import {
   Button,
   Text,
   DataTable,
+  Divider,
   SegmentedButtons,
 } from 'react-native-paper';
+import {Configuration} from '../utils/Configuration';
 import {connect} from 'react-redux';
 import {AppStyles} from '../utils/AppStyles';
 import {monitorService} from '../utils/_services';
@@ -115,6 +117,8 @@ function BookingRequest({navigation, user, token, route}) {
   return (
     <>
       <ScrollView style={styles.container}>
+      <Text style={globalStyles.subtitle}>Booking Request</Text>
+        <Divider style={globalStyles.divider} />
         <View style={styles.container}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <SegmentedButtons
@@ -234,8 +238,8 @@ function BookingRequest({navigation, user, token, route}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 10,
+    backgroundColor: 'white',
+    padding: Configuration.home.listing_item.offset,
   },
   card: {
     marginBottom: 16,
