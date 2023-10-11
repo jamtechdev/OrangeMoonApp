@@ -3,58 +3,33 @@ import * as React from 'react';
 import {ScrollView, StyleSheet, View, Pressable} from 'react-native'; // Import View
 import {Avatar, Button, Card, Text} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import { createdDate } from '../../utils/_helpers';
 import globalStyles from '../../utils/_css/globalStyle';
 import {AppStyles} from '../../utils/AppStyles';
-import { isWithin48Hours } from '../../utils/_helpers';
-const BookingCardList = ({item ,id,status,groupName,date, navigateDetails, toggleDialogAccept, toggleDialogReject, setUpdateId }) => (
+const StipeCardList = ({item  }) => (
   <Card style={styles.tableCard}>
     <Card.Content>
       <View style={[globalStyles.buttonRow, {alignItems: 'center'}]}>
         <View style={styles.viewRow}>
           <View style={styles.badgeheadingText}>
-            <Text style={styles.valueTextinner}>Id: {id}</Text>
+          <Text style={styles.valueTextinner}>Amount : {item?.amount}</Text>
           </View>
         </View>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{status}</Text>
-        </View>
+        <View style={styles.badgeheadingText}>
+        <Text style={styles.valueTextinner}> {createdDate(item?.created_at)}</Text>
+          </View>
       </View>
-
       <View style={[styles.viewRow, {flexDirection: 'column', gap: 5}]}>
-        <Text style={styles.keyText}>Group Name </Text>
+        <Text style={styles.keyText}>Account ID </Text>
         <Text style={styles.valueText}>
-          {groupName}
+        {item?.transfer_id}
         </Text>
       </View>
-      <View style={globalStyles.buttonRow}>
-        <View style={styles.viewRow}>
-          <View style={styles.badgeheadingText}>
-            <Text style={styles.valueTextinner}> {date}</Text>
-          </View>
-        </View>
-        <View style={styles.action}>
-        {item?.status !== 'REJECTED' && item?.status !== 'CANCEL' && (
-          <Pressable style={styles.pressable} onPress={() => navigateDetails(item)}>
-          <Icon name="eye" color={AppStyles.color.tint} size={20}   />
-          </Pressable>
-        )}
-        {item?.status === 'PENDING' && (
-          <>
-          <Pressable onPress={() => { toggleDialogAccept(); setUpdateId(item.id); }}>
-            <Icon name="check" color={AppStyles.color.tint} size={20} />
-          </Pressable>
-          <Pressable onPress={() => { toggleDialogReject('REJECTED'); setUpdateId(item.id); }}>
-            <Icon name="close" color={AppStyles.color.tint} size={20} />
-          </Pressable>
-          </>
-        )}
-        {item?.status === 'ACCEPTED' && isWithin48Hours(date) > 1  &&  (
-          <Pressable onPress={() => { toggleDialogReject('CANCEL'); setUpdateId(item.id); }}>
-            <Icon name="close" color={AppStyles.color.tint} size={20} />
-          </Pressable>
-        )}
-        </View>
+      <View style={[styles.viewRow, {flexDirection: 'column', gap: 5}]}>
+        <Text style={styles.keyText}>Transfer ID </Text>
+        <Text style={styles.valueText}>
+        {item?.transfer_account_id}
+        </Text>
       </View>
     </Card.Content>
   </Card>
@@ -116,4 +91,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BookingCardList;
+export default StipeCardList;

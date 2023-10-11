@@ -25,6 +25,7 @@ export const monitorService = {
     bookingdayActivity,
     prechecksResponse,
     precheckquestion,
+    MonitorSubmitReport
 };
 
 async function dashboard(token) {
@@ -197,6 +198,16 @@ async function precheckquestion(token) {
         `${API_URL}/monitor/precheck-questions`,
         {
             headers: { 'Authorization': 'Bearer ' + token },
+        }
+    );
+}
+async function MonitorSubmitReport(token ,data) {
+    console.log('token, data',token,data)
+    return await axios.post(
+        `${API_URL}/monitor/submit-report/${data.Monitor_Booking_Day_Report_Id}`,
+        data.requestbody,
+        {
+            headers: { 'Authorization': 'Bearer ' + token,  'Content-Type': 'multipart/form-data' },
         }
     );
 }

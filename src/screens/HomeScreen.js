@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
 import React, { useLayoutEffect, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View, FlatList, Platform, KeyboardAvoidingView} from 'react-native'; // Import View
+import { ScrollView, StyleSheet, View, FlatList, Platform, KeyboardAvoidingView } from 'react-native'; // Import View
 import { connect } from 'react-redux';
 import { AppStyles } from '../utils/AppStyles';
 import { Configuration } from '../utils/Configuration';
@@ -96,6 +96,7 @@ function HomeScreen({ navigation, user, token }) {
   const [visible3, setVisible3] = React.useState(false)
   const [visible4, setVisible4] = React.useState(false)
   const [refreshing, setRefreshing] = React.useState(false);
+  const [item, setItem] = React.useState()
 
   const validationSchema = Yup.object().shape({
     first_name: Yup.string().required("Answer is required"),
@@ -107,9 +108,9 @@ function HomeScreen({ navigation, user, token }) {
     incidentdescription: Yup.string().required("Description is required"),
     location: Yup.string().required("Description is required"),
     external: Yup.string().required("External is required"),
-    witness:  Yup.string().required("Witness is required"),
-    witness_description : Yup.string().required("Witness description is required"),
-    students :  Yup.string().required("Students is required"),
+    witness: Yup.string().required("Witness is required"),
+    witness_description: Yup.string().required("Witness description is required"),
+    students: Yup.string().required("Students is required"),
     rooms: Yup.string().required('Rooms is required')
   })
   const formOptions = {
@@ -215,7 +216,7 @@ function HomeScreen({ navigation, user, token }) {
     getPrecheckData();
     getGeoLocation()
   }, [isFocused]);
-  
+
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -325,6 +326,7 @@ function HomeScreen({ navigation, user, token }) {
   }
   const hideModal2 = () => {
     setVisible2(false)
+    reset2()
   }
   const hideModal3 = () => {
     setVisible3(false)
@@ -333,24 +335,43 @@ function HomeScreen({ navigation, user, token }) {
     setVisible4(false)
   }
   const openPrecheckDialog = (item, name) => {
-    console.log('name', name)
-    setBookingId(item.monitor_booking_day_report.id);
-    console.log(item, 'here my item data ')
-    if (item?.monitor_booking_day_report && item?.precheckCount === 0) {
-      showModal()
-    }
-    else if (item?.monitor_booking_day_report && item?.precheckCount > 0) {
-      if (name === 'plus') {
-        setVisible1(true)
+    // Modal for play , plus and circle plus icons
+    console.log('name', name);
+
+    const report = item?.monitor_booking_day_report;
+
+    if (report) {
+      setBookingId(report.id);
+
+      if (item.precheckCount === 0) {
+        showModal();
       } else {
-        setVisible2(true)
+        name === 'plus' ? setVisible1(true) : setVisible2(true);
       }
     }
   }
+  // Old code
+  // const openPrecheckDialog = (item, name) => {
+  //   console.log('name', name)
+  //   setBookingId(item.monitor_booking_day_report.id);
+  //   console.log(item, 'here my item data ')
+  //   if (item?.monitor_booking_day_report && item?.precheckCount === 0) {
+  //     showModal()
+  //   }
+  //   else if (item?.monitor_booking_day_report && item?.precheckCount > 0) {
+  //     if (name === 'plus') {
+  //       setVisible1(true)
+  //     } else {
+  //       setVisible2(true)
+  //     }
+  //   }
+  // }
   const openActionDialog = (item, name) => {
+    // Modal for hospital and last stop icons 
     console.log('name', name)
-    if (name === 'stop'){
+    if (name === 'stop') {
       setVisible4(true)
+      setItem(item)
 
     } else {
       setIsDialogVisible(true);
@@ -457,34 +478,34 @@ function HomeScreen({ navigation, user, token }) {
   //   return isActive;
   // }
 
-    const incidentSubmit = (newdata)=>{
-      console.log('newData',newdata)
-      const data = new Object({
-        booking_day_report_id : bookingId,
-        location: newdata.location,
-        time: selectedTime,
-        rooms: newdata.rooms,
-        is_external_involve : newdata.external,
-        is_witness_involve : newdata.witness,
-        witness_description: newdata.witness_description,
-        students: newdata.students,
-        description : newdata.incidentdescription
-      })
-      monitorService.IncidentActivity(token,data).then((res) => {
-        console.log("response",res)
-        setMessage(res.data.message)
-        setVisible3(true)
-        reset2
-        hideModal2()
-      }).catch((error) => {
-        console.log("error",error)
-        setMessage("Something went wrong")
-        setVisible3(true)
-        reset2
-        hideModal2()
-      })
+  const incidentSubmit = (newdata) => {
+    console.log('newData', newdata)
+    const data = new Object({
+      booking_day_report_id: bookingId,
+      location: newdata.location,
+      time: selectedTime,
+      rooms: newdata.rooms,
+      is_external_involve: newdata.external,
+      is_witness_involve: newdata.witness,
+      witness_description: newdata.witness_description,
+      students: newdata.students,
+      description: newdata.incidentdescription
+    })
+    monitorService.IncidentActivity(token, data).then((res) => {
+      reset2()
+      console.log("response", res)
+      setMessage(res.data.message)
+      setVisible3(true)
+      hideModal2()
+    }).catch((error) => {
+      console.log("error", error)
+      reset2()
+      setMessage("Something went wrong")
+      setVisible3(true)
+      hideModal2()
+    })
 
-    } 
+  }
   const getGeoLocation = () => {
     Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
@@ -499,7 +520,6 @@ function HomeScreen({ navigation, user, token }) {
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   };
-
   return (
     <>
       <KeyboardAvoidingView
@@ -507,40 +527,48 @@ function HomeScreen({ navigation, user, token }) {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
       >
-        <ScrollView style={styles.container}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        >
-          {/* <Text style={globalStyles.subtitle} onPress={() => getGeoLocation()}>Today's Booking</Text> */}
-          <Text style={globalStyles.subtitle}>Today's Booking</Text>
-          <Divider style={globalStyles.divider} />
-          <View style={styles.container}>
-            <TodayFilterSearch
-              dashboardDataBkp={dashboardDataBkp}
-              setDashboardData={setDashboardData}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              sortDirections={sortDirections}
-              setSortDirections={setSortDirections}
-              dashboardData={dashboardData}
-            />
-            <FlatList
-              data={dashboardData?.slice(from, to)}
-              keyExtractor={item => item.id.toString()}
-              renderItem={({ item }) => (
+        <FlatList
+          style={styles.container}
+          data={[{ key: 'header' }, ...dashboardData?.slice(from, to)]}
+          keyExtractor={(item) => item.key}
+          renderItem={({ item, index }) => {
+            if (index === 0) {
+              return (
+                <>
+                  <Text style={globalStyles.subtitle}>Today's Booking</Text>
+                  <Divider style={globalStyles.divider} />
+                  <View style={styles.container}>
+                    <TodayFilterSearch
+                      dashboardDataBkp={dashboardDataBkp}
+                      setDashboardData={setDashboardData}
+                      searchQuery={searchQuery}
+                      setSearchQuery={setSearchQuery}
+                      sortDirections={sortDirections}
+                      setSortDirections={setSortDirections}
+                      dashboardData={dashboardData}
+                    />
+                  </View>
+                </>
+              );
+            } else {
+              return (
                 <TodayBookingCardList
                   item={item}
                   checkActive={checkActive}
                   openPrecheckDialog={openPrecheckDialog}
                   openActionDialog={openActionDialog}
-                  navigation = {navigation}
+                  navigation={navigation}
                 />
-              )}
-            />
-            {!dashboardData?.length && !isLoading && (
-              <Text style={globalStyles.emptyData}> Data not found</Text>
-            )}
+              );
+            }
+          }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          ListEmptyComponent={!dashboardData?.length && !isLoading && (
+            <Text style={globalStyles.emptyData}> Data not found</Text>
+          )}
+          ListFooterComponent={
             <DataTable.Pagination
               page={page}
               numberOfPages={Math.ceil(dashboardData.length / itemsPerPage)}
@@ -552,218 +580,224 @@ function HomeScreen({ navigation, user, token }) {
               showFastPaginationControls
               selectPageDropdownLabel={'Rows per page'}
             />
-            <Portal>
-              <Dialog visible={isDialogVisible} onDismiss={closeActionDialog}>
-                <Dialog.Title>Wellness Check{ }</Dialog.Title>
-                <Dialog.Content>
-                  {askQuestion.question1 === true && (
-                    <View>
-                      <Text>
-                        Within the last 10 days have you been diagnosed with
-                        COVID-19 or had a test confirming you have the virus?
-                      </Text>
-                      <RadioButton.Group
-                        onValueChange={handleRadioSelect}
-                        value={selectedRadio}>
-                        <RadioButton.Item label="yes" value="yes" />
-                        <RadioButton.Item label="No" value="No" />
-                      </RadioButton.Group>
-                      <HelperText
-                        type="error"
-                        visible={selectedRadio == 'yes' ? true : false}>
-                        Please contact the Night Auditor on duty
-                      </HelperText>
-                    </View>
-                  )}
-                  {askQuestion.question2 === true && (
-                    <View>
-                      <Text>
-                        Do you live in the same household with, or have you had
-                        close contact with someone who in the past 14 days has
-                        been in isolation for COVID-19 or had a test confirming
-                        they have the virus?
-                      </Text>
-                      <RadioButton.Group
-                        onValueChange={handleRadioSelect}
-                        value={selectedRadio}>
-                        <RadioButton.Item label="yes" value="yes" />
-                        <RadioButton.Item label="No" value="No" />
-                      </RadioButton.Group>
-                      <HelperText
-                        type="error"
-                        visible={selectedRadio == 'yes' ? true : false}>
-                        Please contact the Night Auditor on duty
-                      </HelperText>
-                    </View>
-                  )}
-                  {askQuestion.question3 === true && (
-                    <View>
-                      <Text>
-                        Have you experienced any of these symptoms today or within
-                        the past 24 hours, which is new or not explained by
-                        another reason?
-                      </Text>
-                      <Text>Fever, chills, or repeated shaking/shivering</Text>
-                      <Text> Cough</Text>
-                      <Text> Shortness of breath or difficulty breathing</Text>
-                      <Text> Feeling unusually weak or fatigue</Text>
-                      <Text> Muscle or body aches</Text>
-                      <Text> Headache</Text>
-                      <Text> Loss of taste or smell</Text>
-                      <Text> Sore throat</Text>
-                      <Text> Congestion or runny nose</Text>
-                      <Text> Nausea or vomiting</Text>
-                      <Text> Diarrhea</Text>
-                      <RadioButton.Group
-                        onValueChange={handleRadioSelect}
-                        value={selectedRadio}>
-                        <RadioButton.Item label="yes" value="yes" />
-                        <RadioButton.Item label="No" value="No" />
-                      </RadioButton.Group>
-                      <HelperText
-                        type="error"
-                        visible={selectedRadio == 'No' ? true : false}>
-                        Symptoms & Exposure: Passed, Click Submit button to
-                        continue
-                      </HelperText>
-                    </View>
-                  )}
-                  {askQuestion.question4 === true && (
-                    <View>
-                      <Text>
-                        Are all of the symptoms you're experiencing related to a
-                        known chronic condition?
-                      </Text>
-                      <RadioButton.Group
-                        onValueChange={handleRadioSelect}
-                        value={selectedRadio}>
-                        <RadioButton.Item label="yes" value="yes" />
-                        <RadioButton.Item label="No" value="No" />
-                      </RadioButton.Group>
-                      <HelperText
-                        type="error"
-                        visible={selectedRadio == 'yes' ? true : false}>
-                        Please contact the Night Auditor on duty
-                      </HelperText>
-                      <HelperText
-                        type="error"
-                        visible={selectedRadio == 'No' ? true : false}>
-                        Symptoms & Exposure: Passed, Click Submit button to
-                        continue
-                      </HelperText>
-                    </View>
-                  )}
-                </Dialog.Content>
-                <Dialog.Actions>
-                  {selectedRadio && (
-                    <Button mode="contained" onPress={() => actionCheckSubmit()}>
-                      Submit
-                    </Button>
-                  )}
-                  <Button mode="contained" onPress={() => closeActionDialog()}>
-                    Cancel
-                  </Button>
-                </Dialog.Actions>
-              </Dialog>
-            </Portal>
-
-            <Portal>
-              <Dialog visible={visible} onDismiss={hideModal}>
-                <View style={styles.rowView}>
-                  <Dialog.Title style={globalStyles.subtitle}>Wellness Check</Dialog.Title>
-                  <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal} />
-                </View>
-                <Dialog.Content>
-                  <View style={{ marginTop: 15, minHeight: 36 }}>
-                    <Text style={{ fontWeight: '700' }}>{precheckQuestions[next]?.question}</Text>
-                  </View>
-                  <View style={{ marginTop: 15 }}>
-                    <View style={{ marginLeft: 10 }}>
-                      <FormTextInput
-                        control={control}
-                        errors={errors}
-                        name="first_name"
-                        label="Description"
-                        style={{ backgroundColor: 'transparent', width: '100%' }}
-                      />
-                    </View>
-                    <FormRadioButtons
-                      control={control}
-                      name="preference"
-                      label="Preference"
-                      options={[
-                        { label: 'Yes', value: 'Yes' },
-                        { label: 'No', value: 'No' },
-                      ]}
-                      // Helpertext = {data[next].HelpText}
-                      radioButton={radioButton}
-                      setRadio={setRadio}
-                      errors={errors}
-                    />
-                  </View>
-                </Dialog.Content>
-                <Dialog.Actions>
-                  {next != precheckQuestions.length - 1 ? (
-                    <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleSubmit(handleNext)}>
-                      Next
-                    </Button>
-                  ) : (
-                    <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleSubmit(onSubmit)}>
-                      Submit
-                    </Button>
-                  )}
-                </Dialog.Actions>
-              </Dialog>
-            </Portal>
-
-            <Portal>
-              <Dialog visible={visible1} onDismiss={hideModal1}>
-                <View style={styles.rowView}>
-                  <Dialog.Title style={globalStyles.subtitle}>Add New Activity</Dialog.Title>
-                  <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal1} />
-                </View>
-                <Dialog.Content>
-                  <View style={{ flexDirection: 'row', padding: 20, justifyContent: 'space-between' }}>
-                    <Text style={{ fontSize: 15, fontWeight: 'bold', }}>Start Date</Text>
-                    <Text style={{ fontSize: 15, fontWeight: 'bold', }}>End Date</Text>
-                  </View>
-                  <View style={{ minHeight: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={{ width: 130 }} onPress={() => { showTimePicker() }}>
-                      {selectedTime}
-                    </Button>
-                    <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={{ width: 130 }} onPress={() => { showTimeLastPicker() }}>
-                      {selectedTimeLast}
-                    </Button>
-                  </View>
-                  <View style={{ alignItems: 'center', justifyContent: 'center', minHeight: 50 }}>
-                    <HelperText>
-                      <Text>Minimum 1/2 Hours Required</Text>
-                    </HelperText>
-                  </View>
-                  <View style={{ marginTop: 15 }}>
-                    <View style={{ marginLeft: 20, minHeight: 40 }}>
-                      <Text style={{ fontSize: 15, fontWeight: 'bold', }}>Description</Text>
-                    </View>
-                    <View>
-                      <TextInput style={{ height: 100, borderRadius: 20 }} onChangeText={(e) => setDescriptionActivity(e)} underlineColor="transparent" placeholder='description' />
-                    </View>
-                  </View>
-                  <HelperText style={{ minHeight: 40 }} visible={helper}>
-                    <HelperText type="error">This field is required</HelperText>
+          }
+        />
+        <Portal>
+          <Dialog visible={isDialogVisible} onDismiss={closeActionDialog}>
+            <Dialog.Title>Wellness Check{ }</Dialog.Title>
+            <Dialog.Content>
+              {askQuestion.question1 === true && (
+                <View>
+                  <Text>
+                    Within the last 10 days have you been diagnosed with
+                    COVID-19 or had a test confirming you have the virus?
+                  </Text>
+                  <RadioButton.Group
+                    onValueChange={handleRadioSelect}
+                    value={selectedRadio}>
+                    <RadioButton.Item label="yes" value="yes" />
+                    <RadioButton.Item label="No" value="No" />
+                  </RadioButton.Group>
+                  <HelperText
+                    type="error"
+                    visible={selectedRadio == 'yes' ? true : false}>
+                    Please contact the Night Auditor on duty
                   </HelperText>
-                </Dialog.Content>
-                <Dialog.Actions style={{ alignItems: 'center', justifyContent: 'center' }}>
-                  <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleActivitySubmit}>
-                    Submit
-                  </Button>
-                </Dialog.Actions>
-              </Dialog>
-            </Portal>
-            <Portal>
-          <Dialog visible={visible2} onDismiss={hideModal2}>
+                </View>
+              )}
+              {askQuestion.question2 === true && (
+                <View>
+                  <Text>
+                    Do you live in the same household with, or have you had
+                    close contact with someone who in the past 14 days has
+                    been in isolation for COVID-19 or had a test confirming
+                    they have the virus?
+                  </Text>
+                  <RadioButton.Group
+                    onValueChange={handleRadioSelect}
+                    value={selectedRadio}>
+                    <RadioButton.Item label="yes" value="yes" />
+                    <RadioButton.Item label="No" value="No" />
+                  </RadioButton.Group>
+                  <HelperText
+                    type="error"
+                    visible={selectedRadio == 'yes' ? true : false}>
+                    Please contact the Night Auditor on duty
+                  </HelperText>
+                </View>
+              )}
+              {askQuestion.question3 === true && (
+                <View>
+                  <Text>
+                    Have you experienced any of these symptoms today or within
+                    the past 24 hours, which is new or not explained by
+                    another reason?
+                  </Text>
+                  <Text>Fever, chills, or repeated shaking/shivering</Text>
+                  <Text> Cough</Text>
+                  <Text> Shortness of breath or difficulty breathing</Text>
+                  <Text> Feeling unusually weak or fatigue</Text>
+                  <Text> Muscle or body aches</Text>
+                  <Text> Headache</Text>
+                  <Text> Loss of taste or smell</Text>
+                  <Text> Sore throat</Text>
+                  <Text> Congestion or runny nose</Text>
+                  <Text> Nausea or vomiting</Text>
+                  <Text> Diarrhea</Text>
+                  <RadioButton.Group
+                    onValueChange={handleRadioSelect}
+                    value={selectedRadio}>
+                    <RadioButton.Item label="yes" value="yes" />
+                    <RadioButton.Item label="No" value="No" />
+                  </RadioButton.Group>
+                  <HelperText
+                    type="error"
+                    visible={selectedRadio == 'No' ? true : false}>
+                    Symptoms & Exposure: Passed, Click Submit button to
+                    continue
+                  </HelperText>
+                </View>
+              )}
+              {askQuestion.question4 === true && (
+                <View>
+                  <Text>
+                    Are all of the symptoms you're experiencing related to a
+                    known chronic condition?
+                  </Text>
+                  <RadioButton.Group
+                    onValueChange={handleRadioSelect}
+                    value={selectedRadio}>
+                    <RadioButton.Item label="yes" value="yes" />
+                    <RadioButton.Item label="No" value="No" />
+                  </RadioButton.Group>
+                  <HelperText
+                    type="error"
+                    visible={selectedRadio == 'yes' ? true : false}>
+                    Please contact the Night Auditor on duty
+                  </HelperText>
+                  <HelperText
+                    type="error"
+                    visible={selectedRadio == 'No' ? true : false}>
+                    Symptoms & Exposure: Passed, Click Submit button to
+                    continue
+                  </HelperText>
+                </View>
+              )}
+            </Dialog.Content>
+            <Dialog.Actions>
+              {selectedRadio && (
+                <Button mode="contained" onPress={() => actionCheckSubmit()}>
+                  Submit
+                </Button>
+              )}
+              <Button mode="contained" onPress={() => closeActionDialog()}>
+                Cancel
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+
+        <Portal>
+          <Dialog visible={visible} onDismiss={hideModal}>
             <View style={styles.rowView}>
+              <Dialog.Title style={globalStyles.subtitle}>Wellness Check</Dialog.Title>
+              <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal} />
+            </View>
+            <Dialog.Content>
+              <View style={{ marginTop: 15, minHeight: 36 }}>
+                <Text style={{ fontWeight: '700' }}>{precheckQuestions[next]?.question}</Text>
+              </View>
+              <View style={{ marginTop: 15 }}>
+                <View style={{ marginLeft: 10 }}>
+                  <FormTextInput
+                    control={control}
+                    errors={errors}
+                    name="first_name"
+                    label="Description"
+                    style={{ backgroundColor: 'transparent', width: '100%' }}
+                  />
+                </View>
+                <FormRadioButtons
+                  control={control}
+                  name="preference"
+                  label="Preference"
+                  options={[
+                    { label: 'Yes', value: 'Yes' },
+                    { label: 'No', value: 'No' },
+                  ]}
+                  // Helpertext = {data[next].HelpText}
+                  radioButton={radioButton}
+                  setRadio={setRadio}
+                  errors={errors}
+                />
+              </View>
+            </Dialog.Content>
+            <Dialog.Actions>
+              {next != precheckQuestions.length - 1 ? (
+                <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleSubmit(handleNext)}>
+                  Next
+                </Button>
+              ) : (
+                <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleSubmit(onSubmit)}>
+                  Submit
+                </Button>
+              )}
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+
+        <Portal>
+          <Dialog visible={visible1} onDismiss={hideModal1}>
+            <View style={{ ...styles.rowView, flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Dialog.Title style={globalStyles.subtitle}>Add New Activity</Dialog.Title>
+              <View style={{ marginTop: 10 }}>
+                <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal1} />
+              </View>
+            </View>
+            <Dialog.Content>
+              <View style={{ flexDirection: 'row', padding: 20, justifyContent: 'space-between' }}>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', }}>Start Date</Text>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', }}>End Date</Text>
+              </View>
+              <View style={{ minHeight: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={{ width: 130 }} onPress={() => { showTimePicker() }}>
+                  {selectedTime}
+                </Button>
+                <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={{ width: 130 }} onPress={() => { showTimeLastPicker() }}>
+                  {selectedTimeLast}
+                </Button>
+              </View>
+              <View style={{ alignItems: 'center', justifyContent: 'center', minHeight: 50 }}>
+                <HelperText>
+                  <Text>Minimum 1/2 Hours Required</Text>
+                </HelperText>
+              </View>
+              <View style={{ marginTop: 15 }}>
+                <View style={{ marginLeft: 20, minHeight: 40 }}>
+                  <Text style={{ fontSize: 15, fontWeight: 'bold', }}>Description</Text>
+                </View>
+                <View>
+                  <TextInput style={{ height: 100, borderRadius: 20 }} onChangeText={(e) => setDescriptionActivity(e)} underlineColor="transparent" placeholder='description' />
+                </View>
+              </View>
+              <HelperText style={{ minHeight: 40 }} visible={helper}>
+                <HelperText type="error">This field is required</HelperText>
+              </HelperText>
+            </Dialog.Content>
+            <Dialog.Actions style={{ alignItems: 'center', justifyContent: 'center' }}>
+              <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleActivitySubmit}>
+                Submit
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+        <Portal>
+          <Dialog visible={visible2} onDismiss={hideModal2}>
+            <View style={{ ...styles.rowView, flexDirection: 'row', justifyContent: 'space-between' }}>
               <Dialog.Title style={globalStyles.subtitle}>Incident</Dialog.Title>
-              <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal2} />
+              <View style={{ marginTop: 10 }}>
+                <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal2} />
+              </View>
             </View>
             <Dialog.Content style={{ minHeight: 500 }}>
               <ScrollView style={{ ...globalStyles.cardContainer, minHeight: 90, paddingHorizontal: 0, paddingVertical: 0, backgroundColor: 'transparent' }} nestedScrollEnabled={true}>
@@ -793,7 +827,7 @@ function HomeScreen({ navigation, user, token }) {
                       />
                       <FormTextInput control={control2} errors={errors2} name="incidentdescription" label="Description" />
                       <View>
-                        <Text style={{ fontWeight: 'bold', fontSize: 16 , color: '#777'}}>Time:</Text>
+                        <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#777' }}>Time:</Text>
                       </View>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', minHeight: 60 }}>
                         <View style={{ padding: 12 }}>
@@ -805,7 +839,7 @@ function HomeScreen({ navigation, user, token }) {
                             paddingBottom: 0,
                           }}>{selectedTime}</Text>
                         </View>
-                        <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={{...styles.buttonStyle, height: 40}}  onPress={() => setTimePickerVisibility(true)} uppercase={false}>
+                        <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={{ ...styles.buttonStyle, height: 40 }} onPress={() => setTimePickerVisibility(true)} uppercase={false}>
                           Pick time
                         </Button>
                       </View>
@@ -831,31 +865,22 @@ function HomeScreen({ navigation, user, token }) {
             </Dialog.Content>
           </Dialog>
         </Portal>
-            {/* <IncidentModal visible2={visible2} hideModal2={hideModal2} bookingId={bookingId} token={token} setMessage={setMessage} setVisible3={setVisible3} /> */}
-            <TodayBookingModel visible4={visible4} hideModal4={hideModal4}/>
-            <DateTimePickerModal
-              isVisible={isTimePickerVisible}
-              mode="time"
-              value={new Date()}
-              onConfirm={handleTimeConfirm}
-              onCancel={hideTimePicker}
-            />
-            <DateTimePickerModal
-              isVisible={isTimePickerVisibleLast}
-              mode="time"
-              value={new Date()}
-              onConfirm={handleTimeLastConfirm}
-              onCancel={hideTimeLastPicker}
-            />
-            {/* <TimePickerModal
-          visible={visibleTime}
-          onDismiss={onDismiss}
-          onConfirm={onConfirm}
-          hours={12}
-          minutes={14}
-        /> */}
-          </View>
-        </ScrollView>
+        {/* <IncidentModal visible2={visible2} hideModal2={hideModal2} bookingId={bookingId} token={token} setMessage={setMessage} setVisible3={setVisible3} /> */}
+        <TodayBookingModel visible4={visible4} hideModal4={hideModal4} item={item} token={token} setItem={setItem} location={location} setMessage={setMessage} setVisible3={setVisible3} />
+        <DateTimePickerModal
+          isVisible={isTimePickerVisible}
+          mode="time"
+          value={new Date()}
+          onConfirm={handleTimeConfirm}
+          onCancel={hideTimePicker}
+        />
+        <DateTimePickerModal
+          isVisible={isTimePickerVisibleLast}
+          mode="time"
+          value={new Date()}
+          onConfirm={handleTimeLastConfirm}
+          onCancel={hideTimeLastPicker}
+        />
         {isLoading && (
           <Portal>
             <LoadingContainer />
@@ -868,9 +893,379 @@ function HomeScreen({ navigation, user, token }) {
         >
           {Message}
         </Snackbar>
+
       </KeyboardAvoidingView>
     </>
-  );
+  )
+  //---------Old code-----------------------
+  // return (
+  //   <>
+  //     <KeyboardAvoidingView
+  //       style={{ flex: 1 }}
+  //       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+  //       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
+  //     >
+  //       <ScrollView style={styles.container}
+  //         refreshControl={
+  //           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+  //         }
+  //       >
+  //         {/* <Text style={globalStyles.subtitle} onPress={() => getGeoLocation()}>Today's Booking</Text> */}
+  //         <Text style={globalStyles.subtitle}>Today's Booking</Text>
+  //         <Divider style={globalStyles.divider} />
+  //         <View style={styles.container}>
+  //           <TodayFilterSearch
+  //             dashboardDataBkp={dashboardDataBkp}
+  //             setDashboardData={setDashboardData}
+  //             searchQuery={searchQuery}
+  //             setSearchQuery={setSearchQuery}
+  //             sortDirections={sortDirections}
+  //             setSortDirections={setSortDirections}
+  //             dashboardData={dashboardData}
+  //           />
+  //           <FlatList
+  //             data={dashboardData?.slice(from, to)}
+  //             keyExtractor={item => item.id.toString()}
+  //             renderItem={({ item }) => (
+  //               <TodayBookingCardList
+  //                 item={item}
+  //                 checkActive={checkActive}
+  //                 openPrecheckDialog={openPrecheckDialog}
+  //                 openActionDialog={openActionDialog}
+  //                 navigation={navigation}
+  //               />
+  //             )}
+  //           />
+  //           {!dashboardData?.length && !isLoading && (
+  //             <Text style={globalStyles.emptyData}> Data not found</Text>
+  //           )}
+  //           <DataTable.Pagination
+  //             page={page}
+  //             numberOfPages={Math.ceil(dashboardData.length / itemsPerPage)}
+  //             onPageChange={page => setPage(page)}
+  //             label={`${from + 1}-${to} of ${dashboardData.length}`}
+  //             numberOfItemsPerPageList={numberOfItemsPerPageList}
+  //             numberOfItemsPerPage={itemsPerPage}
+  //             onItemsPerPageChange={onItemsPerPageChange}
+  //             showFastPaginationControls
+  //             selectPageDropdownLabel={'Rows per page'}
+  //           />
+  //           <Portal>
+  //             <Dialog visible={isDialogVisible} onDismiss={closeActionDialog}>
+  //               <Dialog.Title>Wellness Check{ }</Dialog.Title>
+  //               <Dialog.Content>
+  //                 {askQuestion.question1 === true && (
+  //                   <View>
+  //                     <Text>
+  //                       Within the last 10 days have you been diagnosed with
+  //                       COVID-19 or had a test confirming you have the virus?
+  //                     </Text>
+  //                     <RadioButton.Group
+  //                       onValueChange={handleRadioSelect}
+  //                       value={selectedRadio}>
+  //                       <RadioButton.Item label="yes" value="yes" />
+  //                       <RadioButton.Item label="No" value="No" />
+  //                     </RadioButton.Group>
+  //                     <HelperText
+  //                       type="error"
+  //                       visible={selectedRadio == 'yes' ? true : false}>
+  //                       Please contact the Night Auditor on duty
+  //                     </HelperText>
+  //                   </View>
+  //                 )}
+  //                 {askQuestion.question2 === true && (
+  //                   <View>
+  //                     <Text>
+  //                       Do you live in the same household with, or have you had
+  //                       close contact with someone who in the past 14 days has
+  //                       been in isolation for COVID-19 or had a test confirming
+  //                       they have the virus?
+  //                     </Text>
+  //                     <RadioButton.Group
+  //                       onValueChange={handleRadioSelect}
+  //                       value={selectedRadio}>
+  //                       <RadioButton.Item label="yes" value="yes" />
+  //                       <RadioButton.Item label="No" value="No" />
+  //                     </RadioButton.Group>
+  //                     <HelperText
+  //                       type="error"
+  //                       visible={selectedRadio == 'yes' ? true : false}>
+  //                       Please contact the Night Auditor on duty
+  //                     </HelperText>
+  //                   </View>
+  //                 )}
+  //                 {askQuestion.question3 === true && (
+  //                   <View>
+  //                     <Text>
+  //                       Have you experienced any of these symptoms today or within
+  //                       the past 24 hours, which is new or not explained by
+  //                       another reason?
+  //                     </Text>
+  //                     <Text>Fever, chills, or repeated shaking/shivering</Text>
+  //                     <Text> Cough</Text>
+  //                     <Text> Shortness of breath or difficulty breathing</Text>
+  //                     <Text> Feeling unusually weak or fatigue</Text>
+  //                     <Text> Muscle or body aches</Text>
+  //                     <Text> Headache</Text>
+  //                     <Text> Loss of taste or smell</Text>
+  //                     <Text> Sore throat</Text>
+  //                     <Text> Congestion or runny nose</Text>
+  //                     <Text> Nausea or vomiting</Text>
+  //                     <Text> Diarrhea</Text>
+  //                     <RadioButton.Group
+  //                       onValueChange={handleRadioSelect}
+  //                       value={selectedRadio}>
+  //                       <RadioButton.Item label="yes" value="yes" />
+  //                       <RadioButton.Item label="No" value="No" />
+  //                     </RadioButton.Group>
+  //                     <HelperText
+  //                       type="error"
+  //                       visible={selectedRadio == 'No' ? true : false}>
+  //                       Symptoms & Exposure: Passed, Click Submit button to
+  //                       continue
+  //                     </HelperText>
+  //                   </View>
+  //                 )}
+  //                 {askQuestion.question4 === true && (
+  //                   <View>
+  //                     <Text>
+  //                       Are all of the symptoms you're experiencing related to a
+  //                       known chronic condition?
+  //                     </Text>
+  //                     <RadioButton.Group
+  //                       onValueChange={handleRadioSelect}
+  //                       value={selectedRadio}>
+  //                       <RadioButton.Item label="yes" value="yes" />
+  //                       <RadioButton.Item label="No" value="No" />
+  //                     </RadioButton.Group>
+  //                     <HelperText
+  //                       type="error"
+  //                       visible={selectedRadio == 'yes' ? true : false}>
+  //                       Please contact the Night Auditor on duty
+  //                     </HelperText>
+  //                     <HelperText
+  //                       type="error"
+  //                       visible={selectedRadio == 'No' ? true : false}>
+  //                       Symptoms & Exposure: Passed, Click Submit button to
+  //                       continue
+  //                     </HelperText>
+  //                   </View>
+  //                 )}
+  //               </Dialog.Content>
+  //               <Dialog.Actions>
+  //                 {selectedRadio && (
+  //                   <Button mode="contained" onPress={() => actionCheckSubmit()}>
+  //                     Submit
+  //                   </Button>
+  //                 )}
+  //                 <Button mode="contained" onPress={() => closeActionDialog()}>
+  //                   Cancel
+  //                 </Button>
+  //               </Dialog.Actions>
+  //             </Dialog>
+  //           </Portal>
+
+  //           <Portal>
+  //             <Dialog visible={visible} onDismiss={hideModal}>
+  //               <View style={styles.rowView}>
+  //                 <Dialog.Title style={globalStyles.subtitle}>Wellness Check</Dialog.Title>
+  //                 <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal} />
+  //               </View>
+  //               <Dialog.Content>
+  //                 <View style={{ marginTop: 15, minHeight: 36 }}>
+  //                   <Text style={{ fontWeight: '700' }}>{precheckQuestions[next]?.question}</Text>
+  //                 </View>
+  //                 <View style={{ marginTop: 15 }}>
+  //                   <View style={{ marginLeft: 10 }}>
+  //                     <FormTextInput
+  //                       control={control}
+  //                       errors={errors}
+  //                       name="first_name"
+  //                       label="Description"
+  //                       style={{ backgroundColor: 'transparent', width: '100%' }}
+  //                     />
+  //                   </View>
+  //                   <FormRadioButtons
+  //                     control={control}
+  //                     name="preference"
+  //                     label="Preference"
+  //                     options={[
+  //                       { label: 'Yes', value: 'Yes' },
+  //                       { label: 'No', value: 'No' },
+  //                     ]}
+  //                     // Helpertext = {data[next].HelpText}
+  //                     radioButton={radioButton}
+  //                     setRadio={setRadio}
+  //                     errors={errors}
+  //                   />
+  //                 </View>
+  //               </Dialog.Content>
+  //               <Dialog.Actions>
+  //                 {next != precheckQuestions.length - 1 ? (
+  //                   <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleSubmit(handleNext)}>
+  //                     Next
+  //                   </Button>
+  //                 ) : (
+  //                   <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleSubmit(onSubmit)}>
+  //                     Submit
+  //                   </Button>
+  //                 )}
+  //               </Dialog.Actions>
+  //             </Dialog>
+  //           </Portal>
+
+  //           <Portal>
+  //             <Dialog visible={visible1} onDismiss={hideModal1}>
+  //               <View style={{ ...styles.rowView, flexDirection: 'row', justifyContent: 'space-between' }}>
+  //                 <Dialog.Title style={globalStyles.subtitle}>Add New Activity</Dialog.Title>
+  //                 <View style={{ marginTop: 10 }}>
+  //                   <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal1} />
+  //                 </View>
+  //               </View>
+  //               <Dialog.Content>
+  //                 <View style={{ flexDirection: 'row', padding: 20, justifyContent: 'space-between' }}>
+  //                   <Text style={{ fontSize: 15, fontWeight: 'bold', }}>Start Date</Text>
+  //                   <Text style={{ fontSize: 15, fontWeight: 'bold', }}>End Date</Text>
+  //                 </View>
+  //                 <View style={{ minHeight: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
+  //                   <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={{ width: 130 }} onPress={() => { showTimePicker() }}>
+  //                     {selectedTime}
+  //                   </Button>
+  //                   <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={{ width: 130 }} onPress={() => { showTimeLastPicker() }}>
+  //                     {selectedTimeLast}
+  //                   </Button>
+  //                 </View>
+  //                 <View style={{ alignItems: 'center', justifyContent: 'center', minHeight: 50 }}>
+  //                   <HelperText>
+  //                     <Text>Minimum 1/2 Hours Required</Text>
+  //                   </HelperText>
+  //                 </View>
+  //                 <View style={{ marginTop: 15 }}>
+  //                   <View style={{ marginLeft: 20, minHeight: 40 }}>
+  //                     <Text style={{ fontSize: 15, fontWeight: 'bold', }}>Description</Text>
+  //                   </View>
+  //                   <View>
+  //                     <TextInput style={{ height: 100, borderRadius: 20 }} onChangeText={(e) => setDescriptionActivity(e)} underlineColor="transparent" placeholder='description' />
+  //                   </View>
+  //                 </View>
+  //                 <HelperText style={{ minHeight: 40 }} visible={helper}>
+  //                   <HelperText type="error">This field is required</HelperText>
+  //                 </HelperText>
+  //               </Dialog.Content>
+  //               <Dialog.Actions style={{ alignItems: 'center', justifyContent: 'center' }}>
+  //                 <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleActivitySubmit}>
+  //                   Submit
+  //                 </Button>
+  //               </Dialog.Actions>
+  //             </Dialog>
+  //           </Portal>
+  //           <Portal>
+  //             <Dialog visible={visible2} onDismiss={hideModal2}>
+  //               <View style={{ ...styles.rowView, flexDirection: 'row', justifyContent: 'space-between' }}>
+  //                 <Dialog.Title style={globalStyles.subtitle}>Incident</Dialog.Title>
+  //                 <View style={{ marginTop: 10 }}>
+  //                   <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal2} />
+  //                 </View>
+  //               </View>
+  //               <Dialog.Content style={{ minHeight: 500 }}>
+  //                 <ScrollView style={{ ...globalStyles.cardContainer, minHeight: 90, paddingHorizontal: 0, paddingVertical: 0, backgroundColor: 'transparent' }} nestedScrollEnabled={true}>
+  //                   <Card style={{ ...globalStyles.card }} mode='contained' >
+  //                     <Card.Content>
+  //                       <View style={styles.detailsContainer}>
+  //                         <FormTextInput control={control2} errors={errors2} name="location" label="Location" />
+  //                         <FormRadioButtons
+  //                           control={control2}
+  //                           name="external"
+  //                           label="Is External Involve"
+  //                           options={[
+  //                             { label: 'Yes', value: 'yes' },
+  //                             { label: 'No', value: 'no' },
+  //                           ]}
+  //                           errors={errors2}
+  //                         />
+  //                         <FormRadioButtons
+  //                           control={control2}
+  //                           name="witness"
+  //                           label="Is Witness Involve"
+  //                           options={[
+  //                             { label: 'Yes', value: 'yes' },
+  //                             { label: 'No', value: 'no' },
+  //                           ]}
+  //                           errors={errors2}
+  //                         />
+  //                         <FormTextInput control={control2} errors={errors2} name="incidentdescription" label="Description" />
+  //                         <View>
+  //                           <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#777' }}>Time:</Text>
+  //                         </View>
+  //                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', minHeight: 60 }}>
+  //                           <View style={{ padding: 12 }}>
+  //                             <Text style={{
+  //                               fontSize: 16,
+  //                               color: '#777',
+  //                               fontWeight: '600',
+  //                               textAlign: 'left',
+  //                               paddingBottom: 0,
+  //                             }}>{selectedTime}</Text>
+  //                           </View>
+  //                           <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={{ ...styles.buttonStyle, height: 40 }} onPress={() => setTimePickerVisibility(true)} uppercase={false}>
+  //                             Pick time
+  //                           </Button>
+  //                         </View>
+  //                         <View style={{ padding: 10 }}>
+  //                           <Divider style={globalStyles.divider} />
+  //                         </View>
+  //                         <FormTextInput control={control2} errors={errors2} name="witness_description" label="Witness Description" />
+  //                         <FormTextInput control={control2} errors={errors2} name="students" label="Students" />
+  //                         <FormTextInput control={control2} errors={errors2} name="rooms" label="Rooms" />
+  //                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+  //                           <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleSubmit2(incidentSubmit)}>
+  //                             Submit
+  //                           </Button>
+  //                           <Button textColor={AppStyles.color.black} buttonColor={AppStyles.color.white} mode="contained-tonal" style={styles.buttonStyle} onPress={hideModal2}>
+  //                             Back
+  //                           </Button>
+  //                         </View>
+  //                       </View>
+  //                     </Card.Content>
+
+  //                   </Card>
+  //                 </ScrollView>
+  //               </Dialog.Content>
+  //             </Dialog>
+  //           </Portal>
+  //           {/* <IncidentModal visible2={visible2} hideModal2={hideModal2} bookingId={bookingId} token={token} setMessage={setMessage} setVisible3={setVisible3} /> */}
+  //           <HomePageModal visible4={visible4} hideModal4={hideModal4} item={item} token={token} setItem={setItem} location={location} setMessage={setMessage} setVisible3={setVisible3} />
+  //           <DateTimePickerModal
+  //             isVisible={isTimePickerVisible}
+  //             mode="time"
+  //             value={new Date()}
+  //             onConfirm={handleTimeConfirm}
+  //             onCancel={hideTimePicker}
+  //           />
+  //           <DateTimePickerModal
+  //             isVisible={isTimePickerVisibleLast}
+  //             mode="time"
+  //             value={new Date()}
+  //             onConfirm={handleTimeLastConfirm}
+  //             onCancel={hideTimeLastPicker}
+  //           />
+  //         </View>
+  //       </ScrollView>
+  //       {isLoading && (
+  //         <Portal>
+  //           <LoadingContainer />
+  //         </Portal>
+  //       )}
+  //       <Snackbar
+  //         visible={visible3}
+  //         onDismiss={() => setVisible3(false)}
+  //         duration={3000}
+  //       >
+  //         {Message}
+  //       </Snackbar>
+  //     </KeyboardAvoidingView>
+  //   </>
+  // );
 }
 
 const styles = StyleSheet.create({

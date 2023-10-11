@@ -16,7 +16,7 @@ import {
 import globalStyles from '../../utils/_css/globalStyle';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {AppStyles} from '../../utils/AppStyles';
-
+import { isWithin48Hours } from '../../utils/_helpers';
 const SchedulingModel = ({
   visibleModel,
   hideModal,
@@ -24,13 +24,6 @@ const SchedulingModel = ({
   modelType,
   showConfirmFunction,
 }) => {
-  const isWithin48Hours = targetDate => {
-    const targetDateTime = new Date(targetDate);
-    const currentDate = new Date();
-    const timeDifference = targetDateTime - currentDate;
-    const hoursIn48Hours = 48 * 60 * 60 * 1000;
-    return timeDifference <= hoursIn48Hours;
-  };
 
   return (
     <Portal>
@@ -170,10 +163,7 @@ const SchedulingModel = ({
             )}
             {modelType == 'BOOKED' && (
               <>
-                {!isWithin48Hours(
-                  bookingDetails?.booking?.end_date,
-                  bookingDetails?.booking?.end_time,
-                ) ? (
+                {isWithin48Hours( bookingDetails?.monitor_booking_day_requests[0]?.booking_day?.date)  > 1 ? (
                   <Button
                     onPress={() => {
                       showConfirmFunction(3);

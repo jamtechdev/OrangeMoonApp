@@ -1,6 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
 //import liraries
+//import liraries
 import React, { Component, useState } from 'react';
 import {
     Divider,
@@ -20,8 +21,30 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Configuration } from '../../utils/Configuration';
 import { AppStyles } from '../../utils/AppStyles';
 import { View, StyleSheet, ScrollView } from 'react-native';
+import { monitorService } from '../../utils/_services';
 
-const TodayBookingModel = ({ visible4, hideModal4 }) => {
+const TodayBookingModel = ({ visible4, hideModal4, bookingId, token, setMessage, setVisible3 , item, location ,setItem}) => {
+    const apiMonitorSubmit = () => {
+        console.log('itme', item)
+        const data = new Object ({
+            Monitor_Booking_Day_Report_Id : item.monitor_booking_day_report.id,
+            requestbody:{latlng : (location.latitude,location.longitude)}
+        })
+        monitorService.MonitorSubmitReport(token, data).then((res) =>{
+            console.log('res',res)
+            setMessage(res.data.message)
+            setVisible3(true)
+            setItem()
+            hideModal4()
+        }).catch((error) => {
+            console.log("error",error)
+            setMessage("Something went wrong")
+            setVisible3(true)
+            setItem()
+            hideModal4()
+        })
+    }
+    // monitorService.MonitorSubmitReport
     return (
         <Portal>
             <Dialog visible={visible4} onDismiss={hideModal4}>
@@ -33,7 +56,7 @@ const TodayBookingModel = ({ visible4, hideModal4 }) => {
                         <Card style={{ ...globalStyles.card, minHeight: 300, padding: 10}} mode='contained' >
                             <Text style={{ fontWeight: 'bold' }}>Submitting this report closes the job for the night.</Text>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 30}}>
-                                <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={hideModal4}>
+                                <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={apiMonitorSubmit}>
                                     Yes
                                 </Button>
                                 <Button textColor={AppStyles.color.black} buttonColor={AppStyles.color.white} mode="contained-tonal" style={styles.buttonStyle} onPress={hideModal4}>
@@ -79,6 +102,7 @@ const styles = StyleSheet.create({
         padding: 20,
     },
 });
+
 
 //make this component available to the app
 export default TodayBookingModel;

@@ -7,11 +7,17 @@ import { AppStyles } from '../../utils/AppStyles';
 import { useState } from 'react';
 import { formatDate, sortingHelper } from '../../utils/_helpers';
 
-export default function FilterSearch({ bookingDataBkp, setBookingData, searchQuery, setSearchQuery, sortDirections, setSortDirections, bookingData}) {
+export default function FilterSearch({ bookingDataBkp, setBookingData, bookingData}) {
     const [showFilter, setShowFilter] = useState(false);
     const [activeFilter, setActiveFilter] = useState('')
     const toggleFilter = ()=>setShowFilter(!showFilter);
-
+    const [sortDirections, setSortDirections] = useState({
+      booking_id: 'none', // Initialize with 'none' as the default
+      group_name: 'none',
+      dates: 'none',
+      status: 'none',
+    });
+    const [searchQuery, setSearchQuery] = useState('');
     const handleSearch = query => {
       const lowerCaseQuery = query.toLowerCase();
       const filteredData = bookingDataBkp.filter(
@@ -63,9 +69,9 @@ export default function FilterSearch({ bookingDataBkp, setBookingData, searchQue
         <Text>Filter By</Text>
         <View style={styles.buttonGroup}>
             <Button icon={sortDirections.booking_id == 'ascending' ? 'arrow-up-thick' : 'arrow-down-thick'} mode="contained-tonal" buttonColor={ activeFilter == 'id' ? AppStyles.color.tint : '' } contentStyle={styles.buttonContainer} labelStyle={activeFilter == 'id'? styles.filterButtonActive  :styles.filterButton }  onPress={() =>{ handleSort('booking_id'); setActiveFilter('id')} }>Id</Button>
-            <Button icon={sortDirections.booking_id == 'ascending' ? 'arrow-up-thick' : 'arrow-down-thick'}  mode="contained-tonal" buttonColor={ activeFilter == 'group' ? AppStyles.color.tint : '' } contentStyle={styles.buttonContainer} labelStyle={activeFilter == 'group'? styles.filterButtonActive  :styles.filterButton }  onPress={() =>{ handleSort('group_name'); setActiveFilter('group')}}>Group</Button>
-            <Button icon={sortDirections.booking_id == 'ascending' ? 'arrow-up-thick' : 'arrow-down-thick'}  mode="contained-tonal" buttonColor={ activeFilter == 'date' ? AppStyles.color.tint : '' } contentStyle={styles.buttonContainer} labelStyle={activeFilter == 'date'? styles.filterButtonActive  :styles.filterButton }  onPress={() =>{ handleSort('dates'); setActiveFilter('date')}}>Date</Button>
-            <Button icon={sortDirections.booking_id == 'ascending' ? 'arrow-up-thick' : 'arrow-down-thick'}  mode="contained-tonal" buttonColor={ activeFilter == 'status' ? AppStyles.color.tint : '' } contentStyle={styles.buttonContainer} labelStyle={activeFilter == 'status'? styles.filterButtonActive  :styles.filterButton } onPress={() =>{ handleSort('status'); setActiveFilter('status')}}>status</Button>
+            <Button icon={sortDirections.group_name == 'ascending' ? 'arrow-up-thick' : 'arrow-down-thick'}  mode="contained-tonal" buttonColor={ activeFilter == 'group' ? AppStyles.color.tint : '' } contentStyle={styles.buttonContainer} labelStyle={activeFilter == 'group'? styles.filterButtonActive  :styles.filterButton }  onPress={() =>{ handleSort('group_name'); setActiveFilter('group')}}>Group</Button>
+            <Button icon={sortDirections.dates == 'ascending' ? 'arrow-up-thick' : 'arrow-down-thick'}  mode="contained-tonal" buttonColor={ activeFilter == 'date' ? AppStyles.color.tint : '' } contentStyle={styles.buttonContainer} labelStyle={activeFilter == 'date'? styles.filterButtonActive  :styles.filterButton }  onPress={() =>{ handleSort('dates'); setActiveFilter('date')}}>Date</Button>
+            <Button icon={sortDirections.status == 'ascending' ? 'arrow-up-thick' : 'arrow-down-thick'}  mode="contained-tonal" buttonColor={ activeFilter == 'status' ? AppStyles.color.tint : '' } contentStyle={styles.buttonContainer} labelStyle={activeFilter == 'status'? styles.filterButtonActive  :styles.filterButton } onPress={() =>{ handleSort('status'); setActiveFilter('status')}}>status</Button>
         </View>
     </View>
         )

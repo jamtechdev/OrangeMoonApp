@@ -15,11 +15,12 @@ async function login(data) {
         }
     );
 }
-async function logout(data, token) {
-    return await axios.post(
+async function logout( token) {
+    return await axios.get(
         `${API_URL}/auth/logout`,
-        { ...data },
-        { headers: { Authorization: "Bearer " + token } }
+        {
+            headers: { 'Authorization': 'Bearer ' + token },
+        }
     );
 }
 // async function forgotPass(data, token) {

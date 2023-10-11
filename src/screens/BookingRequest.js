@@ -29,17 +29,11 @@ function BookingRequest({navigation, user, token, route}) {
   const [isLoading, setIsLoading] = useState(true);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [segmentedValue, setSegmentedValue] = useState('All');
-  const [sortDirections, setSortDirections] = useState({
-    booking_id: 'none', // Initialize with 'none' as the default
-    group_name: 'none',
-    dates: 'none',
-    status: 'none',
-  });
-  const [searchQuery, setSearchQuery] = useState('');
   const [updateId, setUpdateId] = useState();
   const [isAcceptDialogVisible, setIsAcceptDialogVisible] = useState(false);
   const [isRejectDialogVisible, setIsRejectDialogVisible] = useState(false);
   const [page, setPage] = useState(0);
+  const [status,setStatus]=useState('')
   const [numberOfItemsPerPageList] = useState([10, 25, 50, 100]);
   const [itemsPerPage, onItemsPerPageChange] = useState(
     numberOfItemsPerPageList[0],
@@ -49,7 +43,8 @@ function BookingRequest({navigation, user, token, route}) {
   const toggleDialogAccept = () => {
     setIsAcceptDialogVisible(!isAcceptDialogVisible);
   };
-  const toggleDialogReject = () => {
+  const toggleDialogReject = (status) => {
+    setStatus(status)
     setIsRejectDialogVisible(!isRejectDialogVisible);
   };
 
@@ -74,6 +69,7 @@ function BookingRequest({navigation, user, token, route}) {
     monitorService
       .bookingRequest(token, segmentedValue)
       .then(res => {
+        console.log(res?.data?.data)
         setBookingData(res?.data?.data);
         setBookingDataBkp(res?.data?.data);
         setIsLoading(false);
@@ -98,6 +94,7 @@ function BookingRequest({navigation, user, token, route}) {
     monitorService
       .bookingChangeStatus(token, updateId, status)
       .then(res => {
+        console.log(res)
         setIsButtonLoading(false);
         if (res?.data?.status === true) {
           monitorDataCall();
@@ -135,20 +132,15 @@ function BookingRequest({navigation, user, token, route}) {
               style={styles.segmentButtonSection}
             />
           </ScrollView>
+        {/* <Text>{bookingData?.length} </Text> */}
           <FilterSearch
             bookingDataBkp={bookingDataBkp}
             setBookingData={setBookingData}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            sortDirections={sortDirections}
-            setSortDirections={setSortDirections}
             bookingData={bookingData}
           />
-          <FlatList
-            data={bookingData?.slice(from, to)}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({item}) => (
+           {bookingData && bookingData?.map((item, index) => (
               <BookingCardList
+              key={index}
               item={item}
               id={item.booking_id}
               status={item.status}
@@ -159,11 +151,9 @@ function BookingRequest({navigation, user, token, route}) {
               toggleDialogReject={toggleDialogReject}
               setUpdateId={setUpdateId}
             />
-            )}
-            // onEndReached={()=>setPage(page + 1)}
-            // onEndReachedThreshold={0.1}
-          />
-          <DataTable.Pagination
+            ))}
+        
+          {/* <DataTable.Pagination
                 page={page}
                 numberOfPages={Math.ceil(bookingData.length / itemsPerPage)}
                 onPageChange={page => setPage(page)}
@@ -173,7 +163,7 @@ function BookingRequest({navigation, user, token, route}) {
                 onItemsPerPageChange={onItemsPerPageChange}
                 showFastPaginationControls
                 selectPageDropdownLabel={'Rows per page'}
-              />
+              /> */}
         </View>
         <Portal>
           <Dialog
@@ -215,7 +205,7 @@ function BookingRequest({navigation, user, token, route}) {
                 mode="contained"
                 loading={isButtonLoading}
                 onPress={() => {
-                  updateBookingStatus('REJECTED');
+                  updateBookingStatus(status);
                 }}>
                 Yes{' '}
               </Button>

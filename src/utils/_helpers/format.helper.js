@@ -59,3 +59,16 @@ export const formatDateNew = (dateStr) => {
     const year = date.getFullYear();
     return `${month}/${day}/${year}`;
 }
+
+export const isWithin48Hours = (booking) => {
+    let days = 0;
+
+    if (booking) {
+      const currentDate = new Date();
+      const bookingDate = new Date(booking);
+      const timeDifference = bookingDate.getTime() - currentDate.getTime();
+      const dayDifference = timeDifference / (1000 * 60 * 60 * 24);
+      days = dayDifference;
+    }
+    return days
+}

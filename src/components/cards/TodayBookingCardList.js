@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {formatDate, formatTime} from '../../utils/_helpers';
 import globalStyles from '../../utils/_css/globalStyle';
 import {AppStyles} from '../../utils/AppStyles';
-const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog}) => {
+const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog , navigation}) => {
   const checkActive = monitorBookingDayRequest => {
     const currentDateTime = new Date();
     const firstTime = new Date(currentDateTime);
@@ -21,7 +21,7 @@ const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog}) => {
     let active = false;
     if (intervalInHours <= 8 && intervalInHours > 1) {
       active = true;
-    }
+  }
     // else if (intervalInHours <= 1 && monitorBookingDayRequest.monitorBookingRequest.temperature_button === true) {
     //   active = true;
     // }
@@ -35,6 +35,15 @@ const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog}) => {
     const currentDate = new Date(timeZone).toISOString().split('T')[0];
     return currentDate;
   };
+  const detailHandler = (item) => {
+    console.log("item", item)
+    const data = new Object({
+      id: item.booking_day_id,
+      start_Time : item.booking_day.start_time,
+      end_Time : item.booking_day.end_time,
+    })
+    navigation.navigate('DetailsReport', { Booking: data });
+  }
 
   return (
     <Card style={styles.tableCard}>
@@ -79,7 +88,7 @@ const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog}) => {
         </View>
 
         <View style={[globalStyles.buttonRow, {marginTop: 10}]}>
-        <View style={styles.action}>
+          <View style={styles.action}>
             {!item?.monitor_booking_day_report &&
               item?.booking_day?.date <= checkActive(item) && (
                 <Icon
@@ -92,7 +101,7 @@ const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog}) => {
             {item?.monitor_booking_day_report && (
               <Icon
                 name="eye"
-                // onPress={() => detailHandler(item)}
+                onPress={() => detailHandler(item)}
                 size={20}
                 color={AppStyles.color.tint}
               />

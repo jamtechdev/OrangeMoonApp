@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable prettier/prettier */
-import React, { useMemo, useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, Text, Pressable } from 'react-native';
+import React, {useMemo, useState, useEffect} from 'react';
+import {View, ScrollView, StyleSheet, Text, Pressable} from 'react-native';
 import {
   List,
   Card,
@@ -15,21 +15,23 @@ import {
   Modal,
   Dialog,
 } from 'react-native-paper';
-import { connect } from 'react-redux';
-import { monitorService } from '../utils/_services';
-import { AppStyles } from '../utils/AppStyles';
+import {connect} from 'react-redux';
+import {monitorService} from '../utils/_services';
+import {AppStyles} from '../utils/AppStyles';
 import globalStyles from '../utils/_css/globalStyle';
 import LoadingContainer from '../components/LoadingContainer';
-import { formatDate, formatTime } from '../utils/_helpers';
-import { Calendar } from 'react-native-big-calendar';
+import {formatDate, formatTime} from '../utils/_helpers';
+import {Calendar} from 'react-native-big-calendar';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { useForm, Controller } from 'react-hook-form';
+import {useForm, Controller} from 'react-hook-form';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import FormDateInput from '../components/FormDateInput';
 import SearchBox from '../components/SearchBox';
 import SchedulingModel from '../components/model/SchedulingModel';
 import SchedulingDateDialog from '../components/dialog/SchedulingDateDialog';
-function Scheduling({ navigation, user, token, route }) {
+import SchedulingCardList from '../components/cards/SchedulingCardList';
+import SchedulingFilterSearch from '../components/searchFilter/ScheduleFilterSearch';
+function Scheduling({navigation, user, token, route}) {
   const [eventData, setEventData] = useState([]);
   const [assignableData, setAssignableData] = useState([]);
   const [assignableDataBkp, setAssignableDataBkp] = useState([]);
@@ -45,15 +47,7 @@ function Scheduling({ navigation, user, token, route }) {
   const [bookingDetails, setBookingDetails] = useState([]);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [modelType, setModelType] = useState();
-  const [sortDirections, setSortDirections] = useState({
-    booking_id: 'none', // Initialize with 'none' as the default
-    group_name: 'none',
-    location: 'none',
-    date: 'none',
-    start_time: 'none',
-    end_time: 'none',
-  });
-  const [searchQuery, setSearchQuery] = useState('');
+
   const [page, setPage] = useState(0);
   const [numberOfItemsPerPageList] = useState([10, 25, 50, 100]);
   const [itemsPerPage, onItemsPerPageChange] = useState(
@@ -102,62 +96,13 @@ function Scheduling({ navigation, user, token, route }) {
         }
         setEventData(res.data?.monitor_availability);
         setIsLoading(false);
-        setIsButtonLoading(false)
+        setIsButtonLoading(false);
         hideDialog();
       })
       .catch(error => {
         console.log(error);
         setIsLoading(false);
       });
-  };
-  const handleSort = async columnKey => {
-    const nextSortDirection =
-      sortDirections[columnKey] === 'ascending' ? 'descending' : 'ascending';
-    setSortDirections({
-      ...sortDirections,
-      [columnKey]: nextSortDirection,
-    });
-
-    let sortDataType = typeof assignableData[0][columnKey];
-    const sortedData = [...assignableData].sort((a, b) => {
-      let aValue = a[columnKey];
-      let bValue = b[columnKey];
-      switch (sortDataType) {
-        case 'number':
-          return nextSortDirection === 'ascending'
-            ? aValue - bValue
-            : bValue - aValue;
-        case 'string':
-          return nextSortDirection === 'ascending'
-            ? aValue?.localeCompare(bValue)
-            : bValue?.localeCompare(aValue);
-        case 'object':
-          return nextSortDirection === 'ascending'
-            ? aValue?.getTime() - bValue?.getTime()
-            : bValue?.getTime() - aValue?.getTime();
-        default:
-          return 0;
-      }
-    });
-    setAssignableData(sortedData);
-  };
-  const handleSearch = query => {
-    const lowerCaseQuery = query.toLowerCase();
-    const filteredData = assignableData.filter(
-      item =>
-        item?.booking_id?.toString()?.toLowerCase()?.includes(lowerCaseQuery) ||
-        item?.group_name?.toLowerCase()?.includes(lowerCaseQuery) ||
-        item?.location?.toLowerCase()?.includes(lowerCaseQuery) ||
-        formatDate(item?.date)?.toLowerCase()?.includes(lowerCaseQuery) ||
-        formatDate(item?.end_date)?.toLowerCase()?.includes(lowerCaseQuery) ||
-        formatDate(item?.end_date)?.toLowerCase()?.includes(lowerCaseQuery),
-    );
-    if (filteredData.length == 0 || query == '') {
-      setAssignableData(assignableDataBkp);
-    } else {
-      setAssignableData(filteredData);
-    }
-    setSearchQuery(query);
   };
 
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -191,16 +136,16 @@ function Scheduling({ navigation, user, token, route }) {
     };
   };
 
-  const CustomEvent = ({ event, touchableOpacityProps }) => (
+  const CustomEvent = ({event, touchableOpacityProps}) => (
     <Pressable
       {...touchableOpacityProps}
       onPress={() => onEventPress(event)}
-      style={[styles.customEventContainer, { backgroundColor: event.color }]}
+      style={[styles.customEventContainer, {backgroundColor: event.color}]}
       key={event?.id}>
       {event.color !== 'yellow' ? (
         <Text style={styles.eventText}>{event.title}</Text>
       ) : (
-        <Text style={[styles.eventText, { color: AppStyles.color.black }]}>
+        <Text style={[styles.eventText, {color: AppStyles.color.black}]}>
           {event.title}
         </Text>
       )}
@@ -251,14 +196,6 @@ function Scheduling({ navigation, user, token, route }) {
     }
   };
 
-  const isWithin48Hours = targetDate => {
-    const targetDateTime = new Date(targetDate);
-    const currentDate = new Date();
-    const timeDifference = targetDateTime - currentDate;
-    const hoursIn48Hours = 48 * 60 * 60 * 1000;
-    return timeDifference <= hoursIn48Hours;
-  };
-
   const updateAvailability = (start, end, status) => {
     console.log(start, end);
     let data = {
@@ -273,7 +210,7 @@ function Scheduling({ navigation, user, token, route }) {
       monitorService
         .setMonitorAvailablity(token, data)
         .then(res => {
-          console.log(res)
+          console.log(res);
           if (res.data.status) {
             getdayList();
             // setTimeout(() => {
@@ -342,7 +279,7 @@ function Scheduling({ navigation, user, token, route }) {
     <>
       <ScrollView
         style={styles.container}
-        scrollIndicatorInsets={{ top: 0, left: 0, bottom: 0, right: 0 }}>
+        scrollIndicatorInsets={{top: 0, left: 0, bottom: 0, right: 0}}>
         <View style={styles.container}>
           <Text style={globalStyles.subtitle}> Manage Schedule </Text>
           <Divider style={globalStyles.divider} />
@@ -397,101 +334,34 @@ function Scheduling({ navigation, user, token, route }) {
           <View style={styles.nextDiv}>
             <Text style={globalStyles.subtitle}> Open Assignments</Text>
             <Divider style={globalStyles.divider} />
-            <SearchBox handleSearch={handleSearch} searchQuery={searchQuery} />
-            <ScrollView horizontal>
-              <DataTable style={styles.DataTable}>
-                <DataTable.Header style={styles.header}>
-                  <DataTable.Title
-                    sortDirection={sortDirections.booking_id}
-                    onPress={() => handleSort('booking_id')}
-                    style={globalStyles.tableCellId}>
-                    ID
-                  </DataTable.Title>
-                  <DataTable.Title
-                    sortDirection={sortDirections.group_name}
-                    onPress={() => handleSort('group_name')}
-                    style={globalStyles.tableCellGroup}>
-                    Group Name
-                  </DataTable.Title>
-                  <DataTable.Title
-                    sortDirection={sortDirections.location}
-                    onPress={() => handleSort('location')}
-                    style={styles.tableAddress}>
-                    Hotel Address
-                  </DataTable.Title>
-                  <DataTable.Title
-                    sortDirection={sortDirections.date}
-                    onPress={() => handleSort('date')}
-                    style={globalStyles.tableCell}>
-                    Job Date
-                  </DataTable.Title>
-                  <DataTable.Title
-                    sortDirection={sortDirections.start_time}
-                    onPress={() => handleSort('start_time')}
-                    style={globalStyles.tableCell}>
-                    Start Time
-                  </DataTable.Title>
-                  <DataTable.Title
-                    sortDirection={sortDirections.end_time}
-                    onPress={() => handleSort('end_time')}
-                    style={globalStyles.tableCell}>
-                    End Time
-                  </DataTable.Title>
-                  <DataTable.Title style={styles.tableAction}>
-                    Action
-                  </DataTable.Title>
-                </DataTable.Header>
-                {isLoading && <LoadingContainer />}
-                {assignableData?.slice(from, to).map((item, index) => (
-                  <DataTable.Row key={index}>
-                    <DataTable.Cell style={globalStyles.tableCellId}>
-                      {item.booking_id}{' '}
-                    </DataTable.Cell>
-                    <DataTable.Cell style={globalStyles.tableCellGroup}>
-                      {item?.group_name}
-                    </DataTable.Cell>
-                    <DataTable.Cell style={styles.tableAddress}>
-                      {item?.location}
-                    </DataTable.Cell>
-                    <DataTable.Cell style={globalStyles.tableCell}>
-                      {formatDate(item?.date)}{' '}
-                    </DataTable.Cell>
-                    <DataTable.Cell style={globalStyles.tableCell}>
-                      {formatTime(item?.start_time)}{' '}
-                    </DataTable.Cell>
-                    <DataTable.Cell style={globalStyles.tableCell}>
-                      {formatTime(item?.end_time)}{' '}
-                    </DataTable.Cell>
-                    <DataTable.Cell style={styles.tableAction}>
-                      <Button
-                        mode="contained"
-                        style={styles.actionButton}
-                        onPress={() =>
-                          updateRequestStatus(item?.booking_day_id)
-                        }>
-                        Request
-                      </Button>
-                    </DataTable.Cell>
-                  </DataTable.Row>
-                ))}
-                {!assignableData?.length && !isLoading && (
-                  <Text style={globalStyles.emptyData}> Data not found</Text>
-                )}
-                <DataTable.Pagination
-                  page={page}
-                  numberOfPages={Math.ceil(
-                    assignableData.length / itemsPerPage,
-                  )}
-                  onPageChange={page => setPage(page)}
-                  label={`${from + 1}-${to} of ${assignableData.length}`}
-                  numberOfItemsPerPageList={numberOfItemsPerPageList}
-                  numberOfItemsPerPage={itemsPerPage}
-                  onItemsPerPageChange={onItemsPerPageChange}
-                  showFastPaginationControls
-                  selectPageDropdownLabel={'Rows per page'}
+            <SchedulingFilterSearch
+              assignableData={assignableData}
+              setAssignableData={setAssignableData}
+              assignableDataBkp={assignableDataBkp}
+            />
+            {isLoading && <LoadingContainer />}
+            {assignableData &&
+              assignableData.map((item, index) => (
+                <SchedulingCardList
+                  key={index}
+                  item={item}
+                  updateRequestStatus={updateRequestStatus}
                 />
-              </DataTable>
-            </ScrollView>
+              ))}
+            {!assignableData?.length && !isLoading && (
+              <Text style={globalStyles.emptyData}> Data not found</Text>
+            )}
+            {/* <DataTable.Pagination
+              page={page}
+              numberOfPages={Math.ceil(assignableData.length / itemsPerPage)}
+              onPageChange={page => setPage(page)}
+              label={`${from + 1}-${to} of ${assignableData.length}`}
+              numberOfItemsPerPageList={numberOfItemsPerPageList}
+              numberOfItemsPerPage={itemsPerPage}
+              onItemsPerPageChange={onItemsPerPageChange}
+              showFastPaginationControls
+              selectPageDropdownLabel={'Rows per page'}
+            /> */}
           </View>
         </View>
       </ScrollView>
