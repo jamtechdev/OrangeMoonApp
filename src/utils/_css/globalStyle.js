@@ -46,11 +46,7 @@ const globalStyles = StyleSheet.create({
     //     color: AppStyles.color.white,
     // },
     emptyData: {
-        paddingTop: '50%',
-        justifyContent:'center',
-        alignItems:'center',
-        fontWeight:'100',
-        gap:20,
+        paddingTop: 20,
     },
     divider: {
         height: 2,
