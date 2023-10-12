@@ -35,8 +35,11 @@ const SubReportCardList = ({item , navigateDetails }) => (
         </View>
       <View style={[globalStyles.buttonRow, {alignItems: 'center'}]}>
         <View style={styles.viewRow}>
+        <View style={{justifyContent:'center'}}>
+        <Text style={styles.valueText}>Wellness Check Status : </Text>
+        </View>
           <View style={styles.badgeheadingText}>
-            <Text style={styles.valueTextinner}>Wellness Check Status : {item?.temperature}</Text>
+           <Text style={styles.valueTextinner}>{item?.temperature}</Text>
           </View>
         </View>
         <View style={styles.action}>

@@ -20,6 +20,7 @@ function DetailsReport({ navigation, route, user, token }) {
     console.log(token)
     
     useEffect(() => {
+        console.log(route,"here route ")
         if (route.params && route.params.Booking) {
             const paramsData = {
                 id: route.params.Booking.id,

@@ -15,7 +15,7 @@ const StipeCardList = ({item  }) => (
           <Text style={styles.valueTextinner}>Amount : {item?.amount}</Text>
           </View>
         </View>
-        <View style={styles.badgeheadingText}>
+        <View style={styles.badge}>
         <Text style={styles.valueTextinner}> {createdDate(item?.created_at)}</Text>
           </View>
       </View>

@@ -434,7 +434,8 @@ function HomeScreen({ navigation, user, token }) {
   };
 
   const actionCheckSubmit = () => {
-    console.log('this button was clicked')
+    
+    console.log('this button was clicked' )
     let data = {
       temperature: 'Passed',
       booking_day_request_id: bookingId,
@@ -520,6 +521,7 @@ function HomeScreen({ navigation, user, token }) {
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   };
+  
   return (
     <>
       <KeyboardAvoidingView
@@ -529,9 +531,10 @@ function HomeScreen({ navigation, user, token }) {
       >
         <FlatList
           style={styles.container}
-          data={[{ key: 'header' }, ...dashboardData?.slice(from, to)]}
+          data={[{ key: 'header' }, ...dashboardData]}
           keyExtractor={(item) => item.key}
           renderItem={({ item, index }) => {
+            // console.log(item, 'testv ')
             if (index === 0) {
               return (
                 <>
@@ -551,6 +554,9 @@ function HomeScreen({ navigation, user, token }) {
                 </>
               );
             } else {
+              if(item?.monitor_booking_day_report && item.monitor_booking_day_report?.end_time !== null){
+                return; 
+              }
               return (
                 <TodayBookingCardList
                   item={item}
@@ -568,19 +574,19 @@ function HomeScreen({ navigation, user, token }) {
           ListEmptyComponent={!dashboardData?.length && !isLoading && (
             <Text style={globalStyles.emptyData}> Data not found</Text>
           )}
-          ListFooterComponent={
-            <DataTable.Pagination
-              page={page}
-              numberOfPages={Math.ceil(dashboardData.length / itemsPerPage)}
-              onPageChange={page => setPage(page)}
-              label={`${from + 1}-${to} of ${dashboardData.length}`}
-              numberOfItemsPerPageList={numberOfItemsPerPageList}
-              numberOfItemsPerPage={itemsPerPage}
-              onItemsPerPageChange={onItemsPerPageChange}
-              showFastPaginationControls
-              selectPageDropdownLabel={'Rows per page'}
-            />
-          }
+          // ListFooterComponent={
+          //   <DataTable.Pagination
+          //     page={page}
+          //     numberOfPages={Math.ceil(dashboardData.length / itemsPerPage)}
+          //     onPageChange={page => setPage(page)}
+          //     label={`${from + 1}-${to} of ${dashboardData.length}`}
+          //     numberOfItemsPerPageList={numberOfItemsPerPageList}
+          //     numberOfItemsPerPage={itemsPerPage}
+          //     onItemsPerPageChange={onItemsPerPageChange}
+          //     showFastPaginationControls
+          //     selectPageDropdownLabel={'Rows per page'}
+          //   />
+          // }
         />
         <Portal>
           <Dialog visible={isDialogVisible} onDismiss={closeActionDialog}>
