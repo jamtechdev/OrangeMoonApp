@@ -97,7 +97,7 @@ function HomeScreen({ navigation, user, token }) {
   const [visible4, setVisible4] = React.useState(false)
   const [refreshing, setRefreshing] = React.useState(false);
   const [item, setItem] = React.useState()
-
+    const [buttonLoading, setButtonLoading] = useState(false)
   const validationSchema = Yup.object().shape({
     first_name: Yup.string().required("Answer is required"),
     preference: Yup.string().required("Preference is required"),
@@ -367,7 +367,6 @@ function HomeScreen({ navigation, user, token }) {
   //   }
   // }
   const openActionDialog = (item, name) => {
-    // Modal for hospital and last stop icons 
     console.log('name', name)
     if (name === 'stop') {
       setVisible4(true)
@@ -375,7 +374,7 @@ function HomeScreen({ navigation, user, token }) {
 
     } else {
       setIsDialogVisible(true);
-
+      setBookingId(item.id)
     }
   }
 
@@ -402,7 +401,7 @@ function HomeScreen({ navigation, user, token }) {
     setSelectedRadio(value);
     if (askQuestion.question1 === true && value === 'No') {
       setAskQuestion({
-        ...sortDirections,
+        ...askQuestion,
         question1: false,
         question2: true,
       });
@@ -410,7 +409,7 @@ function HomeScreen({ navigation, user, token }) {
       return;
     } else if (askQuestion.question2 === true && value === 'No') {
       setAskQuestion({
-        ...sortDirections,
+        ...askQuestion,
         question2: false,
         question3: true,
       });
@@ -418,7 +417,7 @@ function HomeScreen({ navigation, user, token }) {
       return;
     } else if (askQuestion.question3 === true && value === 'yes') {
       setAskQuestion({
-        ...sortDirections,
+        ...askQuestion,
         question3: false,
         question4: true,
       });
@@ -426,7 +425,7 @@ function HomeScreen({ navigation, user, token }) {
       return;
     } else if (askQuestion.question4 === true) {
       setAskQuestion({
-        ...sortDirections,
+        ...askQuestion,
         question4: true,
       });
       return;
@@ -434,21 +433,36 @@ function HomeScreen({ navigation, user, token }) {
   };
 
   const actionCheckSubmit = () => {
-    
-    console.log('this button was clicked' )
-    let data = {
-      temperature: 'Passed',
-      booking_day_request_id: bookingId,
-      answer: 'no',
-    };
-    monitorService
-      .BookingReportActionCheck(token, data)
-      .then(res => {
-        todayReportData();
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    setButtonLoading(true)
+    console.log('this button was clicked', item )
+    if(askQuestion.question3 || askQuestion.question4){
+      if( askQuestion.question4 && selectedRadio == 'yes'){
+        setButtonLoading(false)
+        closeActionDialog()
+        return 
+      }
+      let data = {
+        temperature: 'Passed',
+        booking_day_request_id: bookingId,
+        answer: 'yes',
+      };
+      monitorService
+        .BookingReportActionCheck(token, data)
+        .then(res => {
+          console.log(res)
+          todayReportData();
+          closeActionDialog()
+          setButtonLoading(false)
+        })
+        .catch(error => {
+          console.log(error);
+          setButtonLoading(false)
+        });
+    }else{
+      setButtonLoading(false)
+      closeActionDialog()
+    }
+ 
   };
 
   useEffect(() => {
@@ -521,7 +535,44 @@ function HomeScreen({ navigation, user, token }) {
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   };
-  
+  const ArrivedMarked= (data)=>{
+    setIsLoading(true)
+   let item={
+    booking_day_request_id: data.id
+   }
+    monitorService
+    .markArrived(token, item)
+    .then(res => {
+      console.log(res)
+      todayReportData();
+      setIsLoading(false)
+    })
+    .catch(error => {
+      console.log(error);
+      setIsLoading(false)
+    });
+  }
+  const apiMonitorSubmit = () => {
+    console.log('itme', item)
+    const data = new Object ({
+        Monitor_Booking_Day_Report_Id : item.monitor_booking_day_report.id,
+        requestbody:{latlng : (location.latitude,location.longitude)}
+    })
+    monitorService.MonitorSubmitReport(token, data).then((res) =>{
+        console.log('res',res)
+        todayReportData();
+        setMessage(res.data.message)
+        setVisible3(true)
+        setItem()
+        hideModal4()
+    }).catch((error) => {
+        console.log("error",error)
+        setMessage("Something went wrong")
+        setVisible3(true)
+        setItem()
+        hideModal4()
+    })
+}
   return (
     <>
       <KeyboardAvoidingView
@@ -564,6 +615,7 @@ function HomeScreen({ navigation, user, token }) {
                   openPrecheckDialog={openPrecheckDialog}
                   openActionDialog={openActionDialog}
                   navigation={navigation}
+                  ArrivedMarked={ArrivedMarked}
                 />
               );
             }
@@ -692,7 +744,7 @@ function HomeScreen({ navigation, user, token }) {
             </Dialog.Content>
             <Dialog.Actions>
               {selectedRadio && (
-                <Button mode="contained" onPress={() => actionCheckSubmit()}>
+                <Button loading={buttonLoading} mode="contained" onPress={() => actionCheckSubmit()}>
                   Submit
                 </Button>
               )}
@@ -872,7 +924,28 @@ function HomeScreen({ navigation, user, token }) {
           </Dialog>
         </Portal>
         {/* <IncidentModal visible2={visible2} hideModal2={hideModal2} bookingId={bookingId} token={token} setMessage={setMessage} setVisible3={setVisible3} /> */}
-        <TodayBookingModel visible4={visible4} hideModal4={hideModal4} item={item} token={token} setItem={setItem} location={location} setMessage={setMessage} setVisible3={setVisible3} />
+        <Portal>
+            <Dialog visible={visible4} onDismiss={hideModal4}>
+                <View style={{ ...styles.rowView, alignItems: 'center', justifyContent: 'center' }}>
+                    <Dialog.Title style={{ ...globalStyles.subtitle }}>Are you Sure?</Dialog.Title>
+                </View>
+                <Dialog.Content style={{ minHeight: 200, justifyContent: 'center', alignItems: 'center' }}>
+                    <ScrollView style={{ ...globalStyles.cardContainer, minHeight: 90, paddingHorizontal: 0, paddingVertical: 0, backgroundColor: 'transparent' }} nestedScrollEnabled={true}>
+                        <Card style={{ ...globalStyles.card, minHeight: 300, padding: 10}} mode='contained' >
+                            <Text style={{ fontWeight: 'bold' }}>Submitting this report closes the job for the night.</Text>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 30}}>
+                                <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={apiMonitorSubmit}>
+                                    Yes
+                                </Button>
+                                <Button textColor={AppStyles.color.black} buttonColor={AppStyles.color.white} mode="contained-tonal" style={styles.buttonStyle} onPress={hideModal4}>
+                                    No
+                                </Button>
+                            </View>
+                        </Card>
+                    </ScrollView>
+                </Dialog.Content>
+            </Dialog>
+        </Portal>
         <DateTimePickerModal
           isVisible={isTimePickerVisible}
           mode="time"

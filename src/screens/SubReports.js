@@ -56,7 +56,7 @@ function SubReports({navigation, user, token, route, value}) {
 
   const navigateDetails = booking => {
     // route(booking?.id);
-    navigation.navigate('DetailsReport', {Booking: booking});
+    navigation.navigate('DetailsReport', {Booking: booking, header: 'report'});
     console.log(booking);
   };
 

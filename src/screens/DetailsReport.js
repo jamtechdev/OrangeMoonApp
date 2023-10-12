@@ -7,6 +7,9 @@ import InputLabelView from '../components/InputLabelView';
 import { monitorService } from '../utils/_services';
 import LoadingContainer from '../components/LoadingContainer';
 import globalStyles from '../utils/_css/globalStyle';
+import PreCheckCardList from '../components/cards/PreCheckCardList';
+import ActivitiesCardList from '../components/cards/ActivitiesCardList';
+import IncidentCardList from '../components/cards/IncidentCardList';
 
 
 function DetailsReport({ navigation, route, user, token }) {
@@ -17,11 +20,11 @@ function DetailsReport({ navigation, route, user, token }) {
     const [incidents, setIncidents] = useState([])
     const [monitorActivitySorted, setMonitorActivitySorted] = useState([])
     const [isLoading, setIsLoading] = useState(true)
-    console.log(token)
-    
+    const [ header, setHeader ] = useState('')    
     useEffect(() => {
         console.log(route,"here route ")
         if (route.params && route.params.Booking) {
+            setHeader(route.params.header)
             const paramsData = {
                 id: route.params.Booking.id,
                 start_Time: route.params.Booking.start_Time,
@@ -50,7 +53,12 @@ function DetailsReport({ navigation, route, user, token }) {
                 <ScrollView style={styles.main}>
                     <View style={styles.container}>
                         <Card style={styles.card} >
+                        { header == 'report' && (
                             <Text style={globalStyles.subtitle}>Nightly Activity Report </Text>
+                        )}
+                        { header == 'today' && (
+                            <Text style={globalStyles.subtitle}>Booking Day Details </Text>
+                        )}
                             <Divider style={globalStyles.divider} />
                             <Card.Content>
                                 {monitorBookingDayReport && bookingDayDetails &&
@@ -111,29 +119,55 @@ function DetailsReport({ navigation, route, user, token }) {
                             <Card style={styles.card} >
                                 <Text style={globalStyles.subtitle}>Pre-Checks</Text>
                                 <Divider style={globalStyles.divider} />
-                                <Card.Content>
-                                   
-                                </Card.Content>
+                                <View style={{marginVertical:10}}>
+                                   {
+                                    preCheckQuestions && preCheckQuestions.map((item, index)=>{
+                                        return(
+                                            <PreCheckCardList
+                                                key={index}
+                                                item={item}
+                                            />
+                                        )
+                                    })
+                                   }
+                                   </View>
                             </Card>
                         </View>
                         <View style={styles.nextView}>
                             <Card style={styles.card} >
                                 <Text style={globalStyles.subtitle}>Activities</Text>
                                 <Divider style={globalStyles.divider} />
-
-
-                                <Card.Content>
-                                   
-                                </Card.Content>
+                                <View style={{marginVertical:10}}>
+                                {
+                                    monitorActivitySorted && monitorActivitySorted.map((item, index)=>{
+                                        return(
+                                            <ActivitiesCardList
+                                                key={index}
+                                                item={item}
+                                            />
+                                        )
+                                    })
+                                   }
+                                </View>    
                             </Card>
                         </View>
                         <View style={styles.nextView}>
                             <Card style={styles.card} >
                                 <Text style={globalStyles.subtitle}>Incident Reports</Text>
                                 <Divider style={globalStyles.divider} />
-                                <Card.Content>
-                                   
-                                </Card.Content>
+                                <View style={{marginVertical:10}}>
+                                {
+                                    incidents && incidents.map((item, index)=>{
+                                        console.log(item)
+                                        return(
+                                            <IncidentCardList
+                                                key={index}
+                                                item={item}
+                                            />
+                                        )
+                                    })
+                                   }
+                                   </View>
                             </Card>
                         </View>
                     </View>

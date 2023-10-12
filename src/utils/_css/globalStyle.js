@@ -46,7 +46,11 @@ const globalStyles = StyleSheet.create({
     //     color: AppStyles.color.white,
     // },
     emptyData: {
-        padding: 20
+        paddingTop: '50%',
+        justifyContent:'center',
+        alignItems:'center',
+        fontWeight:'100',
+        gap:20,
     },
     divider: {
         height: 2,
@@ -62,6 +66,7 @@ const globalStyles = StyleSheet.create({
     },
     card: {
         marginVertical: 12,
+        backgroundColor: '#fff',
     },
     cardContainer: {
         flex: 1,

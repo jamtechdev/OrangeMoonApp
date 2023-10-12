@@ -25,7 +25,9 @@ export const monitorService = {
     bookingdayActivity,
     prechecksResponse,
     precheckquestion,
-    MonitorSubmitReport
+    MonitorSubmitReport,
+    IncidentActivity,
+    markArrived
 };
 
 async function dashboard(token) {
@@ -179,7 +181,7 @@ async function bookingdayActivity(token, data) {
         `${API_URL}/monitor-booking-day-report/activity`,
         data,
         {
-            headers: { 'Authorization': 'Bearer' + token }
+            headers: { 'Authorization': 'Bearer ' + token }
         }
     );
 }
@@ -208,6 +210,25 @@ async function MonitorSubmitReport(token ,data) {
         data.requestbody,
         {
             headers: { 'Authorization': 'Bearer ' + token,  'Content-Type': 'multipart/form-data' },
+        }
+    );
+}
+async function IncidentActivity(token, data) {
+    return await axios.post(
+        `${API_URL}/monitor-booking-day-report/incident`,
+        data,
+        {
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'multipart/form-data' },
+        }
+    );
+}
+
+async function markArrived(token, data) {
+    return await axios.post(
+        `${API_URL}/mark-arrival-by-monitor`,
+        data,
+        {
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'multipart/form-data' },
         }
     );
 }

@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {formatDate, formatTime} from '../../utils/_helpers';
 import globalStyles from '../../utils/_css/globalStyle';
 import {AppStyles} from '../../utils/AppStyles';
-const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog , navigation}) => {
+const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog , navigation, ArrivedMarked}) => {
   const checkActive = monitorBookingDayRequest => {
     const currentDateTime = new Date();
     const firstTime = new Date(currentDateTime);
@@ -38,11 +38,11 @@ const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog , navi
   const detailHandler = (item) => {
     console.log("item", item)
     const data = new Object({
-      id: item.booking_day_id,
+      id: item?.monitor_booking_day_report?.id,
       start_Time : item.booking_day.start_time,
       end_Time : item.booking_day.end_time,
     })
-    navigation.navigate('DetailsReport', { Booking: data });
+    navigation.navigate('DetailsReport', { Booking: data, header: 'today' });
   }
 
   return (
@@ -89,6 +89,16 @@ const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog , navi
 
         <View style={[globalStyles.buttonRow, {marginTop: 10}]}>
           <View style={styles.action}>
+        {item?.arrival_time !== null && (
+            <Pressable style={styles.badgeButtonDisable} onPress={() => console.log('gsys')}>
+                 <Text style={styles.badgeButtonText}>Arrived</Text>
+          </Pressable>
+          ) }
+          {item?.arrival_time == null && (
+            <Pressable style={styles.badgeButton} onPress={() => ArrivedMarked(item)}>
+                 <Text style={styles.badgeButtonText}> Mark Arrived</Text>
+          </Pressable>
+          ) }
             {!item?.monitor_booking_day_report &&
               item?.booking_day?.date <= checkActive(item) && (
                 <Icon
@@ -198,9 +208,33 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
+   
   },
   valueTextinner: {
     fontSize: 10,
+    color: '#fff',
+  },
+  badgeButton:{
+    backgroundColor: 'green',
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    fontSize:15,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeButtonDisable:{
+    backgroundColor: AppStyles.color.tint,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    fontSize:15,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity:0.7
+  },
+  badgeButtonText: {
+    fontSize: 14,
     color: '#fff',
   },
 });

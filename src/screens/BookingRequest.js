@@ -22,6 +22,7 @@ import LoadingContainer from '../components/LoadingContainer';
 import globalStyles from '../utils/_css/globalStyle';
 import FilterSearch from '../components/searchFilter/BookingFilterSearch';
 import BookingCardList from '../components/cards/BookingCardList';
+import NoDataFound from '../components/searchFilter/NoData';
 
 function BookingRequest({navigation, user, token, route}) {
   const [bookingData, setBookingData] = useState([]);
@@ -152,7 +153,9 @@ function BookingRequest({navigation, user, token, route}) {
               setUpdateId={setUpdateId}
             />
             ))}
-        
+            {!bookingData?.length && !isLoading && (
+              <NoDataFound />
+          )}
           {/* <DataTable.Pagination
                 page={page}
                 numberOfPages={Math.ceil(bookingData.length / itemsPerPage)}
