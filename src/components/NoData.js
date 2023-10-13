@@ -12,7 +12,7 @@ import {
   SegmentedButtons,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { AppStyles } from '../../utils/AppStyles';
+import { AppStyles } from '../utils/AppStyles';
 
 export default function NoDataFound(){
 

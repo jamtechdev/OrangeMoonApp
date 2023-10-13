@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
-import {View, ScrollView, StyleSheet, Pressable} from 'react-native';
+import {View, ScrollView, StyleSheet, RefreshControl, Pressable} from 'react-native';
 import {
   Portal,
   Dialog,
@@ -20,12 +20,13 @@ import globalStyles from '../utils/_css/globalStyle';
 import SearchBox from '../components/SearchBox';
 import CompleteFilterSearch from '../components/searchFilter/CompleteFilterSearch';
 import CompleteCardList from '../components/cards/CompleteCardList';
+import NoDataFound from '../components/NoData';
 
 function CompleteReport({navigation, user, token, route}) {
   const [completeData, setCompleteData] = useState([]);
   const [completeDataBkp, setCompleteDataBkp] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(0);
   const [numberOfItemsPerPageList] = useState([10, 25, 50, 100]);
   const [itemsPerPage, onItemsPerPageChange] = useState(
@@ -39,19 +40,28 @@ function CompleteReport({navigation, user, token, route}) {
   }, [itemsPerPage]);
 
   useEffect(() => {
-    monitorService
-      .completedReport(token)
-      .then(res => {
-        setCompleteData(res?.data?.data);
-        setCompleteDataBkp(res?.data?.data);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.log(error);
-        setIsLoading(false);
-      });
+    completeListData();
   }, [token]);
 
+  const completeListData=()=>{
+    monitorService
+    .completedReport(token)
+    .then(res => {
+      setCompleteData(res?.data?.data);
+      setCompleteDataBkp(res?.data?.data);
+      setIsLoading(false);
+    })
+    .catch(error => {
+      console.log(error);
+      setIsLoading(false);
+    }).finally(() => {
+      setRefreshing(false);
+    });
+  }
+  const handleRefresh = () => {
+    setRefreshing(true);
+    completeListData();
+  }
   const navigateDetails = booking => {
     route(booking);
     navigation.navigate({
@@ -65,6 +75,14 @@ function CompleteReport({navigation, user, token, route}) {
     <>
       <ScrollView
         style={styles.container}
+        refreshControl={
+    <RefreshControl
+      refreshing={refreshing}
+      onRefresh={handleRefresh}
+      tintColor={AppStyles.color.tint}
+    />
+  }
+  showsVerticalScrollIndicator={false}
         scrollIndicatorInsets={{top: 0, left: 0, bottom: 0, right: 0}}>
         <View style={styles.container}>
           <Text style={globalStyles.subtitle}> Reports</Text>
@@ -83,7 +101,7 @@ function CompleteReport({navigation, user, token, route}) {
               />
             ))}
           {!completeData?.length && !isLoading && (
-            <Text style={globalStyles.emptyData}>Data not found</Text>
+          <NoDataFound />
           )}
           {/* <DataTable.Pagination
               page={page}

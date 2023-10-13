@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable prettier/prettier */
 import React, {useMemo, useState, useEffect} from 'react';
-import {View, ScrollView, StyleSheet, Text, Pressable} from 'react-native';
+import {View, ScrollView, StyleSheet, Text, RefreshControl, Pressable} from 'react-native';
 import {
   List,
   Card,
@@ -31,6 +31,7 @@ import SchedulingModel from '../components/model/SchedulingModel';
 import SchedulingDateDialog from '../components/dialog/SchedulingDateDialog';
 import SchedulingCardList from '../components/cards/SchedulingCardList';
 import SchedulingFilterSearch from '../components/searchFilter/ScheduleFilterSearch';
+import NoDataFound from '../components/NoData';
 function Scheduling({navigation, user, token, route}) {
   const [eventData, setEventData] = useState([]);
   const [assignableData, setAssignableData] = useState([]);
@@ -47,7 +48,7 @@ function Scheduling({navigation, user, token, route}) {
   const [bookingDetails, setBookingDetails] = useState([]);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [modelType, setModelType] = useState();
-
+  const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(0);
   const [numberOfItemsPerPageList] = useState([10, 25, 50, 100]);
   const [itemsPerPage, onItemsPerPageChange] = useState(
@@ -70,6 +71,11 @@ function Scheduling({navigation, user, token, route}) {
     getdayList();
     getAssignList();
   }, [token]);
+  const handleRefresh = () => {
+    setRefreshing(true);
+    getdayList();
+    getAssignList();
+  }
   const getAssignList = () => {
     // setIsLoading(true);
     monitorService
@@ -102,6 +108,8 @@ function Scheduling({navigation, user, token, route}) {
       .catch(error => {
         console.log(error);
         setIsLoading(false);
+      }).finally(() => {
+        setRefreshing(false);
       });
   };
 
@@ -279,6 +287,14 @@ function Scheduling({navigation, user, token, route}) {
     <>
       <ScrollView
         style={styles.container}
+        refreshControl={
+    <RefreshControl
+      refreshing={refreshing}
+      onRefresh={handleRefresh}
+      tintColor={AppStyles.color.tint}
+    />
+  }
+  showsVerticalScrollIndicator={false} 
         scrollIndicatorInsets={{top: 0, left: 0, bottom: 0, right: 0}}>
         <View style={styles.container}>
           <Text style={globalStyles.subtitle}> Manage Schedule </Text>
@@ -349,7 +365,7 @@ function Scheduling({navigation, user, token, route}) {
                 />
               ))}
             {!assignableData?.length && !isLoading && (
-              <Text style={globalStyles.emptyData}> Data not found</Text>
+           <NoDataFound />
             )}
             {/* <DataTable.Pagination
               page={page}

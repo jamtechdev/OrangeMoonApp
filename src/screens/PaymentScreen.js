@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
-import {View, ScrollView, StyleSheet, Linking} from 'react-native';
+import {View, ScrollView, StyleSheet,RefreshControl, Linking} from 'react-native';
 import {Divider, Button, Text, DataTable, Portal} from 'react-native-paper';
 import {connect} from 'react-redux';
 import globalStyles from '../utils/_css/globalStyle';
@@ -13,13 +13,14 @@ import LoadingContainer from '../components/LoadingContainer';
 import SearchBox from '../components/SearchBox';
 import StipeCardList from '../components/cards/StripeCardList';
 import StripeFilterSearch from '../components/searchFilter/StripeFilterSearch';
+import NoDataFound from '../components/NoData';
 function PaymentScreen({navigation, user, token}) {
   const [stripeData, setStripeData] = useState([]);
   const [stripeTableData, setStripeTableData] = useState([]);
   const [stripeTableDataBkp, setStripeTableDataBkp] = useState([]);
   const [stripeShowData, setStripeShowData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(0);
   const [numberOfItemsPerPageList] = useState([10, 25, 50, 100]);
   const [itemsPerPage, onItemsPerPageChange] = useState(
@@ -32,33 +33,42 @@ function PaymentScreen({navigation, user, token}) {
     setPage(0);
   }, [itemsPerPage]);
   useEffect(() => {
-    stripeService
-      .checkStripeConnection(token)
-      .then(res => {
-        setStripeData(res?.data?.stripe_connection);
-        console.log(res);
-        setStripeShowData(
-          res?.data?.stripe_connection.account_detail.external_accounts.data[0],
-        );
-        setIsLoading(false);
-      })
-      .catch(error => {
-        setIsLoading(false);
-        console.log(error);
-      });
-
-    stripeService
-      .stripePayoutDetails(token)
-      .then(res => {
-        setStripeTableData(res?.data?.payment_records);
-        setStripeTableDataBkp(res?.data?.payment_records);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        setIsLoading(false);
-        console.log(error);
-      });
+    paymentApiData()
   }, [token]);
+  const handleRefresh = () => {
+    setRefreshing(true);
+    paymentApiData()
+  }
+  const paymentApiData = ()=>{
+    stripeService
+    .checkStripeConnection(token)
+    .then(res => {
+      setStripeData(res?.data?.stripe_connection);
+      console.log(res);
+      setStripeShowData(
+        res?.data?.stripe_connection.account_detail.external_accounts.data[0],
+      );
+      setIsLoading(false);
+    })
+    .catch(error => {
+      setIsLoading(false);
+      console.log(error);
+    });
+
+  stripeService
+    .stripePayoutDetails(token)
+    .then(res => {
+      setStripeTableData(res?.data?.payment_records);
+      setStripeTableDataBkp(res?.data?.payment_records);
+      setIsLoading(false);
+    })
+    .catch(error => {
+      setIsLoading(false);
+      console.log(error);
+    }).finally(() => {
+      setRefreshing(false);
+    });
+  } 
 
   const handlePayment = async () => {
     const url =
@@ -99,7 +109,15 @@ function PaymentScreen({navigation, user, token}) {
         </Portal>
       )}
       {!isLoading && (
-        <ScrollView style={styles.main}>
+        <ScrollView style={styles.main}
+          refreshControl={
+    <RefreshControl
+      refreshing={refreshing}
+      onRefresh={handleRefresh}
+      tintColor={AppStyles.color.tint}
+    />
+  }
+  showsVerticalScrollIndicator={false} >
           <View style={styles.container}>
             <Text style={globalStyles.subtitle}> Stripe Connect </Text>
             <Divider style={globalStyles.divider} />
@@ -185,7 +203,7 @@ function PaymentScreen({navigation, user, token}) {
                 <StipeCardList item={item} key={index} />
               ))}
               {!stripeTableData?.length && !isLoading && (
-                <Text style={globalStyles.emptyData}>Data not found</Text>
+               <NoDataFound />
               )}
               {/* <DataTable.Pagination
                     page={page}

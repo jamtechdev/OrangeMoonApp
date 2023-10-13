@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
-import {View, ScrollView, StyleSheet, Pressable, FlatList} from 'react-native';
+import {View, ScrollView, StyleSheet, RefreshControl, Pressable, FlatList} from 'react-native';
 import {
   Portal,
   Dialog,
@@ -22,7 +22,7 @@ import LoadingContainer from '../components/LoadingContainer';
 import globalStyles from '../utils/_css/globalStyle';
 import FilterSearch from '../components/searchFilter/BookingFilterSearch';
 import BookingCardList from '../components/cards/BookingCardList';
-import NoDataFound from '../components/searchFilter/NoData';
+import NoDataFound from '../components/NoData';
 
 function BookingRequest({navigation, user, token, route}) {
   const [bookingData, setBookingData] = useState([]);
@@ -31,6 +31,7 @@ function BookingRequest({navigation, user, token, route}) {
   const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [segmentedValue, setSegmentedValue] = useState('All');
   const [updateId, setUpdateId] = useState();
+  const [refreshing, setRefreshing] = useState(false);
   const [isAcceptDialogVisible, setIsAcceptDialogVisible] = useState(false);
   const [isRejectDialogVisible, setIsRejectDialogVisible] = useState(false);
   const [page, setPage] = useState(0);
@@ -78,8 +79,14 @@ function BookingRequest({navigation, user, token, route}) {
       .catch(error => {
         console.log(error);
         setIsLoading(false);
+      }).finally(() => {
+        setRefreshing(false);
       });
   };
+  const handleRefresh = () => {
+    setRefreshing(true);
+    monitorDataCall();
+  }
   const navigateDetails = booking => {
     route(booking?.id);
     navigation.navigate({
@@ -109,12 +116,21 @@ function BookingRequest({navigation, user, token, route}) {
       .catch(error => {
         setIsButtonLoading(false);
         console.log(error);
-      });
+      })
   };
 
   return (
     <>
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.container}
+        refreshControl={
+    <RefreshControl
+      refreshing={refreshing}
+      onRefresh={handleRefresh}
+      tintColor={AppStyles.color.tint}// Change the color of the loading indicator
+    />
+  }
+  showsVerticalScrollIndicator={false} // Hide the vertical scroll indicator
+>
       <Text style={globalStyles.subtitle}>Booking Request</Text>
         <Divider style={globalStyles.divider} />
         <View style={styles.container}>

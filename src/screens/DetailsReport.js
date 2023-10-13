@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useLayoutEffect, useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, RefreshControl, Pressable } from 'react-native';
 import { List, Card, Divider, Button, TextInput, Text, Title, DataTable, Paragraph, PaperText, Portal } from 'react-native-paper';
 import { connect } from 'react-redux';
 import InputLabelView from '../components/InputLabelView';
@@ -10,6 +10,7 @@ import globalStyles from '../utils/_css/globalStyle';
 import PreCheckCardList from '../components/cards/PreCheckCardList';
 import ActivitiesCardList from '../components/cards/ActivitiesCardList';
 import IncidentCardList from '../components/cards/IncidentCardList';
+import { AppStyles } from '../utils/AppStyles';
 
 
 function DetailsReport({ navigation, route, user, token }) {
@@ -18,11 +19,23 @@ function DetailsReport({ navigation, route, user, token }) {
     const [bookingDayDetails, setBookingDayDetails] = useState([])
     const [preCheckQuestions, setPreCheckQuestions] = useState([])
     const [incidents, setIncidents] = useState([])
+    const [refreshing, setRefreshing] = useState(false);
+
     const [monitorActivitySorted, setMonitorActivitySorted] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [ header, setHeader ] = useState('')    
+
+    const handleRefresh = () => {
+        setRefreshing(true);
+        detailsData();
+    }
+
     useEffect(() => {
         console.log(route,"here route ")
+        detailsData()
+    }, [route, token])
+
+    const detailsData = ()=>{
         if (route.params && route.params.Booking) {
             setHeader(route.params.header)
             const paramsData = {
@@ -39,9 +52,15 @@ function DetailsReport({ navigation, route, user, token }) {
                 setMonitorActivitySorted(res?.data?.monitorActivitySorted);
                 setIncidents(res?.data?.incidents);
                 setIsLoading(false)
-            }).catch(error => { setIsLoading(false); console.log(error); });
+            }).catch(error => { 
+                setIsLoading(false);
+                console.log(error); 
+            }).finally(() => {
+                setRefreshing(false);
+              });
         }
-    }, [route, token])
+    }
+
     return (
         <>
       {isLoading && 
@@ -50,11 +69,26 @@ function DetailsReport({ navigation, route, user, token }) {
       </Portal>
       }
             {!isLoading && reportDetails && (
-                <ScrollView style={styles.main}>
+                <ScrollView style={styles.main}
+                 refreshControl={
+                    <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={handleRefresh}
+                    tintColor={AppStyles.color.tint} // Change the color of the loading indicator
+                    />
+                }
+                    showsVerticalScrollIndicator={false}>
                     <View style={styles.container}>
                         <Card style={styles.card} >
                         { header == 'report' && (
+                            <>
+                            <View style={globalStyles.buttonRow}>
                             <Text style={globalStyles.subtitle}>Nightly Activity Report </Text>
+                            {/* <Pressable style={styles.badgeButtonDisable} onPress={() => console.log('gsys')}>
+                                 <Text style={styles.badgeButtonText}>Export PDF</Text>
+                              </Pressable> */}
+                            </View>
+                            </>
                         )}
                         { header == 'today' && (
                             <Text style={globalStyles.subtitle}>Booking Day Details </Text>
@@ -157,8 +191,7 @@ function DetailsReport({ navigation, route, user, token }) {
                                 <Divider style={globalStyles.divider} />
                                 <View style={{marginVertical:10}}>
                                 {
-                                    incidents && incidents.map((item, index)=>{
-                                        console.log(item)
+                                    incidents && incidents.map((item, index)=>{ 
                                         return(
                                             <IncidentCardList
                                                 key={index}
@@ -249,6 +282,21 @@ const styles = StyleSheet.create({
       tableCell: {
         fontSize: 16,
         paddingLeft: 8,
+      },
+      badgeButtonDisable:{
+        backgroundColor: AppStyles.color.tint,
+        paddingVertical: 1,
+        paddingHorizontal: 15,
+        fontSize:12,
+        borderRadius: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        // opacity:0.7
+      },
+      badgeButtonText: {
+        fontSize: 12,
+        color: '#fff',
+        fontWeight:600
       },
 });
 

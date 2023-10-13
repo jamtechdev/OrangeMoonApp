@@ -39,6 +39,7 @@ import { RefreshControl } from 'react-native';
 import FormRadioButtons from '../components/FormRadioButton';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import TodayBookingModel from '../components/model/TodayBookingModel';
+import NoDataFound from '../components/NoData';
 
 function HomeScreen({ navigation, user, token }) {
   const [dashboardData, setDashboardData] = useState([]);
@@ -279,7 +280,7 @@ function HomeScreen({ navigation, user, token }) {
         booking_day_report_id: bookingId,
         start_location_lat: location != null ? location.latitude : null,
         start_location_lng: location != null ? location.longitude : null,
-        precheck_question: [questionaire],
+        precheck_question: questionaire,
         status: status,
         description: description
       }
@@ -583,7 +584,7 @@ function HomeScreen({ navigation, user, token }) {
         <FlatList
           style={styles.container}
           data={[{ key: 'header' }, ...dashboardData]}
-          keyExtractor={(item) => item.key}
+          keyExtractor={(item, index) => index}
           renderItem={({ item, index }) => {
             // console.log(item, 'testv ')
             if (index === 0) {
@@ -621,10 +622,10 @@ function HomeScreen({ navigation, user, token }) {
             }
           }}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={AppStyles.color.tint} />
           }
           ListEmptyComponent={!dashboardData?.length && !isLoading && (
-            <Text style={globalStyles.emptyData}> Data not found</Text>
+           <NoDataFound />
           )}
           // ListFooterComponent={
           //   <DataTable.Pagination
@@ -757,8 +758,8 @@ function HomeScreen({ navigation, user, token }) {
 
         <Portal>
           <Dialog visible={visible} onDismiss={hideModal}>
-            <View style={styles.rowView}>
-              <Dialog.Title style={globalStyles.subtitle}>Wellness Check</Dialog.Title>
+            <View style={{...styles.rowView , flexDirection:'row', justifyContent:'space-between'}}>
+              <Dialog.Title style={globalStyles.subtitle}>PreCheck Check</Dialog.Title>
               <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal} />
             </View>
             <Dialog.Content>

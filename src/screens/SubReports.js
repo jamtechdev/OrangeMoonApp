@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
-import {View, ScrollView, StyleSheet, Pressable} from 'react-native';
+import {View, ScrollView, StyleSheet, RefreshControl, Pressable} from 'react-native';
 import {
   Portal,
   Dialog,
@@ -21,12 +21,13 @@ import globalStyles from '../utils/_css/globalStyle';
 import SearchBox from '../components/SearchBox';
 import SubReportCardList from '../components/cards/SubReportCardList';
 import SubReportFilterSearch from '../components/searchFilter/SubReportFilterSearch';
+import NoDataFound from '../components/NoData';
 
 function SubReports({navigation, user, token, route, value}) {
   const [subReport, setSubReportData] = useState([]);
   const [subReportBkp, setSubReportDataBkp] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(0);
   const [numberOfItemsPerPageList] = useState([10, 25, 50, 100]);
   const [itemsPerPage, onItemsPerPageChange] = useState(
@@ -40,19 +41,28 @@ function SubReports({navigation, user, token, route, value}) {
   }, [itemsPerPage]);
 
   useEffect(() => {
-    monitorService
-      .reportDetails(token, value.id)
-      .then(res => {
-        console.log(res, res?.data?.data);
-        setSubReportData(res?.data?.data);
-        setSubReportDataBkp(res?.data?.data);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.log(error);
-        setIsLoading(false);
-      });
+    detailsData()
   }, []);
+ const  detailsData = () =>{
+    monitorService
+    .reportDetails(token, value.id)
+    .then(res => {
+      console.log(res, res?.data?.data);
+      setSubReportData(res?.data?.data);
+      setSubReportDataBkp(res?.data?.data);
+      setIsLoading(false);
+    })
+    .catch(error => {
+      console.log(error);
+      setIsLoading(false);
+    }).finally(() => {
+      setRefreshing(false);
+    });
+  }
+  const handleRefresh = () => {
+    setRefreshing(true);
+    detailsData()
+  }
 
   const navigateDetails = booking => {
     // route(booking?.id);
@@ -62,7 +72,16 @@ function SubReports({navigation, user, token, route, value}) {
 
   return (
     <>
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.container}
+       refreshControl={
+    <RefreshControl
+      refreshing={refreshing}
+      onRefresh={handleRefresh}
+      tintColor={AppStyles.color.tint}
+    />
+  }
+  showsVerticalScrollIndicator={false} 
+      >
         <Text style={globalStyles.subtitle}> Sub-Reports</Text>
         <Divider style={globalStyles.divider} />
         <View style={styles.container}>
@@ -80,7 +99,7 @@ function SubReports({navigation, user, token, route, value}) {
               />
             ))}
           {!subReport?.length && !isLoading && (
-            <Text style={globalStyles.emptyData}>Data not found</Text>
+       <NoDataFound />
           )}
           {/* <DataTable.Pagination
                             page={page}

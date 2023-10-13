@@ -7,33 +7,25 @@ import {formatDate, formatTime} from '../../utils/_helpers';
 import globalStyles from '../../utils/_css/globalStyle';
 import {AppStyles} from '../../utils/AppStyles';
 const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog , navigation, ArrivedMarked}) => {
-  const checkActive = monitorBookingDayRequest => {
+  const checkActive = item => {
     const currentDateTime = new Date();
     const firstTime = new Date(currentDateTime);
-    const secondTime = new Date(
-      monitorBookingDayRequest.booking_day.date +
-        ' ' +
-        monitorBookingDayRequest.booking_day.start_time,
-    );
-    const intervalInMilliseconds = secondTime - firstTime;
-    const intervalInHours = intervalInMilliseconds / (1000 * 60 * 60);
-
+    const secondTime = new Date(`${item.booking_day.date}T${item.booking_day.start_time}`);
+    const interval = Math.abs(secondTime - firstTime) / 36e5; // Calculate the interval in hours
+  
     let active = false;
-    if (intervalInHours <= 8 && intervalInHours > 1) {
+  
+    if (interval <= 8 && interval > 1) {
       active = true;
-  }
-    // else if (intervalInHours <= 1 && monitorBookingDayRequest.monitorBookingRequest.temperature_button === true) {
-    //   active = true;
-    // }
-
-    const getBookingTimeZone =
-      monitorBookingDayRequest.booking_day.booking?.hotel?.state?.time_zone ||
-      'EST'; // here i don't get the hotel state timezone
-    const timeZone = new Date().toLocaleString('en-US', {
-      timeZone: getBookingTimeZone,
-    });
-    const currentDate = new Date(timeZone).toISOString().split('T')[0];
-    return currentDate;
+    } else if (interval <= 1 && item.temperature_button === 1) {
+      active = true;
+    }
+  
+    // Assuming getBookingTimeZone is already a valid time zone identifier
+    const timeZone = item?.booking_day?.booking?.hotel?.state?.time_zone || 'EST';
+    const timeOffset = new Date().toLocaleString('en-US', { timeZone, timeZoneName: 'short' });
+    const current_date = new Date(timeOffset).toISOString().split('T')[0];
+    return current_date;
   };
   const detailHandler = (item) => {
     console.log("item", item)
@@ -89,16 +81,7 @@ const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog , navi
 
         <View style={[globalStyles.buttonRow, {marginTop: 10}]}>
           <View style={styles.action}>
-        {item?.arrival_time !== null && (
-            <Pressable style={styles.badgeButtonDisable} onPress={() => console.log('gsys')}>
-                 <Text style={styles.badgeButtonText}>Arrived</Text>
-          </Pressable>
-          ) }
-          {item?.arrival_time == null && (
-            <Pressable style={styles.badgeButton} onPress={() => ArrivedMarked(item)}>
-                 <Text style={styles.badgeButtonText}> Mark Arrived</Text>
-          </Pressable>
-          ) }
+     
             {!item?.monitor_booking_day_report &&
               item?.booking_day?.date <= checkActive(item) && (
                 <Icon
@@ -109,14 +92,26 @@ const TodayBookingCardList = ({item, openActionDialog, openPrecheckDialog , navi
                 />
               )}
             {item?.monitor_booking_day_report && (
+              <>
+              {item?.arrival_time !== null && (
+                      <Pressable style={styles.badgeButtonDisable} onPress={() => console.log('gsys')}>
+                          <Text style={styles.badgeButtonText}>Arrived</Text>
+                    </Pressable>
+                    ) }
+                    {item?.arrival_time == null && (
+                      <Pressable style={styles.badgeButton} onPress={() => ArrivedMarked(item)}>
+                          <Text style={styles.badgeButtonText}> Mark Arrived</Text>
+                    </Pressable>
+                    ) }
               <Icon
                 name="eye"
                 onPress={() => detailHandler(item)}
                 size={20}
                 color={AppStyles.color.tint}
               />
+               </>
             )}
-            {item?.monitor_booking_day_report && item?.precheckCount === 0 && (
+            {item?.monitor_booking_day_report && item?.precheckCount === 0 && item?.arrival_time !== null && (
               <Icon
                 name="play"
                 onPress={() => openPrecheckDialog(item)}
