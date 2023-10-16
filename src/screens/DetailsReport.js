@@ -11,7 +11,7 @@ import PreCheckCardList from '../components/cards/PreCheckCardList';
 import ActivitiesCardList from '../components/cards/ActivitiesCardList';
 import IncidentCardList from '../components/cards/IncidentCardList';
 import { AppStyles } from '../utils/AppStyles';
-
+import { pdfGenerator } from '../utils/_helpers';
 
 function DetailsReport({ navigation, route, user, token }) {
     const [reportDetails, setReportDetails] = useState()
@@ -84,9 +84,9 @@ function DetailsReport({ navigation, route, user, token }) {
                             <>
                             <View style={globalStyles.buttonRow}>
                             <Text style={globalStyles.subtitle}>Nightly Activity Report </Text>
-                            {/* <Pressable style={styles.badgeButtonDisable} onPress={() => console.log('gsys')}>
+                            <Pressable style={styles.badgeButtonDisable} onPress={() => pdfGenerator(bookingDayDetails,monitorBookingDayReport, preCheckQuestions,monitorActivitySorted,incidents)}>
                                  <Text style={styles.badgeButtonText}>Export PDF</Text>
-                              </Pressable> */}
+                              </Pressable>
                             </View>
                             </>
                         )}

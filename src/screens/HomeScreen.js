@@ -1,11 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
-import React, { useLayoutEffect, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View, FlatList, Platform, KeyboardAvoidingView } from 'react-native'; // Import View
-import { connect } from 'react-redux';
-import { AppStyles } from '../utils/AppStyles';
-import { Configuration } from '../utils/Configuration';
-import { monitorService } from '../utils/_services';
+import React, {useLayoutEffect, useEffect, useState} from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  FlatList,
+  Platform,
+  KeyboardAvoidingView,
+} from 'react-native'; // Import View
+import {connect} from 'react-redux';
+import {AppStyles} from '../utils/AppStyles';
+import {Configuration} from '../utils/Configuration';
+import {monitorService} from '../utils/_services';
 import {
   Divider,
   Text,
@@ -17,10 +24,10 @@ import {
   TextInput,
   Card,
   HelperText,
-  Snackbar
+  Snackbar,
 } from 'react-native-paper';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import { formatDate, formatTime, sortingHelper } from '../utils/_helpers';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
+import {formatDate, formatTime, sortingHelper} from '../utils/_helpers';
 import globalStyles from '../utils/_css/globalStyle';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LoadingContainer from '../components/LoadingContainer';
@@ -32,16 +39,16 @@ import FormDateInput from '../components/FormDateInput';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import FormTextInput from '../components/FormTextInput';
 import moment from 'moment';
-import * as Yup from "yup";
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from '@hookform/resolvers/yup';
-import { RefreshControl } from 'react-native';
+import * as Yup from 'yup';
+import {useForm, Controller} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {RefreshControl} from 'react-native';
 import FormRadioButtons from '../components/FormRadioButton';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import TodayBookingModel from '../components/model/TodayBookingModel';
 import NoDataFound from '../components/NoData';
 
-function HomeScreen({ navigation, user, token }) {
+function HomeScreen({navigation, user, token}) {
   const [dashboardData, setDashboardData] = useState([]);
   const [dashboardDataBkp, setDashboardDataBkp] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -74,53 +81,59 @@ function HomeScreen({ navigation, user, token }) {
   const [selectedRadio, setSelectedRadio] = useState();
   const from = page * itemsPerPage;
   const to = Math.min((page + 1) * itemsPerPage, dashboardData?.length);
-  //here new code 
+  //here new code
   const [next, setNext] = useState(0);
-  const [radioButton, setRadio] = useState(false)
+  const [radioButton, setRadio] = useState(false);
 
   const [checked, setChecked] = React.useState('first');
-  const [question, setQuestion] = useState([])
+  const [question, setQuestion] = useState([]);
   const [precheckQuestions, setPrecheckQuestion] = useState([]);
-  const [description, setDescription] = useState([])
-  const [status, setStatus] = useState([])
-  const [questionaire, setquestionaire] = useState([])
-  const [selectedTime, setSelectedTime] = useState('12:00 AM')
-  const [selectedTimeLast, setSelectTimeLast] = useState('1:30 PM')
+  const [description, setDescription] = useState([]);
+  const [status, setStatus] = useState([]);
+  const [questionaire, setquestionaire] = useState([]);
+  const [selectedTime, setSelectedTime] = useState('12:00 AM');
+  const [selectedTimeLast, setSelectTimeLast] = useState('1:30 PM');
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
-  const [isTimePickerVisibleLast, setTimePickerVisibilitylast] = useState(false)
-  const [DescriptionActivity, setDescriptionActivity] = useState(0)
-  const [helper, setHelpertext] = useState(false)
+  const [isTimePickerVisibleLast, setTimePickerVisibilitylast] =
+    useState(false);
+  const [DescriptionActivity, setDescriptionActivity] = useState(0);
+  const [helper, setHelpertext] = useState(false);
   const [Message, setMessage] = useState();
   const [visible, setVisible] = React.useState(false);
-  const [visible1, setVisible1] = React.useState(false)
-  const [visible2, setVisible2] = React.useState(false)
-  const [visible3, setVisible3] = React.useState(false)
-  const [visible4, setVisible4] = React.useState(false)
+  const [visible1, setVisible1] = React.useState(false);
+  const [visible2, setVisible2] = React.useState(false);
+  const [visible3, setVisible3] = React.useState(false);
+  const [visible4, setVisible4] = React.useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
-  const [item, setItem] = React.useState()
-    const [buttonLoading, setButtonLoading] = useState(false)
+  const [item, setItem] = React.useState();
+  const [buttonLoading, setButtonLoading] = useState(false);
   const validationSchema = Yup.object().shape({
-    first_name: Yup.string().required("Answer is required"),
-    preference: Yup.string().required("Preference is required"),
+    first_name: Yup.string().required('Answer is required'),
+    preference: Yup.string().required('Preference is required'),
     precheckquestions: Yup.string(),
-    description: Yup.string()
-  })
+    description: Yup.string(),
+  });
   const incidentvalidationSchema = Yup.object().shape({
-    incidentdescription: Yup.string().required("Description is required"),
-    location: Yup.string().required("Description is required"),
-    external: Yup.string().required("External is required"),
-    witness: Yup.string().required("Witness is required"),
-    witness_description: Yup.string().required("Witness description is required"),
-    students: Yup.string().required("Students is required"),
-    rooms: Yup.string().required('Rooms is required')
-  })
+    incidentdescription: Yup.string().required('Description is required'),
+    location: Yup.string().required('Description is required'),
+    external: Yup.string().required('External is required'),
+    witness: Yup.string().required('Witness is required'),
+    witness_description: Yup.string().required(
+      'Witness description is required',
+    ),
+    students: Yup.string().required('Students is required'),
+    rooms: Yup.string().required('Rooms is required'),
+  });
   const formOptions = {
-    resolver: yupResolver(validationSchema), mode: 'onChange', defaultValues: {
-      first_name: ""
-    }
+    resolver: yupResolver(validationSchema),
+    mode: 'onChange',
+    defaultValues: {
+      preference: 'Yes',
+    },
   };
   const formOptionsIncident = {
-    resolver: yupResolver(incidentvalidationSchema), mode: 'onChange',
+    resolver: yupResolver(incidentvalidationSchema),
+    mode: 'onChange',
   };
   const showTimePicker = () => {
     setTimePickerVisibility(true);
@@ -129,49 +142,48 @@ function HomeScreen({ navigation, user, token }) {
   const hideTimePicker = () => {
     setTimePickerVisibility(false);
   };
-  const helperfunction = (res) => {
-    console.log('helper functi', res)
-
-  }
+  const helperfunction = res => {
+    console.log('helper functi', res);
+  };
   const handleActivitySubmit = () => {
-    console.log("Description activity", DescriptionActivity)
+    console.log('Description activity', DescriptionActivity);
     if (!DescriptionActivity || DescriptionActivity.length === 0) {
-      setHelpertext(true)
+      setHelpertext(true);
     } else {
-      console.log('api')
-      setHelpertext(false)
+      console.log('api');
+      setHelpertext(false);
       const data = new Object({
         booking_day_report_id: bookingId,
         activity_lat: location != null ? location.latitude : null,
         activity_lng: location != null ? location.longitude : null,
         start_time: selectedTime,
         end_time: selectedTimeLast,
-        description: DescriptionActivity
-
-      })
-      console.log("Add new activity data", data)
-      monitorService.bookingdayActivity(token, data).then(res => {
-        helperfunction(res)
-        setMessage(res.data.message)
-        setVisible3(true)
-        setDescriptionActivity(0)
-        hideModal1()
-
-      }).catch((error) => {
-        setMessage("Something went wrong")
-        setVisible3(true)
-        console.log("error", error)
-        setDescriptionActivity(0)
-        hideModal1()
-      }
-      )
+        description: DescriptionActivity,
+      });
+      console.log('Add new activity data', data);
+      monitorService
+        .bookingdayActivity(token, data)
+        .then(res => {
+          helperfunction(res);
+          setMessage(res.data.message);
+          setVisible3(true);
+          setDescriptionActivity(0);
+          hideModal1();
+        })
+        .catch(error => {
+          setMessage('Something went wrong');
+          setVisible3(true);
+          console.log('error', error);
+          setDescriptionActivity(0);
+          hideModal1();
+        });
     }
-  }
-  const handleTimeConfirm = (time) => {
+  };
+  const handleTimeConfirm = time => {
     // console.log("A date has been picked: ", time);
     // console.log(moment(time).add(90, 'minutes').format('hh:mm a'));
-    setSelectedTime(moment(time).format('hh:mm A'))
-    setSelectTimeLast(moment(time).add(30, 'minutes').format('hh:mm A'))
+    setSelectedTime(moment(time).format('hh:mm A'));
+    setSelectTimeLast(moment(time).add(30, 'minutes').format('hh:mm A'));
     hideTimePicker();
   };
   //--------------------------------------------------------------------------
@@ -183,41 +195,65 @@ function HomeScreen({ navigation, user, token }) {
     setTimePickerVisibilitylast(false);
   };
 
-  const handleTimeLastConfirm = (time) => {
-    console.warn("A date has been picked: ", time);
-    setSelectTimeLast(moment(time).format('hh:mm A'))
-    setSelectedTime(moment(time).subtract(30, 'minutes').format('hh:mm A'))
+  const handleTimeLastConfirm = time => {
+    console.warn('A date has been picked: ', time);
+    setSelectTimeLast(moment(time).format('hh:mm A'));
+    setSelectedTime(moment(time).subtract(30, 'minutes').format('hh:mm A'));
     // const dt = new Date(time);
     // const x = dt.toLocaleTimeString()
     // console.log('time', x)
     // setSelectTimeLast(x)
     hideTimeLastPicker();
   };
-  const { control, reset, handleSubmit, setValue, watch, formState: { errors } } = useForm(formOptions);
-  const { control: control2, reset: reset2, handleSubmit: handleSubmit2, setValue: setValue2, watch: watch2, formState: { errors: errors2 } } = useForm(formOptionsIncident);
-  const onSubmit = (data) => {
+  const {
+    control,
+    reset,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: {errors},
+  } = useForm(formOptions);
+  const {
+    control: control2,
+    reset: reset2,
+    handleSubmit: handleSubmit2,
+    setValue: setValue2,
+    watch: watch2,
+    formState: {errors: errors2},
+  } = useForm(formOptionsIncident);
+  const onSubmit = data => {
     // console.log("data are", data)
-    setDescription([...description, data.first_name])
-    setStatus([...status, data.preference])
-    setquestionaire([...questionaire, precheckQuestions[next].question])
-    reset()
-    precheckpostApi()
+    setDescription([...description, data.first_name]);
+    setStatus([...status, data.preference]);
+    setquestionaire([...questionaire, precheckQuestions[next].question]);
+    reset();
+    precheckpostApi();
     // setNext(0)
     // hideModal()
-  }
-  const [time, setTime] = useState({ hours: '12', minutes: '00' })
-  const [visibleTime, setVisibleTime] = React.useState(false)
+  };
+  const [time, setTime] = useState({hours: '12', minutes: '00'});
+  const [visibleTime, setVisibleTime] = React.useState(false);
   const onDismiss = React.useCallback(() => {
-    setVisibleTime(false)
-  }, [setVisible])
+    setVisibleTime(false);
+  }, [setVisible]);
 
-  const isFocused = useIsFocused()
+  const isFocused = useIsFocused();
   useEffect(() => {
     todayReportData();
     getPrecheckData();
-    getGeoLocation()
+    getGeoLocation();
   }, [isFocused]);
-
+  useEffect(() => {
+    const areArraysReady =
+      questionaire.length === 11 &&
+      status.length === 11 &&
+      description.length === 11;
+    if (areArraysReady) {
+      precheckpostApi();
+      setNext(0);
+      hideModal();
+    }
+  }, [questionaire, status, description]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -229,21 +265,24 @@ function HomeScreen({ navigation, user, token }) {
   }, []);
 
   const getPrecheckData = () => {
-    monitorService.precheckquestion(token).then(res => {
-      setPrecheckQuestion(res?.data.questions)
-    }).catch(error => {
-      console.log(error)
-      setIsLoading(false)
-      // navigation.navigate('LoginStack')
-    })
-  }
+    monitorService
+      .precheckquestion(token)
+      .then(res => {
+        setPrecheckQuestion(res?.data.questions);
+      })
+      .catch(error => {
+        console.log(error);
+        setIsLoading(false);
+        // navigation.navigate('LoginStack')
+      });
+  };
   const checkActive = monitorBookingDayRequest => {
     const currentDateTime = new Date();
     const firstTime = new Date(currentDateTime);
     const secondTime = new Date(
       monitorBookingDayRequest.booking_day.date +
-      ' ' +
-      monitorBookingDayRequest.booking_day.start_time,
+        ' ' +
+        monitorBookingDayRequest.booking_day.start_time,
     );
     const intervalInMilliseconds = secondTime - firstTime;
     const intervalInHours = intervalInMilliseconds / (1000 * 60 * 60);
@@ -266,75 +305,76 @@ function HomeScreen({ navigation, user, token }) {
     return currentDate;
   };
   const onConfirm = React.useCallback(
-    ({ hours, minutes }) => {
+    ({hours, minutes}) => {
       setVisibleTime(false);
-      console.log({ hours, minutes });
-      setTime({ hours: hours, minutes: minutes })
+      console.log({hours, minutes});
+      setTime({hours: hours, minutes: minutes});
     },
-    [setVisible]
+    [setVisible],
   );
   const precheckpostApi = () => {
     // console.log("location",location)
-    const data = new Object(
-      {
-        booking_day_report_id: bookingId,
-        start_location_lat: location != null ? location.latitude : null,
-        start_location_lng: location != null ? location.longitude : null,
-        precheck_question: questionaire,
-        status: status,
-        description: description
-      }
-    )
-    monitorService.prechecksResponse(token, data).then(res => {
-      console.log("response", res)
-      setNext(0)
-      hideModal()
-      todayReportData();
-    }).catch((error) => {
-      console.log(error)
-      setNext(0)
-      hideModal()
-    }
-    )
-  }
+    const data = new Object({
+      booking_day_report_id: bookingId,
+      start_location_lat: location != null ? location.latitude : null,
+      start_location_lng: location != null ? location.longitude : null,
+      precheck_question: questionaire,
+      status: status,
+      description: description,
+    });
+    monitorService
+      .prechecksResponse(token, data)
+      .then(res => {
+        console.log('response', res);
+        setNext(0);
+        hideModal();
+        todayReportData();
+      })
+      .catch(error => {
+        console.log(error);
+        setNext(0);
+        hideModal();
+      });
+  };
 
   const handleNext = (data, newdata) => {
     // console.log(precheckQuestions[next].question)
-    setDescription([...description, data.first_name])
-    setStatus([...status, data.preference])
-    setquestionaire([...questionaire, precheckQuestions[next].question])
-    setNext(next + 1)
-    reset()
-    setRadio(false)
+    setDescription([...description, data.first_name]);
+    setStatus([...status, data.preference]);
+    setquestionaire([...questionaire, precheckQuestions[next].question]);
+    reset();
+    setRadio(false);
+    if (next != 11) {
+      setNext(next + 1);
+    }
     // console.log("data are", data)
-  }
-  const handleIncident = (data) => {
-    console.log("data", data)
-  }
-
+  };
+  const handleIncident = data => {
+    console.log('data', data);
+  };
 
   const showModal = () => setVisible(true);
   const hideModal = () => {
-    setNext(0)
-    setDescription([])
-    setStatus([])
-    setquestionaire([])
-    setVisible(false)
-    reset()
-  }
+    setNext(0);
+    setDescription([]);
+    setStatus([]);
+    setquestionaire([]);
+    setVisible(false);
+    reset();
+  };
   const hideModal1 = () => {
-    setVisible1(false)
-  }
+    setVisible1(false);
+  };
   const hideModal2 = () => {
-    setVisible2(false)
-    reset2()
-  }
+    setVisible2(false);
+    reset2();
+  };
   const hideModal3 = () => {
-    setVisible3(false)
-  }
+    setVisible3(false);
+  };
   const hideModal4 = () => {
-    setVisible4(false)
-  }
+    setVisible4(false);
+  };
   const openPrecheckDialog = (item, name) => {
     // Modal for play , plus and circle plus icons
     console.log('name', name);
@@ -350,7 +390,7 @@ function HomeScreen({ navigation, user, token }) {
         name === 'plus' ? setVisible1(true) : setVisible2(true);
       }
     }
-  }
+  };
   // Old code
   // const openPrecheckDialog = (item, name) => {
   //   console.log('name', name)
@@ -368,19 +408,15 @@ function HomeScreen({ navigation, user, token }) {
   //   }
   // }
   const openActionDialog = (item, name) => {
-    console.log('name', name)
+    console.log('name', name);
     if (name === 'stop') {
-      setVisible4(true)
-      setItem(item)
-
+      setVisible4(true);
+      setItem(item);
     } else {
       setIsDialogVisible(true);
-      setBookingId(item.id)
+      setBookingId(item.id);
     }
-  }
-
-
-
+  };
 
   React.useEffect(() => {
     setPage(0);
@@ -434,13 +470,13 @@ function HomeScreen({ navigation, user, token }) {
   };
 
   const actionCheckSubmit = () => {
-    setButtonLoading(true)
-    console.log('this button was clicked', item )
-    if(askQuestion.question3 || askQuestion.question4){
-      if( askQuestion.question4 && selectedRadio == 'yes'){
-        setButtonLoading(false)
-        closeActionDialog()
-        return 
+    setButtonLoading(true);
+    console.log('this button was clicked', item);
+    if (askQuestion.question3 || askQuestion.question4) {
+      if (askQuestion.question4 && selectedRadio == 'yes') {
+        setButtonLoading(false);
+        closeActionDialog();
+        return;
       }
       let data = {
         temperature: 'Passed',
@@ -450,20 +486,19 @@ function HomeScreen({ navigation, user, token }) {
       monitorService
         .BookingReportActionCheck(token, data)
         .then(res => {
-          console.log(res)
+          console.log(res);
           todayReportData();
-          closeActionDialog()
-          setButtonLoading(false)
+          closeActionDialog();
+          setButtonLoading(false);
         })
         .catch(error => {
           console.log(error);
-          setButtonLoading(false)
+          setButtonLoading(false);
         });
-    }else{
-      setButtonLoading(false)
-      closeActionDialog()
+    } else {
+      setButtonLoading(false);
+      closeActionDialog();
     }
- 
   };
 
   useEffect(() => {
@@ -494,8 +529,8 @@ function HomeScreen({ navigation, user, token }) {
   //   return isActive;
   // }
 
-  const incidentSubmit = (newdata) => {
-    console.log('newData', newdata)
+  const incidentSubmit = newdata => {
+    console.log('newData', newdata);
     const data = new Object({
       booking_day_report_id: bookingId,
       location: newdata.location,
@@ -505,87 +540,91 @@ function HomeScreen({ navigation, user, token }) {
       is_witness_involve: newdata.witness,
       witness_description: newdata.witness_description,
       students: newdata.students,
-      description: newdata.incidentdescription
-    })
-    monitorService.IncidentActivity(token, data).then((res) => {
-      reset2()
-      console.log("response", res)
-      setMessage(res.data.message)
-      setVisible3(true)
-      hideModal2()
-    }).catch((error) => {
-      console.log("error", error)
-      reset2()
-      setMessage("Something went wrong")
-      setVisible3(true)
-      hideModal2()
-    })
-
-  }
+      description: newdata.incidentdescription,
+    });
+    monitorService
+      .IncidentActivity(token, data)
+      .then(res => {
+        reset2();
+        console.log('response', res);
+        setMessage(res.data.message);
+        setVisible3(true);
+        hideModal2();
+      })
+      .catch(error => {
+        console.log('error', error);
+        reset2();
+        setMessage('Something went wrong');
+        setVisible3(true);
+        hideModal2();
+      });
+  };
   const getGeoLocation = () => {
     Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       position => {
-        const { latitude, longitude } = position.coords;
+        const {latitude, longitude} = position.coords;
         setLocation(position.coords);
         console.log(latitude, longitude);
       },
       error => {
         console.error(error.message);
       },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
     );
   };
-  const ArrivedMarked= (data)=>{
-    setIsLoading(true)
-   let item={
-    booking_day_request_id: data.id
-   }
+  const ArrivedMarked = data => {
+    setIsLoading(true);
+    let item = {
+      booking_day_request_id: data.id,
+    };
     monitorService
-    .markArrived(token, item)
-    .then(res => {
-      console.log(res)
-      todayReportData();
-      setIsLoading(false)
-    })
-    .catch(error => {
-      console.log(error);
-      setIsLoading(false)
-    });
-  }
-  const apiMonitorSubmit = () => {
-    console.log('itme', item)
-    const data = new Object ({
-        Monitor_Booking_Day_Report_Id : item.monitor_booking_day_report.id,
-        requestbody:{latlng : (location.latitude,location.longitude)}
-    })
-    monitorService.MonitorSubmitReport(token, data).then((res) =>{
-        console.log('res',res)
+      .markArrived(token, item)
+      .then(res => {
+        console.log(res);
         todayReportData();
-        setMessage(res.data.message)
-        setVisible3(true)
-        setItem()
-        hideModal4()
-    }).catch((error) => {
-        console.log("error",error)
-        setMessage("Something went wrong")
-        setVisible3(true)
-        setItem()
-        hideModal4()
-    })
-}
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.log(error);
+        setIsLoading(false);
+      });
+  };
+  const apiMonitorSubmit = () => {
+    console.log('itme', item);
+    const data = new Object({
+      Monitor_Booking_Day_Report_Id: item.monitor_booking_day_report.id,
+      requestbody: {latlng: (location.latitude, location.longitude)},
+    });
+    monitorService
+      .MonitorSubmitReport(token, data)
+      .then(res => {
+        console.log('res', res);
+        todayReportData();
+        setMessage(res.data.message);
+        setVisible3(true);
+        setItem();
+        hideModal4();
+      })
+      .catch(error => {
+        console.log('error', error);
+        setMessage('Something went wrong');
+        setVisible3(true);
+        setItem();
+        hideModal4();
+      });
+  };
   return (
     <>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={{flex: 1}}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
-      >
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}>
         <FlatList
           style={styles.container}
-          data={[{ key: 'header' }, ...dashboardData]}
+          data={[{key: 'header'}, ...dashboardData]}
           keyExtractor={(item, index) => index}
-          renderItem={({ item, index }) => {
+          renderItem={({item, index}) => {
             // console.log(item, 'testv ')
             if (index === 0) {
               return (
@@ -606,8 +645,11 @@ function HomeScreen({ navigation, user, token }) {
                 </>
               );
             } else {
-              if(item?.monitor_booking_day_report && item.monitor_booking_day_report?.end_time !== null){
-                return; 
+              if (
+                item?.monitor_booking_day_report &&
+                item.monitor_booking_day_report?.end_time !== null
+              ) {
+                return;
               }
               return (
                 <TodayBookingCardList
@@ -622,11 +664,15 @@ function HomeScreen({ navigation, user, token }) {
             }
           }}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={AppStyles.color.tint} />
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={AppStyles.color.tint}
+            />
           }
-          ListEmptyComponent={!dashboardData?.length && !isLoading && (
-           <NoDataFound />
-          )}
+          ListEmptyComponent={
+            !dashboardData?.length && !isLoading && <NoDataFound />
+          }
           // ListFooterComponent={
           //   <DataTable.Pagination
           //     page={page}
@@ -643,7 +689,7 @@ function HomeScreen({ navigation, user, token }) {
         />
         <Portal>
           <Dialog visible={isDialogVisible} onDismiss={closeActionDialog}>
-            <Dialog.Title>Wellness Check{ }</Dialog.Title>
+            <Dialog.Title>Wellness Check{}</Dialog.Title>
             <Dialog.Content>
               {askQuestion.question1 === true && (
                 <View>
@@ -668,9 +714,9 @@ function HomeScreen({ navigation, user, token }) {
                 <View>
                   <Text>
                     Do you live in the same household with, or have you had
-                    close contact with someone who in the past 14 days has
-                    been in isolation for COVID-19 or had a test confirming
-                    they have the virus?
+                    close contact with someone who in the past 14 days has been
+                    in isolation for COVID-19 or had a test confirming they have
+                    the virus?
                   </Text>
                   <RadioButton.Group
                     onValueChange={handleRadioSelect}
@@ -689,8 +735,8 @@ function HomeScreen({ navigation, user, token }) {
                 <View>
                   <Text>
                     Have you experienced any of these symptoms today or within
-                    the past 24 hours, which is new or not explained by
-                    another reason?
+                    the past 24 hours, which is new or not explained by another
+                    reason?
                   </Text>
                   <Text>Fever, chills, or repeated shaking/shivering</Text>
                   <Text> Cough</Text>
@@ -712,8 +758,7 @@ function HomeScreen({ navigation, user, token }) {
                   <HelperText
                     type="error"
                     visible={selectedRadio == 'No' ? true : false}>
-                    Symptoms & Exposure: Passed, Click Submit button to
-                    continue
+                    Symptoms & Exposure: Passed, Click Submit button to continue
                   </HelperText>
                 </View>
               )}
@@ -737,15 +782,17 @@ function HomeScreen({ navigation, user, token }) {
                   <HelperText
                     type="error"
                     visible={selectedRadio == 'No' ? true : false}>
-                    Symptoms & Exposure: Passed, Click Submit button to
-                    continue
+                    Symptoms & Exposure: Passed, Click Submit button to continue
                   </HelperText>
                 </View>
               )}
             </Dialog.Content>
             <Dialog.Actions>
               {selectedRadio && (
-                <Button loading={buttonLoading} mode="contained" onPress={() => actionCheckSubmit()}>
+                <Button
+                  loading={buttonLoading}
+                  mode="contained"
+                  onPress={() => actionCheckSubmit()}>
                   Submit
                 </Button>
               )}
@@ -758,31 +805,47 @@ function HomeScreen({ navigation, user, token }) {
 
         <Portal>
           <Dialog visible={visible} onDismiss={hideModal}>
-            <View style={{...styles.rowView , flexDirection:'row', justifyContent:'space-between'}}>
-              <Dialog.Title style={globalStyles.subtitle}>PreCheck Check</Dialog.Title>
-              <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal} />
+            <View
+              style={{
+                ...styles.rowView,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <Dialog.Title style={globalStyles.subtitle}>
+                PreCheck Check
+              </Dialog.Title>
+              <Icon
+                color={AppStyles.color?.tint}
+                style={globalStyles.rightImageIcon}
+                name="close"
+                size={20}
+                onPress={hideModal}
+              />
             </View>
             <Dialog.Content>
-              <View style={{ marginTop: 15, minHeight: 36 }}>
-                <Text style={{ fontWeight: '700' }}>{precheckQuestions[next]?.question}</Text>
+              <View style={{marginTop: 15, minHeight: 36}}>
+                <Text style={{fontWeight: '700'}}>
+                  {precheckQuestions[next]?.question}
+                </Text>
               </View>
-              <View style={{ marginTop: 15 }}>
-                <View style={{ marginLeft: 10 }}>
+              <View style={{marginTop: 15}}>
+                <View style={{marginLeft: 10}}>
                   <FormTextInput
                     control={control}
                     errors={errors}
                     name="first_name"
                     label="Description"
-                    style={{ backgroundColor: 'transparent', width: '100%' }}
+                    style={{backgroundColor: 'transparent', width: '100%'}}
                   />
                 </View>
                 <FormRadioButtons
                   control={control}
                   name="preference"
+                  defaultValue={'Yes'}
                   label="Preference"
                   options={[
-                    { label: 'Yes', value: 'Yes' },
-                    { label: 'No', value: 'No' },
+                    {label: 'Yes', value: 'Yes'},
+                    {label: 'No', value: 'No'},
                   ]}
                   // Helpertext = {data[next].HelpText}
                   radioButton={radioButton}
@@ -793,11 +856,21 @@ function HomeScreen({ navigation, user, token }) {
             </Dialog.Content>
             <Dialog.Actions>
               {next != precheckQuestions.length - 1 ? (
-                <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleSubmit(handleNext)}>
+                <Button
+                  textColor={AppStyles.color.white}
+                  buttonColor={AppStyles.color.tint}
+                  mode="contained-tonal"
+                  style={styles.buttonStyle}
+                  onPress={handleSubmit(handleNext)}>
                   Next
                 </Button>
               ) : (
-                <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleSubmit(onSubmit)}>
+                <Button
+                  textColor={AppStyles.color.white}
+                  buttonColor={AppStyles.color.tint}
+                  mode="contained-tonal"
+                  style={styles.buttonStyle}
+                  onPress={handleSubmit(handleNext)}>
                   Submit
                 </Button>
               )}
@@ -807,44 +880,101 @@ function HomeScreen({ navigation, user, token }) {
 
         <Portal>
           <Dialog visible={visible1} onDismiss={hideModal1}>
-            <View style={{ ...styles.rowView, flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Dialog.Title style={globalStyles.subtitle}>Add New Activity</Dialog.Title>
-              <View style={{ marginTop: 10 }}>
-                <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal1} />
+            <View
+              style={{
+                ...styles.rowView,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <Dialog.Title style={globalStyles.subtitle}>
+                Add New Activity
+              </Dialog.Title>
+              <View style={{marginTop: 10}}>
+                <Icon
+                  color={AppStyles.color?.tint}
+                  style={globalStyles.rightImageIcon}
+                  name="close"
+                  size={20}
+                  onPress={hideModal1}
+                />
               </View>
             </View>
             <Dialog.Content>
-              <View style={{ flexDirection: 'row', padding: 20, justifyContent: 'space-between' }}>
-                <Text style={{ fontSize: 15, fontWeight: 'bold', }}>Start Date</Text>
-                <Text style={{ fontSize: 15, fontWeight: 'bold', }}>End Date</Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  padding: 20,
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{fontSize: 15, fontWeight: 'bold'}}>
+                  Start Date
+                </Text>
+                <Text style={{fontSize: 15, fontWeight: 'bold'}}>End Date</Text>
               </View>
-              <View style={{ minHeight: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={{ width: 130 }} onPress={() => { showTimePicker() }}>
+              <View
+                style={{
+                  minHeight: 5,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <Button
+                  textColor={AppStyles.color.white}
+                  buttonColor={AppStyles.color.tint}
+                  mode="contained-tonal"
+                  style={{width: 130}}
+                  onPress={() => {
+                    showTimePicker();
+                  }}>
                   {selectedTime}
                 </Button>
-                <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={{ width: 130 }} onPress={() => { showTimeLastPicker() }}>
+                <Button
+                  textColor={AppStyles.color.white}
+                  buttonColor={AppStyles.color.tint}
+                  mode="contained-tonal"
+                  style={{width: 130}}
+                  onPress={() => {
+                    showTimeLastPicker();
+                  }}>
                   {selectedTimeLast}
                 </Button>
               </View>
-              <View style={{ alignItems: 'center', justifyContent: 'center', minHeight: 50 }}>
+              <View
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minHeight: 50,
+                }}>
                 <HelperText>
                   <Text>Minimum 1/2 Hours Required</Text>
                 </HelperText>
               </View>
-              <View style={{ marginTop: 15 }}>
-                <View style={{ marginLeft: 20, minHeight: 40 }}>
-                  <Text style={{ fontSize: 15, fontWeight: 'bold', }}>Description</Text>
+              <View style={{marginTop: 15}}>
+                <View style={{marginLeft: 20, minHeight: 40}}>
+                  <Text style={{fontSize: 15, fontWeight: 'bold'}}>
+                    Description
+                  </Text>
                 </View>
                 <View>
-                  <TextInput style={{ height: 100, borderRadius: 20 }} onChangeText={(e) => setDescriptionActivity(e)} underlineColor="transparent" placeholder='description' />
+                  <TextInput
+                    style={{height: 100, borderRadius: 20}}
+                    onChangeText={e => setDescriptionActivity(e)}
+                    underlineColor="transparent"
+                    placeholder="description"
+                  />
                 </View>
               </View>
-              <HelperText style={{ minHeight: 40 }} visible={helper}>
+              <HelperText style={{minHeight: 40}} visible={helper}>
                 <HelperText type="error">This field is required</HelperText>
               </HelperText>
             </Dialog.Content>
-            <Dialog.Actions style={{ alignItems: 'center', justifyContent: 'center' }}>
-              <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleActivitySubmit}>
+            <Dialog.Actions
+              style={{alignItems: 'center', justifyContent: 'center'}}>
+              <Button
+                textColor={AppStyles.color.white}
+                buttonColor={AppStyles.color.tint}
+                mode="contained-tonal"
+                style={styles.buttonStyle}
+                onPress={handleActivitySubmit}>
                 Submit
               </Button>
             </Dialog.Actions>
@@ -852,25 +982,51 @@ function HomeScreen({ navigation, user, token }) {
         </Portal>
         <Portal>
           <Dialog visible={visible2} onDismiss={hideModal2}>
-            <View style={{ ...styles.rowView, flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Dialog.Title style={globalStyles.subtitle}>Incident</Dialog.Title>
-              <View style={{ marginTop: 10 }}>
-                <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal2} />
+            <View
+              style={{
+                ...styles.rowView,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <Dialog.Title style={globalStyles.subtitle}>
+                Incident
+              </Dialog.Title>
+              <View style={{marginTop: 10}}>
+                <Icon
+                  color={AppStyles.color?.tint}
+                  style={globalStyles.rightImageIcon}
+                  name="close"
+                  size={20}
+                  onPress={hideModal2}
+                />
               </View>
             </View>
-            <Dialog.Content style={{ minHeight: 500 }}>
-              <ScrollView style={{ ...globalStyles.cardContainer, minHeight: 90, paddingHorizontal: 0, paddingVertical: 0, backgroundColor: 'transparent' }} nestedScrollEnabled={true}>
-                <Card style={{ ...globalStyles.card }} mode='contained' >
+            <Dialog.Content style={{minHeight: 500}}>
+              <ScrollView
+                style={{
+                  ...globalStyles.cardContainer,
+                  minHeight: 90,
+                  paddingHorizontal: 0,
+                  paddingVertical: 0,
+                  backgroundColor: 'transparent',
+                }}
+                nestedScrollEnabled={true}>
+                <Card style={{...globalStyles.card}} mode="contained">
                   <Card.Content>
                     <View style={styles.detailsContainer}>
-                      <FormTextInput control={control2} errors={errors2} name="location" label="Location" />
+                      <FormTextInput
+                        control={control2}
+                        errors={errors2}
+                        name="location"
+                        label="Location"
+                      />
                       <FormRadioButtons
                         control={control2}
                         name="external"
                         label="Is External Involve"
                         options={[
-                          { label: 'Yes', value: 'yes' },
-                          { label: 'No', value: 'no' },
+                          {label: 'Yes', value: 'yes'},
+                          {label: 'No', value: 'no'},
                         ]}
                         errors={errors2}
                       />
@@ -879,46 +1035,100 @@ function HomeScreen({ navigation, user, token }) {
                         name="witness"
                         label="Is Witness Involve"
                         options={[
-                          { label: 'Yes', value: 'yes' },
-                          { label: 'No', value: 'no' },
+                          {label: 'Yes', value: 'yes'},
+                          {label: 'No', value: 'no'},
                         ]}
                         errors={errors2}
                       />
-                      <FormTextInput control={control2} errors={errors2} name="incidentdescription" label="Description" />
+                      <FormTextInput
+                        control={control2}
+                        errors={errors2}
+                        name="incidentdescription"
+                        label="Description"
+                      />
                       <View>
-                        <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#777' }}>Time:</Text>
-                      </View>
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', minHeight: 60 }}>
-                        <View style={{ padding: 12 }}>
-                          <Text style={{
+                        <Text
+                          style={{
+                            fontWeight: 'bold',
                             fontSize: 16,
                             color: '#777',
-                            fontWeight: '600',
-                            textAlign: 'left',
-                            paddingBottom: 0,
-                          }}>{selectedTime}</Text>
+                          }}>
+                          Time:
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          minHeight: 60,
+                        }}>
+                        <View style={{padding: 12}}>
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              color: '#777',
+                              fontWeight: '600',
+                              textAlign: 'left',
+                              paddingBottom: 0,
+                            }}>
+                            {selectedTime}
+                          </Text>
                         </View>
-                        <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={{ ...styles.buttonStyle, height: 40 }} onPress={() => setTimePickerVisibility(true)} uppercase={false}>
+                        <Button
+                          textColor={AppStyles.color.white}
+                          buttonColor={AppStyles.color.tint}
+                          mode="contained-tonal"
+                          style={{...styles.buttonStyle, height: 40}}
+                          onPress={() => setTimePickerVisibility(true)}
+                          uppercase={false}>
                           Pick time
                         </Button>
                       </View>
-                      <View style={{ padding: 10 }}>
+                      <View style={{padding: 10}}>
                         <Divider style={globalStyles.divider} />
                       </View>
-                      <FormTextInput control={control2} errors={errors2} name="witness_description" label="Witness Description" />
-                      <FormTextInput control={control2} errors={errors2} name="students" label="Students" />
-                      <FormTextInput control={control2} errors={errors2} name="rooms" label="Rooms" />
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleSubmit2(incidentSubmit)}>
+                      <FormTextInput
+                        control={control2}
+                        errors={errors2}
+                        name="witness_description"
+                        label="Witness Description"
+                      />
+                      <FormTextInput
+                        control={control2}
+                        errors={errors2}
+                        name="students"
+                        label="Students"
+                      />
+                      <FormTextInput
+                        control={control2}
+                        errors={errors2}
+                        name="rooms"
+                        label="Rooms"
+                      />
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                        }}>
+                        <Button
+                          textColor={AppStyles.color.white}
+                          buttonColor={AppStyles.color.tint}
+                          mode="contained-tonal"
+                          style={styles.buttonStyle}
+                          onPress={handleSubmit2(incidentSubmit)}>
                           Submit
                         </Button>
-                        <Button textColor={AppStyles.color.black} buttonColor={AppStyles.color.white} mode="contained-tonal" style={styles.buttonStyle} onPress={hideModal2}>
+                        <Button
+                          textColor={AppStyles.color.black}
+                          buttonColor={AppStyles.color.white}
+                          mode="contained-tonal"
+                          style={styles.buttonStyle}
+                          onPress={hideModal2}>
                           Back
                         </Button>
                       </View>
                     </View>
                   </Card.Content>
-
                 </Card>
               </ScrollView>
             </Dialog.Content>
@@ -926,26 +1136,41 @@ function HomeScreen({ navigation, user, token }) {
         </Portal>
         {/* <IncidentModal visible2={visible2} hideModal2={hideModal2} bookingId={bookingId} token={token} setMessage={setMessage} setVisible3={setVisible3} /> */}
         <Portal>
+          <Portal>
             <Dialog visible={visible4} onDismiss={hideModal4}>
-                <View style={{ ...styles.rowView, alignItems: 'center', justifyContent: 'center' }}>
-                    <Dialog.Title style={{ ...globalStyles.subtitle }}>Are you Sure?</Dialog.Title>
+              <Dialog.Title>Are you Sure?</Dialog.Title>
+              <Dialog.Content>
+                <Text variant="bodyMedium">
+                  Submitting this report closes the job for the night.
+                </Text>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    gap: 25,
+                  }}>
+                  <Button
+                    textColor={AppStyles.color.white}
+                    buttonColor={AppStyles.color.tint}
+                    mode="contained-tonal"
+                    style={styles.buttonStyle}
+                    onPress={apiMonitorSubmit}>
+                    Yes
+                  </Button>
+                  <Button
+                    textColor={AppStyles.color.black}
+                    buttonColor={AppStyles.color.white}
+                    mode="contained-tonal"
+                    style={styles.buttonStyle}
+                    onPress={hideModal4}>
+                    No
+                  </Button>
                 </View>
-                <Dialog.Content style={{ minHeight: 200, justifyContent: 'center', alignItems: 'center' }}>
-                    <ScrollView style={{ ...globalStyles.cardContainer, minHeight: 90, paddingHorizontal: 0, paddingVertical: 0, backgroundColor: 'transparent' }} nestedScrollEnabled={true}>
-                        <Card style={{ ...globalStyles.card, minHeight: 300, padding: 10}} mode='contained' >
-                            <Text style={{ fontWeight: 'bold' }}>Submitting this report closes the job for the night.</Text>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 30}}>
-                                <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={apiMonitorSubmit}>
-                                    Yes
-                                </Button>
-                                <Button textColor={AppStyles.color.black} buttonColor={AppStyles.color.white} mode="contained-tonal" style={styles.buttonStyle} onPress={hideModal4}>
-                                    No
-                                </Button>
-                            </View>
-                        </Card>
-                    </ScrollView>
-                </Dialog.Content>
+              </Dialog.Actions>
             </Dialog>
+          </Portal>
         </Portal>
         <DateTimePickerModal
           isVisible={isTimePickerVisible}
@@ -969,14 +1194,12 @@ function HomeScreen({ navigation, user, token }) {
         <Snackbar
           visible={visible3}
           onDismiss={() => setVisible3(false)}
-          duration={3000}
-        >
+          duration={3000}>
           {Message}
         </Snackbar>
-
       </KeyboardAvoidingView>
     </>
-  )
+  );
   //---------Old code-----------------------
   // return (
   //   <>
