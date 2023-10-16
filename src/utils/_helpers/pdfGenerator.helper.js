@@ -5,8 +5,8 @@ import { formatTime, formatDate } from './format.helper';
  const generatePdf = async (htmlContent) => {
     let options = {
         html: htmlContent,
-        file: 'test',
-        directory: 'Document'
+        file: 'export_Pdf',
+        directory: 'OrangeMoon'
     }
 
     let file = await RNHTMLtoPDF.convert(options)
