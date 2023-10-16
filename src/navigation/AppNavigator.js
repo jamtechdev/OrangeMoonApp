@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable prettier/prettier */
-import React from 'react';
-import { Image, Pressable, StyleSheet } from 'react-native';
+import React,{useState} from 'react';
+import { Image, Pressable, StyleSheet, ActivityIndicator, Text , View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -28,6 +28,7 @@ import DrawerContainer from '../components/DrawerContainer';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DetailsReport from '../screens/DetailsReport';
 import { useRoute } from '@react-navigation/native';
+import { authService } from '../utils/_services';
 
 const Stack = createStackNavigator();
 
@@ -416,11 +417,28 @@ const DrawerStack = () => (
 const AppNavigator = () => {
     let auth = useSelector((state) => state.auth); // Get user role from Redux store
     const { token } = auth;
+    const [appInitialized, setAppInitialized] = useState(0);
     // Render the appropriate navigation based on the user role
+    authService.tokenCheck(token).then(res=>{
+        console.log(res, "result")
+    setAppInitialized(1);
+    }).catch(error=>{
+        setAppInitialized(2);
+        console.log(error, "token error")
+    })
+
+    if (appInitialized == 0) {
+        return (
+            <View style={styles.container}>
+            <ActivityIndicator size="large" color={AppStyles.color.tint} />
+            <Text>Loading...</Text>
+          </View>
+        );
+      } else {
     return (
         <NavigationContainer>
             <Stack.Navigator
-                initialRouteName={token ? 'DrawerStack' : 'LoginStack'} // Check if user role exists
+                initialRouteName={appInitialized == 1 ? 'DrawerStack' : 'LoginStack'} // Check if user role exists
                 screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="LoginStack" component={LoginStack} />
                 <Stack.Screen name="DrawerStack" component={DrawerStack} />
@@ -431,9 +449,15 @@ const AppNavigator = () => {
             </Stack.Navigator>
         </NavigationContainer>
     );
+      }
 };
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
     headerTitleStyle: {
         fontWeight: 'bold',
         textAlign: 'center',

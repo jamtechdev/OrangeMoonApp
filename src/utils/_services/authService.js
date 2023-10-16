@@ -3,6 +3,7 @@ import axios from "axios";
 export const authService = {
     login,
     logout,
+    tokenCheck
     // forgotPass
 };
 const API_URL = 'https://staging.orangemoonsss.com/api/v1'
@@ -23,6 +24,15 @@ async function logout( token) {
         }
     );
 }
+async function tokenCheck(token) {
+    return await axios.get(
+        `${API_URL}/auth/check-token-validation`,
+        {
+            headers: { 'Authorization': 'Bearer ' + token },
+        }
+    );
+}
+
 // async function forgotPass(data, token) {
 //     return await axios.post(
 //         `${process.env.NEXT_PUBLIC_API_URL}/auth/changePassword`,

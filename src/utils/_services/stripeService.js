@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import axios from "axios";
 // import { Connection } from "../connection";
-
+import axiosInstance from "./axiosService";
 // const API_URL = Connection.staging;
 
 const API_URL = 'https://staging.orangemoonsss.com/api/v1'
@@ -12,7 +12,7 @@ export const stripeService = {
 };
 
 async function checkStripeConnection(token) {
-    return await axios.get(
+    return await axiosInstance.get(
         `${API_URL}/check-stripe-connect`,
         {
             headers: { 'Authorization': 'Bearer ' + token },
@@ -20,7 +20,7 @@ async function checkStripeConnection(token) {
     );
 }
 async function stripePayoutDetails(token) {
-    return await axios.get(
+    return await axiosInstance.get(
         `${API_URL}/stripe/payout`,
         {
             headers: { 'Authorization': 'Bearer ' + token },
@@ -29,7 +29,7 @@ async function stripePayoutDetails(token) {
 }
 
 async function storeStripeAccount(token, stripe_account_id) {
-    return await axios.post(
+    return await axiosInstance.post(
         `${API_URL}/store-stripe-account/${stripe_account_id}`,
         {
             headers: { 'Authorization': 'Bearer ' + token },
