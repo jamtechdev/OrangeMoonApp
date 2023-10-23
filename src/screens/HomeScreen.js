@@ -47,6 +47,7 @@ import FormRadioButtons from '../components/FormRadioButton';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import TodayBookingModel from '../components/model/TodayBookingModel';
 import NoDataFound from '../components/NoData';
+import IncidentModel from '../components/model/IncidentModel';
 
 function HomeScreen({navigation, user, token}) {
   const [dashboardData, setDashboardData] = useState([]);
@@ -575,20 +576,33 @@ function HomeScreen({navigation, user, token}) {
   };
   const ArrivedMarked = data => {
     setIsLoading(true);
-    let item = {
-      booking_day_request_id: data.id,
-    };
-    monitorService
-      .markArrived(token, item)
-      .then(res => {
-        console.log(res);
-        todayReportData();
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.log(error);
-        setIsLoading(false);
-      });
+    Geolocation.getCurrentPosition(
+      position => {
+        const {latitude, longitude} = position.coords;
+        setLocation(position.coords);
+        console.log(latitude, longitude);
+        let item = {
+          booking_day_request_id: data.id,
+          lat: latitude,
+          lng: longitude
+        };
+        monitorService
+          .markArrived(token, item)
+          .then(res => {
+            console.log(res);
+            todayReportData();
+            setIsLoading(false);
+          })
+          .catch(error => {
+            console.log(error);
+            setIsLoading(false);
+          });
+      },
+      error => {
+        console.error(error.message);
+      },
+      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+    );
   };
   const apiMonitorSubmit = () => {
     console.log('itme', item);
@@ -980,7 +994,16 @@ function HomeScreen({navigation, user, token}) {
             </Dialog.Actions>
           </Dialog>
         </Portal>
-        <Portal>
+        <IncidentModel 
+  visibleModel={visible2}
+  hideModal={hideModal2}
+  handleSubmit2={handleSubmit2}
+  incidentSubmit={incidentSubmit}
+  control2={control2}
+  errors2={errors2}
+  setTimePickerVisibility={setTimePickerVisibility}
+  selectedTime={selectedTime} />
+        {/* <Portal>
           <Dialog visible={visible2} onDismiss={hideModal2}>
             <View
               style={{
@@ -1014,97 +1037,7 @@ function HomeScreen({navigation, user, token}) {
                 <Card style={{...globalStyles.card}} mode="contained">
                   <Card.Content>
                     <View style={styles.detailsContainer}>
-                      <FormTextInput
-                        control={control2}
-                        errors={errors2}
-                        name="location"
-                        label="Location"
-                      />
-                      <FormRadioButtons
-                        control={control2}
-                        name="external"
-                        label="Is External Involve"
-                        options={[
-                          {label: 'Yes', value: 'yes'},
-                          {label: 'No', value: 'no'},
-                        ]}
-                        errors={errors2}
-                      />
-                      <FormRadioButtons
-                        control={control2}
-                        name="witness"
-                        label="Is Witness Involve"
-                        options={[
-                          {label: 'Yes', value: 'yes'},
-                          {label: 'No', value: 'no'},
-                        ]}
-                        errors={errors2}
-                      />
-                      <FormTextInput
-                        control={control2}
-                        errors={errors2}
-                        name="incidentdescription"
-                        label="Description"
-                      />
-                      <View>
-                        <Text
-                          style={{
-                            fontWeight: 'bold',
-                            fontSize: 16,
-                            color: '#777',
-                          }}>
-                          Time:
-                        </Text>
-                      </View>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          minHeight: 60,
-                        }}>
-                        <View style={{padding: 12}}>
-                          <Text
-                            style={{
-                              fontSize: 16,
-                              color: '#777',
-                              fontWeight: '600',
-                              textAlign: 'left',
-                              paddingBottom: 0,
-                            }}>
-                            {selectedTime}
-                          </Text>
-                        </View>
-                        <Button
-                          textColor={AppStyles.color.white}
-                          buttonColor={AppStyles.color.tint}
-                          mode="contained-tonal"
-                          style={{...styles.buttonStyle, height: 40}}
-                          onPress={() => setTimePickerVisibility(true)}
-                          uppercase={false}>
-                          Pick time
-                        </Button>
-                      </View>
-                      <View style={{padding: 10}}>
-                        <Divider style={globalStyles.divider} />
-                      </View>
-                      <FormTextInput
-                        control={control2}
-                        errors={errors2}
-                        name="witness_description"
-                        label="Witness Description"
-                      />
-                      <FormTextInput
-                        control={control2}
-                        errors={errors2}
-                        name="students"
-                        label="Students"
-                      />
-                      <FormTextInput
-                        control={control2}
-                        errors={errors2}
-                        name="rooms"
-                        label="Rooms"
-                      />
+                  
                       <View
                         style={{
                           flexDirection: 'row',
@@ -1115,7 +1048,7 @@ function HomeScreen({navigation, user, token}) {
                           buttonColor={AppStyles.color.tint}
                           mode="contained-tonal"
                           style={styles.buttonStyle}
-                          onPress={handleSubmit2(incidentSubmit)}>
+                         >
                           Submit
                         </Button>
                         <Button
@@ -1133,7 +1066,7 @@ function HomeScreen({navigation, user, token}) {
               </ScrollView>
             </Dialog.Content>
           </Dialog>
-        </Portal>
+        </Portal> */}
         {/* <IncidentModal visible2={visible2} hideModal2={hideModal2} bookingId={bookingId} token={token} setMessage={setMessage} setVisible3={setVisible3} /> */}
         <Portal>
           <Portal>
