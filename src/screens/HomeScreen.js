@@ -656,6 +656,7 @@ function HomeScreen({navigation, user, token}) {
                       dashboardData={dashboardData}
                     />
                   </View>
+                  <NoDataFound />
                 </>
               );
             } else {
@@ -684,9 +685,9 @@ function HomeScreen({navigation, user, token}) {
               tintColor={AppStyles.color.tint}
             />
           }
-          ListEmptyComponent={
-            !dashboardData?.length && !isLoading && <NoDataFound />
-          }
+          // ListEmptyComponent={
+          
+          // }
           // ListFooterComponent={
           //   <DataTable.Pagination
           //     page={page}
@@ -701,6 +702,7 @@ function HomeScreen({navigation, user, token}) {
           //   />
           // }
         />
+
         <Portal>
           <Dialog visible={isDialogVisible} onDismiss={closeActionDialog}>
             <Dialog.Title>Wellness Check{}</Dialog.Title>

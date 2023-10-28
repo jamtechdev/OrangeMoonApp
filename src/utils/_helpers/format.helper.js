@@ -49,6 +49,7 @@ export const formatDateNew = (dateStr) => {
     if (dateString == null){
          date = new Date();
     } else {
+        return dateString
         date = new Date(dateString);
         if (isNaN(date) ) {
             return '-';
