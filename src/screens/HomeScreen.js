@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
-import React, {useLayoutEffect, useEffect, useState} from 'react';
+import React, { useLayoutEffect, useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -9,10 +9,10 @@ import {
   Platform,
   KeyboardAvoidingView,
 } from 'react-native'; // Import View
-import {connect} from 'react-redux';
-import {AppStyles} from '../utils/AppStyles';
-import {Configuration} from '../utils/Configuration';
-import {monitorService} from '../utils/_services';
+import { connect } from 'react-redux';
+import { AppStyles } from '../utils/AppStyles';
+import { Configuration } from '../utils/Configuration';
+import { monitorService } from '../utils/_services';
 import {
   Divider,
   Text,
@@ -26,8 +26,8 @@ import {
   HelperText,
   Snackbar,
 } from 'react-native-paper';
-import {useFocusEffect, useIsFocused} from '@react-navigation/native';
-import {formatDate, formatTime, sortingHelper} from '../utils/_helpers';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { formatDate, formatTime, sortingHelper } from '../utils/_helpers';
 import globalStyles from '../utils/_css/globalStyle';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LoadingContainer from '../components/LoadingContainer';
@@ -40,16 +40,16 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import FormTextInput from '../components/FormTextInput';
 import moment from 'moment';
 import * as Yup from 'yup';
-import {useForm, Controller} from 'react-hook-form';
-import {yupResolver} from '@hookform/resolvers/yup';
-import {RefreshControl} from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { RefreshControl } from 'react-native';
 import FormRadioButtons from '../components/FormRadioButton';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import TodayBookingModel from '../components/model/TodayBookingModel';
 import NoDataFound from '../components/NoData';
 import IncidentModel from '../components/model/IncidentModel';
 
-function HomeScreen({navigation, user, token}) {
+function HomeScreen({ navigation, user, token }) {
   const [dashboardData, setDashboardData] = useState([]);
   const [dashboardDataBkp, setDashboardDataBkp] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -212,7 +212,7 @@ function HomeScreen({navigation, user, token}) {
     handleSubmit,
     setValue,
     watch,
-    formState: {errors},
+    formState: { errors },
   } = useForm(formOptions);
   const {
     control: control2,
@@ -220,7 +220,7 @@ function HomeScreen({navigation, user, token}) {
     handleSubmit: handleSubmit2,
     setValue: setValue2,
     watch: watch2,
-    formState: {errors: errors2},
+    formState: { errors: errors2 },
   } = useForm(formOptionsIncident);
   const onSubmit = data => {
     // console.log("data are", data)
@@ -232,7 +232,7 @@ function HomeScreen({navigation, user, token}) {
     // setNext(0)
     // hideModal()
   };
-  const [time, setTime] = useState({hours: '12', minutes: '00'});
+  const [time, setTime] = useState({ hours: '12', minutes: '00' });
   const [visibleTime, setVisibleTime] = React.useState(false);
   const onDismiss = React.useCallback(() => {
     setVisibleTime(false);
@@ -282,8 +282,8 @@ function HomeScreen({navigation, user, token}) {
     const firstTime = new Date(currentDateTime);
     const secondTime = new Date(
       monitorBookingDayRequest.booking_day.date +
-        ' ' +
-        monitorBookingDayRequest.booking_day.start_time,
+      ' ' +
+      monitorBookingDayRequest.booking_day.start_time,
     );
     const intervalInMilliseconds = secondTime - firstTime;
     const intervalInHours = intervalInMilliseconds / (1000 * 60 * 60);
@@ -306,10 +306,10 @@ function HomeScreen({navigation, user, token}) {
     return currentDate;
   };
   const onConfirm = React.useCallback(
-    ({hours, minutes}) => {
+    ({ hours, minutes }) => {
       setVisibleTime(false);
-      console.log({hours, minutes});
-      setTime({hours: hours, minutes: minutes});
+      console.log({ hours, minutes });
+      setTime({ hours: hours, minutes: minutes });
     },
     [setVisible],
   );
@@ -564,21 +564,21 @@ function HomeScreen({navigation, user, token}) {
     Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       position => {
-        const {latitude, longitude} = position.coords;
+        const { latitude, longitude } = position.coords;
         setLocation(position.coords);
         console.log(latitude, longitude);
       },
       error => {
         console.error(error.message);
       },
-      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   };
   const ArrivedMarked = data => {
     setIsLoading(true);
     Geolocation.getCurrentPosition(
       position => {
-        const {latitude, longitude} = position.coords;
+        const { latitude, longitude } = position.coords;
         setLocation(position.coords);
         console.log(latitude, longitude);
         let item = {
@@ -601,14 +601,14 @@ function HomeScreen({navigation, user, token}) {
       error => {
         console.error(error.message);
       },
-      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   };
   const apiMonitorSubmit = () => {
     console.log('itme', item);
     const data = new Object({
       Monitor_Booking_Day_Report_Id: item.monitor_booking_day_report.id,
-      requestbody: {latlng: (location.latitude, location.longitude)},
+      requestbody: { latlng: (location.latitude, location.longitude) },
     });
     monitorService
       .MonitorSubmitReport(token, data)
@@ -631,14 +631,14 @@ function HomeScreen({navigation, user, token}) {
   return (
     <>
       <KeyboardAvoidingView
-        style={{flex: 1}}
+        style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}>
         <FlatList
           style={styles.container}
-          data={[{key: 'header'}, ...dashboardData]}
+          data={[{ key: 'header' }, ...dashboardData]}
           keyExtractor={(item, index) => index}
-          renderItem={({item, index}) => {
+          renderItem={({ item, index }) => {
             // console.log(item, 'testv ')
             if (index === 0) {
               return (
@@ -655,6 +655,7 @@ function HomeScreen({navigation, user, token}) {
                       setSortDirections={setSortDirections}
                       dashboardData={dashboardData}
                     />
+                    <NoDataFound />
                   </View>
                 </>
               );
@@ -685,25 +686,25 @@ function HomeScreen({navigation, user, token}) {
             />
           }
           ListEmptyComponent={
-            !dashboardData?.length && !isLoading && <NoDataFound />
+            !dashboardData?.length && !isLoading && (<NoDataFound />)
           }
-          // ListFooterComponent={
-          //   <DataTable.Pagination
-          //     page={page}
-          //     numberOfPages={Math.ceil(dashboardData.length / itemsPerPage)}
-          //     onPageChange={page => setPage(page)}
-          //     label={`${from + 1}-${to} of ${dashboardData.length}`}
-          //     numberOfItemsPerPageList={numberOfItemsPerPageList}
-          //     numberOfItemsPerPage={itemsPerPage}
-          //     onItemsPerPageChange={onItemsPerPageChange}
-          //     showFastPaginationControls
-          //     selectPageDropdownLabel={'Rows per page'}
-          //   />
-          // }
+        // ListFooterComponent={
+        //   <DataTable.Pagination
+        //     page={page}
+        //     numberOfPages={Math.ceil(dashboardData.length / itemsPerPage)}
+        //     onPageChange={page => setPage(page)}
+        //     label={`${from + 1}-${to} of ${dashboardData.length}`}
+        //     numberOfItemsPerPageList={numberOfItemsPerPageList}
+        //     numberOfItemsPerPage={itemsPerPage}
+        //     onItemsPerPageChange={onItemsPerPageChange}
+        //     showFastPaginationControls
+        //     selectPageDropdownLabel={'Rows per page'}
+        //   />
+        // }
         />
         <Portal>
           <Dialog visible={isDialogVisible} onDismiss={closeActionDialog}>
-            <Dialog.Title>Wellness Check{}</Dialog.Title>
+            <Dialog.Title>Wellness Check{ }</Dialog.Title>
             <Dialog.Content>
               {askQuestion.question1 === true && (
                 <View>
@@ -837,19 +838,19 @@ function HomeScreen({navigation, user, token}) {
               />
             </View>
             <Dialog.Content>
-              <View style={{marginTop: 15, minHeight: 36}}>
-                <Text style={{fontWeight: '700'}}>
+              <View style={{ marginTop: 15, minHeight: 36 }}>
+                <Text style={{ fontWeight: '700' }}>
                   {precheckQuestions[next]?.question}
                 </Text>
               </View>
-              <View style={{marginTop: 15}}>
-                <View style={{marginLeft: 10}}>
+              <View style={{ marginTop: 15 }}>
+                <View style={{ marginLeft: 10 }}>
                   <FormTextInput
                     control={control}
                     errors={errors}
                     name="first_name"
                     label="Description"
-                    style={{backgroundColor: 'transparent', width: '100%'}}
+                    style={{ backgroundColor: 'transparent', width: '100%' }}
                   />
                 </View>
                 <FormRadioButtons
@@ -858,8 +859,8 @@ function HomeScreen({navigation, user, token}) {
                   defaultValue={'Yes'}
                   label="Preference"
                   options={[
-                    {label: 'Yes', value: 'Yes'},
-                    {label: 'No', value: 'No'},
+                    { label: 'Yes', value: 'Yes' },
+                    { label: 'No', value: 'No' },
                   ]}
                   // Helpertext = {data[next].HelpText}
                   radioButton={radioButton}
@@ -903,7 +904,7 @@ function HomeScreen({navigation, user, token}) {
               <Dialog.Title style={globalStyles.subtitle}>
                 Add New Activity
               </Dialog.Title>
-              <View style={{marginTop: 10}}>
+              <View style={{ marginTop: 10 }}>
                 <Icon
                   color={AppStyles.color?.tint}
                   style={globalStyles.rightImageIcon}
@@ -920,10 +921,10 @@ function HomeScreen({navigation, user, token}) {
                   padding: 20,
                   justifyContent: 'space-between',
                 }}>
-                <Text style={{fontSize: 15, fontWeight: 'bold'}}>
+                <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
                   Start Date
                 </Text>
-                <Text style={{fontSize: 15, fontWeight: 'bold'}}>End Date</Text>
+                <Text style={{ fontSize: 15, fontWeight: 'bold' }}>End Date</Text>
               </View>
               <View
                 style={{
@@ -935,7 +936,7 @@ function HomeScreen({navigation, user, token}) {
                   textColor={AppStyles.color.white}
                   buttonColor={AppStyles.color.tint}
                   mode="contained-tonal"
-                  style={{width: 130}}
+                  style={{ width: 130 }}
                   onPress={() => {
                     showTimePicker();
                   }}>
@@ -945,7 +946,7 @@ function HomeScreen({navigation, user, token}) {
                   textColor={AppStyles.color.white}
                   buttonColor={AppStyles.color.tint}
                   mode="contained-tonal"
-                  style={{width: 130}}
+                  style={{ width: 130 }}
                   onPress={() => {
                     showTimeLastPicker();
                   }}>
@@ -962,27 +963,27 @@ function HomeScreen({navigation, user, token}) {
                   <Text>Minimum 1/2 Hours Required</Text>
                 </HelperText>
               </View>
-              <View style={{marginTop: 15}}>
-                <View style={{marginLeft: 20, minHeight: 40}}>
-                  <Text style={{fontSize: 15, fontWeight: 'bold'}}>
+              <View style={{ marginTop: 15 }}>
+                <View style={{ marginLeft: 20, minHeight: 40 }}>
+                  <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
                     Description
                   </Text>
                 </View>
                 <View>
                   <TextInput
-                    style={{height: 100, borderRadius: 20}}
+                    style={{ height: 100, borderRadius: 20 }}
                     onChangeText={e => setDescriptionActivity(e)}
                     underlineColor="transparent"
                     placeholder="description"
                   />
                 </View>
               </View>
-              <HelperText style={{minHeight: 40}} visible={helper}>
+              <HelperText style={{ minHeight: 40 }} visible={helper}>
                 <HelperText type="error">This field is required</HelperText>
               </HelperText>
             </Dialog.Content>
             <Dialog.Actions
-              style={{alignItems: 'center', justifyContent: 'center'}}>
+              style={{ alignItems: 'center', justifyContent: 'center' }}>
               <Button
                 textColor={AppStyles.color.white}
                 buttonColor={AppStyles.color.tint}
@@ -994,15 +995,15 @@ function HomeScreen({navigation, user, token}) {
             </Dialog.Actions>
           </Dialog>
         </Portal>
-        <IncidentModel 
-  visibleModel={visible2}
-  hideModal={hideModal2}
-  handleSubmit2={handleSubmit2}
-  incidentSubmit={incidentSubmit}
-  control2={control2}
-  errors2={errors2}
-  setTimePickerVisibility={setTimePickerVisibility}
-  selectedTime={selectedTime} />
+        <IncidentModel
+          visibleModel={visible2}
+          hideModal={hideModal2}
+          handleSubmit2={handleSubmit2}
+          incidentSubmit={incidentSubmit}
+          control2={control2}
+          errors2={errors2}
+          setTimePickerVisibility={setTimePickerVisibility}
+          selectedTime={selectedTime} />
         {/* <Portal>
           <Dialog visible={visible2} onDismiss={hideModal2}>
             <View

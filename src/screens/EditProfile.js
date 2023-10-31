@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, FlatList } from 'react-native';
 import { Avatar, Text, Divider, Card, Button, Portal, FAB, Dialog } from 'react-native-paper';
 import { connect } from 'react-redux';
 import globalStyles from '../utils/_css/globalStyle';
@@ -238,15 +238,10 @@ function EditProfileScreen({ user, token, navigation, login }) {
                                 <FormDropdown
                                     control={control}
                                     name="state_id"
-                                    label="State "
-                                    options={stateList}
-                                    setDropdownName={setDropdownName}
-                                    dropdownName={dropdownName}
-                                    searchable={true}
-                                    updateValue={setValue}
+                                    label="State " options={stateList}
                                     defaultValue={monitor?.state_id || ''}
-                                    Index={75000}
-                                    error={!!errors.state_id} // Check if the field has errors
+                                    updateValue={setValue}
+                                    error={!!errors.state_id}
                                     helperText="Select one or more options"
                                 />
                             )}
@@ -256,13 +251,9 @@ function EditProfileScreen({ user, token, navigation, login }) {
                                     name="city_id"
                                     label="City "
                                     options={memoizedProp}
-                                    Index={65000}
-                                    setDropdownName={setDropdownName}
-                                    dropdownName={dropdownName}
-                                    searchable={true}
-                                    updateValue={setValue}
                                     defaultValue={monitor?.city_id || ''}
-                                    error={!!errors.city_id} // Check if the field has errors
+                                    updateValue={setValue}
+                                    error={!!errors.city_id}
                                     helperText="Select one or more options"
                                 />
                             )}
@@ -278,6 +269,7 @@ function EditProfileScreen({ user, token, navigation, login }) {
                                     error={!!errors.selectedOptions} // Check if the field has errors
                                     helperText="Select one or more options"
                                     multi={true}
+                                    other={false}
                                 />
                             )}
                             <FormTextInput control={control} errors={errors} name="medical_condition" label="Medical Conditions/Allergies" multiline={true} />
@@ -291,20 +283,21 @@ function EditProfileScreen({ user, token, navigation, login }) {
                         </View>
                     </Card.Content>
                 </Card>
-                <Portal>
-                    <FAB.Group
-                        style={globalStyles.fabGroup}
-                        open={open}
-                        backdropColor={'#1f1f1f0a'}
-                        icon={open ? 'cogs' : 'plus'}
-                        actions={[
-                            { icon: 'camera', onPress: () => openCamera() },
-                            { icon: 'image', onPress: () => openGallery() },
-                        ]}
-                        onStateChange={() => setOpen(!open)}
-                    />
-                </Portal>
             </ScrollView>
+            <Portal>
+                <FAB.Group
+                    style={globalStyles.fabGroup}
+                    open={open}
+                    backdropColor={'#1f1f1f0a'}
+                    icon={open ? 'cogs' : 'plus'}
+                    actions={[
+                        { icon: 'camera', onPress: () => openCamera() },
+                        { icon: 'image', onPress: () => openGallery() },
+                    ]}
+                    onStateChange={() => setOpen(!open)}
+                />
+            </Portal>
+
             <Portal>
                 <Dialog visible={visible} onDismiss={() => onToggleValue()}>
                     <Dialog.Title>Profile Update</Dialog.Title>
