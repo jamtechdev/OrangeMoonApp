@@ -65,6 +65,7 @@ async function getUnreadMassageCount(token, monitorId) {
 async function updateUnreadMassage(token, receiver_id, sender_id) {
     return await axiosInstance.post(
         `${API_URL}/update-monitor-unread-conversation?receiver_id=${receiver_id}&sender_id=${sender_id}`,
+        {},
         {
             headers: { 'Authorization' : 'Bearer ' + token },
         }

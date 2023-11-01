@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
 import { Controller } from 'react-hook-form';
@@ -36,13 +37,14 @@ const FormDropdown = ({
     };
 
     return (
-        <View style={styleIndex.detailItem}>
+        <View style={styles.detailItem}>
             <Text style={styles.labelText}>{label} : </Text>
             <Controller
                 control={control}
                 name={name}
                 render={({ field: { onChange, value } }) => (
-                    <React.Fragment>
+                    <View style={{ width: '100%' }}>
+
                         <MultiSelect
                             items={options}
                             uniqueKey="value"
@@ -67,6 +69,7 @@ const FormDropdown = ({
                             submitButtonColor="#CCC"
                             submitButtonText="Submit"
                             hideSubmitButton={true}
+                          styleDropdownMenu={{ width: '100%', alignSelf: 'stretch' }} 
                             single={!multi}
                         />
                         {error && (
@@ -74,7 +77,7 @@ const FormDropdown = ({
                                 {helperText}
                             </HelperText>
                         )}
-                    </React.Fragment>
+              </View>
                 )}
             />
         </View>
@@ -83,9 +86,11 @@ const FormDropdown = ({
 
 const styles = StyleSheet.create({
     detailItem: {
-        alignItems: 'start',
+        // alignItems: 'start',
+        flex: 1,
+        width: '100%',
         marginBottom: 10,
-        zIndex: 99999999,
+        // zIndex: 99999999,
     },
     labelText: {
         fontSize: 16,
