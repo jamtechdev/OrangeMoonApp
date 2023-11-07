@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable prettier/prettier */
-import React, {useMemo, useState, useEffect} from 'react';
-import {View, ScrollView, StyleSheet, Text, RefreshControl, Pressable} from 'react-native';
+import React, { useMemo, useState, useEffect } from 'react';
+import { View, ScrollView, StyleSheet, Text, RefreshControl, Pressable, TouchableOpacity } from 'react-native';
 import {
   List,
   Card,
@@ -10,20 +10,20 @@ import {
   Button,
   Divider,
   Snackbar,
-  DataTable,
+  TextInput,
   Portal,
   Modal,
   Dialog,
 } from 'react-native-paper';
-import {connect} from 'react-redux';
-import {monitorService} from '../utils/_services';
-import {AppStyles} from '../utils/AppStyles';
+import { connect } from 'react-redux';
+import { monitorService } from '../utils/_services';
+import { AppStyles } from '../utils/AppStyles';
 import globalStyles from '../utils/_css/globalStyle';
 import LoadingContainer from '../components/LoadingContainer';
-import {formatDate, formatTime} from '../utils/_helpers';
-import {Calendar} from 'react-native-big-calendar';
+import { formatDate, formatTime } from '../utils/_helpers';
+import { Calendar } from 'react-native-big-calendar';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {useForm, Controller} from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import FormDateInput from '../components/FormDateInput';
 import SearchBox from '../components/SearchBox';
@@ -32,7 +32,9 @@ import SchedulingDateDialog from '../components/dialog/SchedulingDateDialog';
 import SchedulingCardList from '../components/cards/SchedulingCardList';
 import SchedulingFilterSearch from '../components/searchFilter/ScheduleFilterSearch';
 import NoDataFound from '../components/NoData';
-function Scheduling({navigation, user, token, route}) {
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+
+function Scheduling({ navigation, user, token, route }) {
   const [eventData, setEventData] = useState([]);
   const [assignableData, setAssignableData] = useState([]);
   const [assignableDataBkp, setAssignableDataBkp] = useState([]);
@@ -51,6 +53,9 @@ function Scheduling({navigation, user, token, route}) {
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(0);
   const [numberOfItemsPerPageList] = useState([10, 25, 50, 100]);
+  const [isStartDateVisible, setIsStartDateVisible] = useState(false)
+  const [isEndDateVisible, setIsEndDateVisible] = useState(false)
+
   const [itemsPerPage, onItemsPerPageChange] = useState(
     numberOfItemsPerPageList[0],
   );
@@ -144,16 +149,16 @@ function Scheduling({navigation, user, token, route}) {
     };
   };
 
-  const CustomEvent = ({event, touchableOpacityProps}) => (
+  const CustomEvent = ({ event, touchableOpacityProps }) => (
     <Pressable
       {...touchableOpacityProps}
       onPress={() => onEventPress(event)}
-      style={[styles.customEventContainer, {backgroundColor: event.color}]}
+      style={[styles.customEventContainer, { backgroundColor: event.color }]}
       key={event?.id}>
       {event.color !== 'yellow' ? (
         <Text style={styles.eventText}>{event.title}</Text>
       ) : (
-        <Text style={[styles.eventText, {color: AppStyles.color.black}]}>
+        <Text style={[styles.eventText, { color: AppStyles.color.black }]}>
           {event.title}
         </Text>
       )}
@@ -283,19 +288,69 @@ function Scheduling({navigation, user, token, route}) {
     }
   };
 
+
+  const handleConfirmEnd = (dateTimeString) => {
+    console.warn("A date has been picked: ", dateTimeString);
+    const date = new Date(dateTimeString);
+
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
+    const day = date.getDate().toString().padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day}`;
+    setEndDate(formattedDate)
+    setIsEndDateVisible(false);
+  };
+  const handleConfirmStart = (dateTimeString) => {
+    console.warn("A date has been picked: ", dateTimeString);
+    const date = new Date(dateTimeString);
+    setIsStartDateVisible(false);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
+    const day = date.getDate().toString().padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day}`;
+    setStartDate(formattedDate)
+
+  };
+
+  const checkEventOrNot = (event) => {
+    const targetDate = new Date(event);
+    console.log(targetDate, "date ")
+    const inputDate = targetDate;
+    const date = new Date(inputDate);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    const dateExists = eventData.some(item => {
+      const itemDate = new Date(item.date);
+      return itemDate.getTime() === targetDate.getTime();
+    });
+    if (dateExists) {
+      return;
+    } else {
+      setVisibleDialog(true);
+      setStartDate(formattedDate);
+      setEndDate(formattedDate);
+      console.log('The target date does not exist in the array.');
+    }
+
+  }
+
   return (
     <>
       <ScrollView
         style={styles.container}
         refreshControl={
-    <RefreshControl
-      refreshing={refreshing}
-      onRefresh={handleRefresh}
-      tintColor={AppStyles.color.tint}
-    />
-  }
-  showsVerticalScrollIndicator={false} 
-        scrollIndicatorInsets={{top: 0, left: 0, bottom: 0, right: 0}}>
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={AppStyles.color.tint}
+          />
+        }
+        showsVerticalScrollIndicator={false}
+        scrollIndicatorInsets={{ top: 0, left: 0, bottom: 0, right: 0 }}>
         <View style={styles.container}>
           <Text style={globalStyles.subtitle}> Manage Schedule </Text>
           <Divider style={globalStyles.divider} />
@@ -343,7 +398,7 @@ function Scheduling({navigation, user, token, route}) {
             onPressDateHeader={e =>
               console.log('onPressDateHeader date here ', e)
             }
-            onPressCell={e => console.log('onPressCell date here ', e)}
+            onPressCell={e => checkEventOrNot(e)}
             onPressEvent={e => console.log('onPressEvent date here ', e)}
           />
 
@@ -365,19 +420,8 @@ function Scheduling({navigation, user, token, route}) {
                 />
               ))}
             {!assignableData?.length && !isLoading && (
-           <NoDataFound />
+              <NoDataFound />
             )}
-            {/* <DataTable.Pagination
-              page={page}
-              numberOfPages={Math.ceil(assignableData.length / itemsPerPage)}
-              onPageChange={page => setPage(page)}
-              label={`${from + 1}-${to} of ${assignableData.length}`}
-              numberOfItemsPerPageList={numberOfItemsPerPageList}
-              numberOfItemsPerPage={itemsPerPage}
-              onItemsPerPageChange={onItemsPerPageChange}
-              showFastPaginationControls
-              selectPageDropdownLabel={'Rows per page'}
-            /> */}
           </View>
         </View>
       </ScrollView>
@@ -387,7 +431,63 @@ function Scheduling({navigation, user, token, route}) {
         duration={1000}>
         You are not able to take action on this date
       </Snackbar>
-      <SchedulingDateDialog
+      <Portal>
+        <Dialog visible={visibleDialog} onDismiss={hideDialog}>
+          <View style={styles.rowView}>
+            <Dialog.Title style={globalStyles.subtitle}>Scheduling</Dialog.Title>
+            <Icon
+              color={AppStyles.color?.tint}
+              style={globalStyles.rightImageIcon}
+              name="close"
+              size={20}
+              onPress={hideDialog}
+            />
+          </View>
+          <Divider style={globalStyles.divider} />
+          <Dialog.Content>
+            <View style={styles.input}>
+              <View style={styles.detailItem}>
+                <Text style={styles.labelText}>Start Date : </Text>
+                <TouchableOpacity onPress={() => setIsStartDateVisible(true)}>
+                  <TextInput
+                    style={styles.valueInput}
+                    value={startDate}
+                    disabled={true}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.detailItem}>
+                <Text style={styles.labelText}>End Date : </Text>
+                <TouchableOpacity onPress={() => setIsEndDateVisible(true)}>
+                  <TextInput
+                    style={styles.valueInput}
+                    value={endDate}
+                    disabled={true}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <ActivityIndicator
+              animating={isButtonLoading}
+              color={AppStyles.color.tint}
+            />
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => updateAvailability(startDate, endDate, 'NOT AVAILABLE')}>
+              NOT AVAILABLE{' '}
+            </Button>
+            <Button
+              textColor={AppStyles.color.white}
+              buttonColor={AppStyles.color.tint}
+              mode="contained-tonal"
+              style={styles.buttonStyle}
+              onPress={() => updateAvailability(startDate, endDate, 'AVAILABLE')}>
+              AVAILABLE
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+      {/* <SchedulingDateDialog
         visibleDialog={visibleDialog}
         hideDialog={hideDialog}
         isButtonLoading={isButtonLoading}
@@ -397,7 +497,7 @@ function Scheduling({navigation, user, token, route}) {
         setStartDate={setStartDate}
         setEndDate={setEndDate}
         setIsButtonLoading={setIsButtonLoading}
-      />
+      /> */}
       <SchedulingModel
         visibleModel={visibleModel}
         hideModal={hideModal}
@@ -426,7 +526,21 @@ function Scheduling({navigation, user, token, route}) {
           </Dialog.Actions>
         </Dialog>
       </Portal>
+      <DateTimePickerModal
+        isVisible={isStartDateVisible}
+        mode="date"
+        date={new Date(startDate)}
+        onConfirm={handleConfirmStart}
+        onCancel={() => setIsStartDateVisible(false)}
+      />
 
+      <DateTimePickerModal
+        isVisible={isEndDateVisible}
+        mode="date"
+        date={new Date(endDate)}
+        onConfirm={handleConfirmEnd}
+        onCancel={() => setIsEndDateVisible(false)}
+      />
       {isLoading && (
         <Portal>
           <LoadingContainer />
@@ -572,6 +686,24 @@ const styles = StyleSheet.create({
     color: AppStyles.color.white,
     backgroundColor: AppStyles.color.tint,
     fontSize: 8,
+  },
+  detailItem: {
+    marginBottom: 10,
+  },
+  labelText: {
+    // width: '40%',
+    fontSize: 16,
+    color: '#777',
+    fontWeight: '700',
+    marginRight: 10,
+    textAlign: 'left',
+    paddingBottom: 10,
+  },
+  valueInput: {
+    // flex: 1,
+    fontSize: 15,
+    marginBottom: 10,
+    // width: AppStyles.textInputWidth.full,
   },
 });
 

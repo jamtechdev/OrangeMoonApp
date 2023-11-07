@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
 export const formatDate = (dateString) => {
-    if (dateString == null){
+    if (dateString == null) {
         const date = new Date()
         return date.toLocaleDateString([], options);
     }
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
     const date = new Date(dateString);
-    if (isNaN(date) ) {
+    if (isNaN(date)) {
         return '-';
     }
     return date.toLocaleDateString([], options);
@@ -46,12 +46,13 @@ export function createdDate(inputDate) {
 export const formatDateNew = (dateStr) => {
     const dateString = dateStr.split(" ,")[0];
     let date = '';
-    if (dateString == null){
-         date = new Date();
+    if (dateString == null) {
+        date = new Date();
     } else {
         return dateString
         date = new Date(dateString);
-        if (isNaN(date) ) {
+        return dateString;
+        if (isNaN(date)) {
             return '-';
         }
     }
@@ -67,4 +68,4 @@ export const isWithin48Hours = (targetDate) => {
     const timeDifference = targetDateTime - currentDate;
     const hoursIn48Hours = 48 * 60 * 60 * 1000;
     return timeDifference <= hoursIn48Hours;
-  };
+};
