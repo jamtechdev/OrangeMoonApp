@@ -1,8 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable prettier/prettier */
-import React, { useMemo, useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, Text, RefreshControl, Pressable, TouchableOpacity } from 'react-native';
+import React, {useMemo, useState, useEffect} from 'react';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  RefreshControl,
+  Pressable,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native';
 import {
   List,
   Card,
@@ -15,15 +25,15 @@ import {
   Modal,
   Dialog,
 } from 'react-native-paper';
-import { connect } from 'react-redux';
-import { monitorService } from '../utils/_services';
-import { AppStyles } from '../utils/AppStyles';
+import {connect} from 'react-redux';
+import {monitorService} from '../utils/_services';
+import {AppStyles} from '../utils/AppStyles';
 import globalStyles from '../utils/_css/globalStyle';
 import LoadingContainer from '../components/LoadingContainer';
-import { formatDate, formatTime } from '../utils/_helpers';
-import { Calendar } from 'react-native-big-calendar';
+import {formatDate, formatTime} from '../utils/_helpers';
+import {Calendar} from 'react-native-big-calendar';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { useForm, Controller } from 'react-hook-form';
+import {useForm, Controller} from 'react-hook-form';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import FormDateInput from '../components/FormDateInput';
 import SearchBox from '../components/SearchBox';
@@ -32,9 +42,12 @@ import SchedulingDateDialog from '../components/dialog/SchedulingDateDialog';
 import SchedulingCardList from '../components/cards/SchedulingCardList';
 import SchedulingFilterSearch from '../components/searchFilter/ScheduleFilterSearch';
 import NoDataFound from '../components/NoData';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import io from 'socket.io-client';
 
-function Scheduling({ navigation, user, token, route }) {
+function Scheduling({navigation, user, token, route}) {
+  const socket = io('https://dev.orangemoonsss.com');
+
   const [eventData, setEventData] = useState([]);
   const [assignableData, setAssignableData] = useState([]);
   const [assignableDataBkp, setAssignableDataBkp] = useState([]);
@@ -53,8 +66,8 @@ function Scheduling({ navigation, user, token, route }) {
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(0);
   const [numberOfItemsPerPageList] = useState([10, 25, 50, 100]);
-  const [isStartDateVisible, setIsStartDateVisible] = useState(false)
-  const [isEndDateVisible, setIsEndDateVisible] = useState(false)
+  const [isStartDateVisible, setIsStartDateVisible] = useState(false);
+  const [isEndDateVisible, setIsEndDateVisible] = useState(false);
 
   const [itemsPerPage, onItemsPerPageChange] = useState(
     numberOfItemsPerPageList[0],
@@ -76,11 +89,24 @@ function Scheduling({ navigation, user, token, route }) {
     getdayList();
     getAssignList();
   }, [token]);
+
+  useEffect(() => {
+    // Listen for live calender update check 
+    socket.on('update-calender', () => {
+      getdayList();
+      getAssignList();
+    });
+    return () => {
+      socket.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleRefresh = () => {
     setRefreshing(true);
     getdayList();
     getAssignList();
-  }
+  };
   const getAssignList = () => {
     // setIsLoading(true);
     monitorService
@@ -95,11 +121,14 @@ function Scheduling({ navigation, user, token, route }) {
         setIsLoading(false);
       });
   };
+
   const getdayList = () => {
     setIsLoading(true);
     monitorService
       .getAllSchedulingEvent(token)
       .then(res => {
+        console.log(res.data, 'monitor availability response');
+
         for (const item of res.data.monitor_availability) {
           const date = new Date(item.date);
           item.start = date;
@@ -113,7 +142,8 @@ function Scheduling({ navigation, user, token, route }) {
       .catch(error => {
         console.log(error);
         setIsLoading(false);
-      }).finally(() => {
+      })
+      .finally(() => {
         setRefreshing(false);
       });
   };
@@ -149,16 +179,16 @@ function Scheduling({ navigation, user, token, route }) {
     };
   };
 
-  const CustomEvent = ({ event, touchableOpacityProps }) => (
+  const CustomEvent = ({event, touchableOpacityProps}) => (
     <Pressable
       {...touchableOpacityProps}
       onPress={() => onEventPress(event)}
-      style={[styles.customEventContainer, { backgroundColor: event.color }]}
+      style={[styles.customEventContainer, {backgroundColor: event.color}]}
       key={event?.id}>
       {event.color !== 'yellow' ? (
         <Text style={styles.eventText}>{event.title}</Text>
       ) : (
-        <Text style={[styles.eventText, { color: AppStyles.color.black }]}>
+        <Text style={[styles.eventText, {color: AppStyles.color.black}]}>
           {event.title}
         </Text>
       )}
@@ -226,6 +256,7 @@ function Scheduling({ navigation, user, token, route }) {
           console.log(res);
           if (res.data.status) {
             getdayList();
+            getAssignList();
             // setTimeout(() => {
             //   hideDialog();
             // }, 1000);
@@ -247,8 +278,11 @@ function Scheduling({ navigation, user, token, route }) {
     monitorService
       .setSelfBooking(token, data)
       .then(res => {
-        setIsLoading(false);
-        getAssignList();
+        if (res.data.status) {
+          getAssignList();
+          getdayList();
+        }
+        // setIsLoading(false);
       })
       .catch(error => {
         setIsLoading(false);
@@ -288,9 +322,8 @@ function Scheduling({ navigation, user, token, route }) {
     }
   };
 
-
-  const handleConfirmEnd = (dateTimeString) => {
-    console.warn("A date has been picked: ", dateTimeString);
+  const handleConfirmEnd = dateTimeString => {
+    console.warn('A date has been picked: ', dateTimeString);
     const date = new Date(dateTimeString);
 
     const year = date.getFullYear();
@@ -298,11 +331,11 @@ function Scheduling({ navigation, user, token, route }) {
     const day = date.getDate().toString().padStart(2, '0');
 
     const formattedDate = `${year}-${month}-${day}`;
-    setEndDate(formattedDate)
+    setEndDate(formattedDate);
     setIsEndDateVisible(false);
   };
-  const handleConfirmStart = (dateTimeString) => {
-    console.warn("A date has been picked: ", dateTimeString);
+  const handleConfirmStart = dateTimeString => {
+    console.warn('A date has been picked: ', dateTimeString);
     const date = new Date(dateTimeString);
     setIsStartDateVisible(false);
     const year = date.getFullYear();
@@ -310,13 +343,12 @@ function Scheduling({ navigation, user, token, route }) {
     const day = date.getDate().toString().padStart(2, '0');
 
     const formattedDate = `${year}-${month}-${day}`;
-    setStartDate(formattedDate)
-
+    setStartDate(formattedDate);
   };
 
-  const checkEventOrNot = (event) => {
+  const checkEventOrNot = event => {
     const targetDate = new Date(event);
-    console.log(targetDate, "date ")
+    console.log(targetDate, 'date ');
     const inputDate = targetDate;
     const date = new Date(inputDate);
     const year = date.getFullYear();
@@ -335,8 +367,7 @@ function Scheduling({ navigation, user, token, route }) {
       setEndDate(formattedDate);
       console.log('The target date does not exist in the array.');
     }
-
-  }
+  };
 
   return (
     <>
@@ -350,7 +381,7 @@ function Scheduling({ navigation, user, token, route }) {
           />
         }
         showsVerticalScrollIndicator={false}
-        scrollIndicatorInsets={{ top: 0, left: 0, bottom: 0, right: 0 }}>
+        scrollIndicatorInsets={{top: 0, left: 0, bottom: 0, right: 0}}>
         <View style={styles.container}>
           <Text style={globalStyles.subtitle}> Manage Schedule </Text>
           <Divider style={globalStyles.divider} />
@@ -419,9 +450,7 @@ function Scheduling({ navigation, user, token, route }) {
                   updateRequestStatus={updateRequestStatus}
                 />
               ))}
-            {!assignableData?.length && !isLoading && (
-              <NoDataFound />
-            )}
+            {!assignableData?.length && !isLoading && <NoDataFound />}
           </View>
         </View>
       </ScrollView>
@@ -434,7 +463,9 @@ function Scheduling({ navigation, user, token, route }) {
       <Portal>
         <Dialog visible={visibleDialog} onDismiss={hideDialog}>
           <View style={styles.rowView}>
-            <Dialog.Title style={globalStyles.subtitle}>Scheduling</Dialog.Title>
+            <Dialog.Title style={globalStyles.subtitle}>
+              Scheduling
+            </Dialog.Title>
             <Icon
               color={AppStyles.color?.tint}
               style={globalStyles.rightImageIcon}
@@ -446,16 +477,25 @@ function Scheduling({ navigation, user, token, route }) {
           <Divider style={globalStyles.divider} />
           <Dialog.Content>
             <View style={styles.input}>
-              <View style={styles.detailItem}>
-                <Text style={styles.labelText}>Start Date : </Text>
-                <TouchableOpacity onPress={() => setIsStartDateVisible(true)}>
+              <TouchableOpacity
+                onPress={() => {
+                  Keyboard.dismiss();
+                  setIsStartDateVisible(true);
+                }}>
+                <View style={styles.detailItem}>
+                  <Text style={styles.labelText}>Start Date : </Text>
+
                   <TextInput
                     style={styles.valueInput}
                     value={startDate}
                     disabled={true}
                   />
-                </TouchableOpacity>
-              </View>
+                  <View
+                    style={styles.startEndDateTextInputView}
+                    onPress={() => setIsStartDateVisible(true)}
+                  />
+                </View>
+              </TouchableOpacity>
               <View style={styles.detailItem}>
                 <Text style={styles.labelText}>End Date : </Text>
                 <TouchableOpacity onPress={() => setIsEndDateVisible(true)}>
@@ -463,6 +503,11 @@ function Scheduling({ navigation, user, token, route }) {
                     style={styles.valueInput}
                     value={endDate}
                     disabled={true}
+                  />
+
+                  <View
+                    style={styles.startEndDateTextInputView}
+                    onPress={() => setIsEndDateVisible(true)}
                   />
                 </TouchableOpacity>
               </View>
@@ -473,7 +518,10 @@ function Scheduling({ navigation, user, token, route }) {
             />
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={() => updateAvailability(startDate, endDate, 'NOT AVAILABLE')}>
+            <Button
+              onPress={() =>
+                updateAvailability(startDate, endDate, 'NOT AVAILABLE')
+              }>
               NOT AVAILABLE{' '}
             </Button>
             <Button
@@ -481,7 +529,9 @@ function Scheduling({ navigation, user, token, route }) {
               buttonColor={AppStyles.color.tint}
               mode="contained-tonal"
               style={styles.buttonStyle}
-              onPress={() => updateAvailability(startDate, endDate, 'AVAILABLE')}>
+              onPress={() =>
+                updateAvailability(startDate, endDate, 'AVAILABLE')
+              }>
               AVAILABLE
             </Button>
           </Dialog.Actions>
@@ -704,6 +754,14 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginBottom: 10,
     // width: AppStyles.textInputWidth.full,
+  },
+  startEndDateTextInputView: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    backgroundColor: 'transparent',
   },
 });
 
