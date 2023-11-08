@@ -96,7 +96,7 @@ function Scheduling({ navigation, user, token, route }) {
       });
   };
   const getdayList = () => {
-    setIsLoading(true);
+    // setIsLoading(true);
     monitorService
       .getAllSchedulingEvent(token)
       .then(res => {
@@ -117,6 +117,7 @@ function Scheduling({ navigation, user, token, route }) {
         setRefreshing(false);
       });
   };
+
 
   const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -292,14 +293,14 @@ function Scheduling({ navigation, user, token, route }) {
   const handleConfirmEnd = (dateTimeString) => {
     console.warn("A date has been picked: ", dateTimeString);
     const date = new Date(dateTimeString);
-
+    setIsEndDateVisible(false);
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
     const day = date.getDate().toString().padStart(2, '0');
 
     const formattedDate = `${year}-${month}-${day}`;
     setEndDate(formattedDate)
-    setIsEndDateVisible(false);
+  
   };
   const handleConfirmStart = (dateTimeString) => {
     console.warn("A date has been picked: ", dateTimeString);
