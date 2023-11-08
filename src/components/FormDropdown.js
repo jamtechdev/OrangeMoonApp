@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
 import { Controller } from 'react-hook-form';
@@ -26,6 +26,7 @@ const FormDropdown = ({
 
     useEffect(() => {
         updateValue(name, multi ? selectedItems : selectedItems[0]); // Pass selected item or the first item
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedItems]);
 
     const styleIndex = {
@@ -69,7 +70,7 @@ const FormDropdown = ({
                             submitButtonColor="#CCC"
                             submitButtonText="Submit"
                             hideSubmitButton={true}
-                          styleDropdownMenu={{ width: '100%', alignSelf: 'stretch' }} 
+                            styleDropdownMenu={{ width: '100%', alignSelf: 'stretch' }}
                             single={!multi}
                         />
                         {error && (
@@ -77,7 +78,7 @@ const FormDropdown = ({
                                 {helperText}
                             </HelperText>
                         )}
-              </View>
+                    </View>
                 )}
             />
         </View>

@@ -657,6 +657,7 @@ function HomeScreen({ navigation, user, token }) {
                     />
                     <NoDataFound />
                   </View>
+                  <NoDataFound />
                 </>
               );
             } else {
@@ -702,6 +703,7 @@ function HomeScreen({ navigation, user, token }) {
         //   />
         // }
         />
+
         <Portal>
           <Dialog visible={isDialogVisible} onDismiss={closeActionDialog}>
             <Dialog.Title>Wellness Check{ }</Dialog.Title>
