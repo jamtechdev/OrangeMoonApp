@@ -45,7 +45,7 @@ function ChatScreen({ navigation, user, token }) {
             console.log(res, "here my console res");
         }).catch(error => console.log(error))
 
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     useEffect(() => {
         // Listen for incoming messages
@@ -75,6 +75,7 @@ function ChatScreen({ navigation, user, token }) {
         return () => {
             socket.disconnect();
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSend = (newMessages) => {

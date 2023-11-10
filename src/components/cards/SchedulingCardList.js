@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { createdDate, formatTime, formatDate } from '../../utils/_helpers';
 import globalStyles from '../../utils/_css/globalStyle';
 import {AppStyles} from '../../utils/AppStyles';
+import moment from 'moment';
 const SchedulingCardList = ({item , updateRequestStatus }) => (
   <Card style={styles.tableCard}>
     <Card.Content>
@@ -16,7 +17,10 @@ const SchedulingCardList = ({item , updateRequestStatus }) => (
           </View>
         </View>
         <View style={styles.badgeheadingText}>
-        <Text style={styles.valueTextinner}> Job Date : {formatDate(item?.date)}</Text>
+        <Text style={styles.valueTextinner}> Job Date : {moment(
+            item?.date,
+      
+    ).format('MM/DD/YYYY')}</Text>
           </View>
       </View>
       <View style={[styles.viewRow, {flexDirection: 'column', gap: 5}]}>
