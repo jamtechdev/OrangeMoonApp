@@ -36,25 +36,24 @@ const SchedulingModel = ({
 
   useEffect(() => {
     if(bookingDetails){
-      
       bookingDetails?.monitor_booking_day_requests?.length > 0 && moment(
-      new moment(
+        setSelectedDate(new moment(
         bookingDetails?.monitor_booking_day_requests[0]?.booking_day?.date,
-      ),
-    ).format('DD')
+      )
+    .format('DD')))
     ,
-    bookingDetails && bookingDetails?.monitor_booking_day_requests?.length > 0 &&   moment(
-      new moment(
+ bookingDetails?.monitor_booking_day_requests?.length > 0 &&   moment(
+      setselectedMonth(new moment(
         bookingDetails?.monitor_booking_day_requests[0]?.booking_day?.date,
-      ),
-    ).format('MM')
+      )
+    .format('MM')))
       }
 
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  } , [])
+  } , [visibleModel , bookingDetails])
 
-
+console.log((parseInt(date) - parseInt(selectedDate)) , date , selectedDate, 'selectedDateselectedDateselectedDate');
 
   return (
     <Portal>
@@ -194,7 +193,7 @@ const SchedulingModel = ({
             )}
             {modelType == 'BOOKED' && (
               <>
-                {selectedDate - date <= 2 && selectedMonth >= month ? (
+                {(-parseInt(date) + parseInt(selectedDate)) <= 2 && selectedMonth <= month? (
                   <Button> Late Cancel </Button>
                 ) : (
                   <Button
