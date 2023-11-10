@@ -16,7 +16,8 @@ import {
 import globalStyles from '../../utils/_css/globalStyle';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {AppStyles} from '../../utils/AppStyles';
-import { isWithin48Hours } from '../../utils/_helpers';
+import {isWithin48Hours} from '../../utils/_helpers';
+import moment from 'moment';
 const SchedulingModel = ({
   visibleModel,
   hideModal,
@@ -24,6 +25,36 @@ const SchedulingModel = ({
   modelType,
   showConfirmFunction,
 }) => {
+  const date = moment(new moment().add(2, 'day')).format('DD');
+  const month = moment(new moment().add(2, 'day')).format('MM');
+  const [selectedDate, setSelectedDate] = useState(
+
+  );
+  const [selectedMonth, setselectedMonth] = useState(
+  
+    );
+
+  useEffect(() => {
+    if(bookingDetails){
+      
+      bookingDetails?.monitor_booking_day_requests?.length > 0 && moment(
+      new moment(
+        bookingDetails?.monitor_booking_day_requests[0]?.booking_day?.date,
+      ),
+    ).format('DD')
+    ,
+    bookingDetails && bookingDetails?.monitor_booking_day_requests?.length > 0 &&   moment(
+      new moment(
+        bookingDetails?.monitor_booking_day_requests[0]?.booking_day?.date,
+      ),
+    ).format('MM')
+      }
+
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  } , [])
+
+
 
   return (
     <Portal>
@@ -163,16 +194,15 @@ const SchedulingModel = ({
             )}
             {modelType == 'BOOKED' && (
               <>
-                {isWithin48Hours( bookingDetails?.monitor_booking_day_requests[0]?.booking_day?.date)  > 1 ? (
+                {selectedDate - date <= 2 && selectedMonth >= month ? (
+                  <Button> Late Cancel </Button>
+                ) : (
                   <Button
                     onPress={() => {
                       showConfirmFunction(3);
                     }}>
-                    {' '}
                     Cancel
                   </Button>
-                ) : (
-                  <Button> Late Cancel </Button>
                 )}
               </>
             )}

@@ -75,7 +75,6 @@ export function formatPhoneNumber(phoneNumber) {
 }
 
 
-
 export function formatSocialSecurity(phoneNumber) {
     if (phoneNumber) {
         const numericPhoneNumber = phoneNumber.replace(/\D/g, '');

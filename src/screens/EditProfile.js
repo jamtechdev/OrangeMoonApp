@@ -216,7 +216,7 @@ function EditProfileScreen({ user, token, navigation, login }) {
                             <FormTextInput control={control} errors={errors} name="last_name" label="Last Name" />
                             <FormTextInput control={control} errors={errors} name="email" label="Email" />
                             <FormTextInput control={control} errors={errors} name="payRate" label="Hourly Rate" />
-                            <FormDateInput control={control} name="d_o_b" label="DOB" setValue={setValue} errors={errors} defaultValue={monitor?.d_o_b} />
+                            <FormDateInput control={control}  name="d_o_b"  label="DOB" setValue={setValue} errors={errors} defaultValue={monitor?.d_o_b} />
                             <FormRadioButtons
                                 control={control}
                                 name="gender"

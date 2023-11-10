@@ -20,7 +20,7 @@ const FormDateInput = ({ control, setValue, name, label, defaultValue, errors })
     const toggleDatePicker=()=>{
         setShowPicker(!showPicker)
     }
-
+    const maxDate = new Date();
     return (
         <View style={styles.detailItem}>
             <Text style={styles.labelText}>{label} : </Text>
@@ -44,6 +44,7 @@ const FormDateInput = ({ control, setValue, name, label, defaultValue, errors })
                                 mode="date"
                                 display="default"
                                 onChange={onDateChange}
+                                maximumDate={maxDate} // set current date  
                             />
                         )}
                         {error && <HelperText type="error" visible={true}>{error.message}</HelperText>}
