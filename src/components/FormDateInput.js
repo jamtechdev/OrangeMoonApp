@@ -8,8 +8,12 @@ import { formatDateToString } from '../utils/_helpers/format.helper';
 const FormDateInput = ({ control, setValue, name, label, defaultValue, errors }) => {
     const [showPicker, setShowPicker] = React.useState(false);
     const defaultDate = defaultValue || new Date();
-    const [selectedDate, setSelectedDate] = React.useState(new Date(defaultDate));
+    const dateString = defaultValue;
+    const [day, month, year] = dateString.split('-');
 
+    const [selectedDate, setSelectedDate] = React.useState(new Date(year, month - 1, day));
+
+console.log(selectedDate, 'dfaiun');
     const onDateChange = (event, selected) => {
         setShowPicker(false);
         if (selected) {
@@ -21,12 +25,14 @@ const FormDateInput = ({ control, setValue, name, label, defaultValue, errors })
         setShowPicker(!showPicker)
     }
     const maxDate = new Date();
+
+
     return (
         <View style={styles.detailItem}>
             <Text style={styles.labelText}>{label} : </Text>
             <Pressable onPress={() => toggleDatePicker()}>
                 <TextInput
-                    value={selectedDate.toDateString()}
+                    value={defaultValue}
                     editable={false}
                     onPressIn={() => toggleDatePicker()}
                     // style={styles.valueInput}
@@ -44,7 +50,7 @@ const FormDateInput = ({ control, setValue, name, label, defaultValue, errors })
                                 mode="date"
                                 display="default"
                                 onChange={onDateChange}
-                                maximumDate={maxDate} // set current date  
+                               maximumDate={maxDate} // set current date  
                             />
                         )}
                         {error && <HelperText type="error" visible={true}>{error.message}</HelperText>}

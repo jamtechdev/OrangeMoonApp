@@ -27,7 +27,11 @@ function ProfileScreen({ user, navigation, token }) {
         }).catch(error => {
             console.log(error);
         });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    console.log(profileData?.monitor?.d_o_b , 'profileData?.monitor?.d_o_b');
+
     return (
         <ScrollView style={styles.container} nestedScrollEnabled={true} >
             <Card style={globalStyles.card}>

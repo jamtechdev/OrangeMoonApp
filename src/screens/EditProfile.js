@@ -63,6 +63,7 @@ function EditProfileScreen({ user, token, navigation, login }) {
     });
     const formOptions = { resolver: yupResolver(validationSchema), mode: 'onChange' };
     const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm(formOptions);
+
     const stateFieldValue = watch('state_id');
     const phone_Value = watch('phone');
     const social_value = watch('social_security');

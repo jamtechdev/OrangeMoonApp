@@ -296,11 +296,16 @@ function Scheduling({navigation, user, token, route}) {
     monitorService
       .bookingChangeStatus(token, id, status)
       .then(res => {
+
+
+        getdayList();
         console.log(res);
         setIsLoading(false);
         hideAlert();
         getdayList();
         hideModal();
+        getAssignList();
+        // getdayList();
       })
       .catch(error => {
         setIsLoading(false);
