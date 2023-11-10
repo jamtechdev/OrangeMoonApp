@@ -575,7 +575,7 @@ function HomeScreen({ navigation, user, token }) {
     );
   };
   const ArrivedMarked = data => {
-    setIsLoading(true);
+    // setIsLoading(true);
     Geolocation.getCurrentPosition(
       position => {
         const { latitude, longitude } = position.coords;
@@ -655,9 +655,10 @@ function HomeScreen({ navigation, user, token }) {
                       setSortDirections={setSortDirections}
                       dashboardData={dashboardData}
                     />
+                    {dashboardData && dashboardData.length == 0 && (
                     <NoDataFound />
+                    )}
                   </View>
-                  <NoDataFound />
                 </>
               );
             } else {

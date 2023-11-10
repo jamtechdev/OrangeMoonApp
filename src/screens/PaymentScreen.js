@@ -1,20 +1,20 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useState, useEffect} from 'react';
-import {View, ScrollView, StyleSheet,RefreshControl, Linking} from 'react-native';
-import {Divider, Button, Text, DataTable, Portal} from 'react-native-paper';
-import {connect} from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, StyleSheet, RefreshControl, Linking } from 'react-native';
+import { Divider, Button, Text, DataTable, Portal } from 'react-native-paper';
+import { connect } from 'react-redux';
 import globalStyles from '../utils/_css/globalStyle';
-import {AppStyles} from '../utils/AppStyles';
+import { AppStyles } from '../utils/AppStyles';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {formatDate, formatTime, createdDate} from '../utils/_helpers';
-import {stripeService} from '../utils/_services/stripeService';
+import { formatDate, formatTime, createdDate } from '../utils/_helpers';
+import { stripeService } from '../utils/_services/stripeService';
 import LoadingContainer from '../components/LoadingContainer';
 import SearchBox from '../components/SearchBox';
 import StipeCardList from '../components/cards/StripeCardList';
 import StripeFilterSearch from '../components/searchFilter/StripeFilterSearch';
 import NoDataFound from '../components/NoData';
-function PaymentScreen({navigation, user, token}) {
+function PaymentScreen({ navigation, user, token }) {
   const [stripeData, setStripeData] = useState([]);
   const [stripeTableData, setStripeTableData] = useState([]);
   const [stripeTableDataBkp, setStripeTableDataBkp] = useState([]);
@@ -39,41 +39,41 @@ function PaymentScreen({navigation, user, token}) {
     setRefreshing(true);
     paymentApiData()
   }
-  const paymentApiData = ()=>{
+  const paymentApiData = () => {
     stripeService
-    .checkStripeConnection(token)
-    .then(res => {
-      setStripeData(res?.data?.stripe_connection);
-      console.log(res);
-      setStripeShowData(
-        res?.data?.stripe_connection.account_detail.external_accounts.data[0],
-      );
-      setIsLoading(false);
-    })
-    .catch(error => {
-      setIsLoading(false);
-      console.log(error);
-    });
+      .checkStripeConnection(token)
+      .then(res => {
+        setStripeData(res?.data?.stripe_connection);
+        console.log(res);
+        setStripeShowData(
+          res?.data?.stripe_connection.account_detail.external_accounts.data[0],
+        );
+        setIsLoading(false);
+      })
+      .catch(error => {
+        setIsLoading(false);
+        console.log(error);
+      });
 
-  stripeService
-    .stripePayoutDetails(token)
-    .then(res => {
-      setStripeTableData(res?.data?.payment_records);
-      setStripeTableDataBkp(res?.data?.payment_records);
-      setIsLoading(false);
-    })
-    .catch(error => {
-      setIsLoading(false);
-      console.log(error);
-    }).finally(() => {
-      setRefreshing(false);
-    });
-  } 
+    stripeService
+      .stripePayoutDetails(token)
+      .then(res => {
+        setStripeTableData(res?.data?.payment_records);
+        setStripeTableDataBkp(res?.data?.payment_records);
+        setIsLoading(false);
+      })
+      .catch(error => {
+        setIsLoading(false);
+        console.log(error);
+      }).finally(() => {
+        setRefreshing(false);
+      });
+  }
 
   const handlePayment = async () => {
     const url =
       'https://connect.stripe.com/express/oauth/v2/authorize?response_type=code&scope=read_write&redirect_uri=https%3A%2F%2Fstaging.orangemoonsss.com%2Fstripe%2Fconnect-stripe-redirect&client_id=ca_Kz1aOhcWevW0ykZu1nnhOHp07QrKyBB5';
-    const supported = await Linking.canOpenURL(url);
+    const supported = await Linking.openURL(url);
     if (supported) {
       // Open the URL in the default browser
       await Linking.openURL(url);
@@ -82,16 +82,17 @@ function PaymentScreen({navigation, user, token}) {
     }
   };
 
+
   const renderStripeAccountStatus = () => {
     let status = stripeData?.status;
     if (status === 'connected') {
-      return <Text style={{color: 'green'}}>Connected</Text>;
+      return <Text style={{ color: 'green' }}>Connected</Text>;
     } else if (status === 'pending') {
-      return <Text style={{color: 'red'}}>Pending</Text>;
+      return <Text style={{ color: 'red' }}>Pending</Text>;
     } else if (status === 'kyc_needed') {
       return (
         <Text
-          style={{color: 'orange', cursor: 'pointer'}}
+          style={{ color: 'orange', cursor: 'pointer' }}
           onPress={handlePayment}>
           KYC Needed
         </Text>
@@ -111,20 +112,21 @@ function PaymentScreen({navigation, user, token}) {
       {!isLoading && (
         <ScrollView style={styles.main}
           refreshControl={
-    <RefreshControl
-      refreshing={refreshing}
-      onRefresh={handleRefresh}
-      tintColor={AppStyles.color.tint}
-    />
-  }
-  showsVerticalScrollIndicator={false} >
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor={AppStyles.color.tint}
+            />
+          }
+          showsVerticalScrollIndicator={false} >
           <View style={styles.container}>
             <Text style={globalStyles.subtitle}> Stripe Connect </Text>
             <Divider style={globalStyles.divider} />
             {stripeData?.status == 'bank_not_connected' ? (
               <Button
                 mode="contained"
-                onPress={handlePayment}
+                // onPress={handlePayment}
+                onPress={() => handlePayment('connectStripe')}
                 style={styles.button}
                 contentStyle={styles.buttonContent}>
                 + Connect Stripe
@@ -183,7 +185,8 @@ function PaymentScreen({navigation, user, token}) {
                 </View>
                 <Button
                   mode="contained"
-                  onPress={handlePayment}
+                  // onPress={handlePayment}
+                  onPress={() => handlePayment('updateAccount')}
                   style={styles.button}
                   contentStyle={styles.buttonContent}>
                   Update Account
@@ -203,7 +206,7 @@ function PaymentScreen({navigation, user, token}) {
                 <StipeCardList item={item} key={index} />
               ))}
               {!stripeTableData?.length && !isLoading && (
-               <NoDataFound />
+                <NoDataFound />
               )}
               {/* <DataTable.Pagination
                     page={page}

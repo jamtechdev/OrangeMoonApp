@@ -22,8 +22,8 @@ function ChatScreen({ navigation, user, token }) {
     useEffect(() => {
 
         chatService.getConversation(token, user.id, 1, page).then(res => {
-            console.log(res, "here my console res");
-            let response = res?.data?.data
+            console.log(res?.data?.data, "here my console res");
+            let response = res?.data?.data.reverse()
             if (response) {
                 const transformedData = response.map(item => {
                     return {
