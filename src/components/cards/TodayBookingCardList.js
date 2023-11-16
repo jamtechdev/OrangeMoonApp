@@ -7,6 +7,7 @@ import {formatDate, formatTime} from '../../utils/_helpers';
 import globalStyles from '../../utils/_css/globalStyle';
 import {AppStyles} from '../../utils/AppStyles';
 import moment from 'moment';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 const TodayBookingCardList = ({
   item,
   openActionDialog,
@@ -126,11 +127,11 @@ const TodayBookingCardList = ({
                   </Pressable>
                 )}
                 {item?.arrival_time == null && (
-                  <Pressable
+                  <TouchableOpacity
                     style={styles.badgeButton}
                     onPress={() => ArrivedMarked(item)}>
                     <Text style={styles.badgeButtonText}> Mark Arrived</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 )}
                 <Icon
                   name="eye"
