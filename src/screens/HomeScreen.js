@@ -8,6 +8,7 @@ import {
   FlatList,
   Platform,
   KeyboardAvoidingView,
+  Alert,
 } from 'react-native'; // Import View
 import { connect } from 'react-redux';
 import { AppStyles } from '../utils/AppStyles';
@@ -92,8 +93,8 @@ function HomeScreen({ navigation, user, token }) {
   const [description, setDescription] = useState([]);
   const [status, setStatus] = useState([]);
   const [questionaire, setquestionaire] = useState([]);
-  const [selectedTime, setSelectedTime] = useState('12:00 AM');
-  const [selectedTimeLast, setSelectTimeLast] = useState('1:30 PM');
+  const [selectedTime, setSelectedTime] = useState('12:00 PM');
+  const [selectedTimeLast, setSelectTimeLast] = useState('12:30 PM');
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
   const [isTimePickerVisibleLast, setTimePickerVisibilitylast] =
     useState(false);
@@ -129,6 +130,7 @@ function HomeScreen({ navigation, user, token }) {
     resolver: yupResolver(validationSchema),
     mode: 'onChange',
     defaultValues: {
+      first_name:'',
       preference: 'Yes',
     },
   };
@@ -166,7 +168,7 @@ function HomeScreen({ navigation, user, token }) {
         .bookingdayActivity(token, data)
         .then(res => {
           helperfunction(res);
-          setMessage(res.data.message);
+          setMessage(res.datfvsfgbghnha.message);
           setVisible3(true);
           setDescriptionActivity(0);
           hideModal1();
@@ -925,9 +927,9 @@ function HomeScreen({ navigation, user, token }) {
                   justifyContent: 'space-between',
                 }}>
                 <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
-                  Start Date
+                  Start Time
                 </Text>
-                <Text style={{ fontSize: 15, fontWeight: 'bold' }}>End Date</Text>
+                <Text style={{ fontSize: 15, fontWeight: 'bold' }}>End Time</Text>
               </View>
               <View
                 style={{
