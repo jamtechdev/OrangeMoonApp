@@ -576,18 +576,21 @@ function HomeScreen({ navigation, user, token }) {
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   };
-  const ArrivedMarked = data => {
-    // setIsLoading(true);
+  const arrivedMarked  = data => {
+    setIsLoading(true);
+
     Geolocation.getCurrentPosition(
       position => {
+        console.log('xxxyyyzzz' , position);
         const { latitude, longitude } = position.coords;
         setLocation(position.coords);
         console.log(latitude, longitude);
         let item = {
           booking_day_request_id: data.id,
-          lat: latitude,
-          lng: longitude
+          lat: location?.latitude,
+          lng: location?.longitude
         };
+
         monitorService
           .markArrived(token, item)
           .then(res => {
@@ -603,7 +606,7 @@ function HomeScreen({ navigation, user, token }) {
       error => {
         console.error(error.message);
       },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+      { enableHighAccuracy: false, timeout: 50000, maximumAge: 10000 },
     );
   };
   const apiMonitorSubmit = () => {
@@ -677,7 +680,7 @@ function HomeScreen({ navigation, user, token }) {
                   openPrecheckDialog={openPrecheckDialog}
                   openActionDialog={openActionDialog}
                   navigation={navigation}
-                  ArrivedMarked={ArrivedMarked}
+                  ArrivedMarked={arrivedMarked }
                 />
               );
             }
