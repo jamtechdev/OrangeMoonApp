@@ -53,6 +53,9 @@ const SchedulingModel = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   } , [visibleModel , bookingDetails])
 
+
+  console.log(bookingDetails , 'bookingDetails');
+
 console.log((parseInt(date) - parseInt(selectedDate)) , date , selectedDate, 'selectedDateselectedDateselectedDate');
 
   return (
@@ -114,7 +117,7 @@ console.log((parseInt(date) - parseInt(selectedDate)) , date , selectedDate, 'se
               <View style={styles.detailRow}>
                 <Text style={styles.keyText}>End Date:</Text>
                 <Text style={styles.valueText}>
-                  {bookingDetails?.booking?.end_date || '-'}{' '}
+                {bookingDetails?.booking?.start_date || '-'}{' '}
                 </Text>
               </View>
               <View style={styles.detailRow}>
@@ -123,6 +126,8 @@ console.log((parseInt(date) - parseInt(selectedDate)) , date , selectedDate, 'se
                   {bookingDetails?.booking?.start_time || '-'}{' '}
                 </Text>
               </View>
+
+              
               <View style={styles.detailRow}>
                 <Text style={styles.keyText}>End Time: </Text>
                 <Text style={styles.valueText}>
