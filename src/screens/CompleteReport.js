@@ -93,7 +93,7 @@ function CompleteReport({navigation, user, token, route}) {
             completeDataBkp={completeDataBkp}
           />
           {completeData &&
-            completeData?.map((item, index) => (
+            completeData?.reverse().map((item, index) => (
               <CompleteCardList
                 key={index}
                 item={item}

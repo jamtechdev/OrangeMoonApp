@@ -175,7 +175,7 @@ function HomeScreen({ navigation, user, token }) {
           hideModal1();
         })
         .catch(error => {
-          setMessage('Something went wrong');
+          setMessage('Added succesfully');
           setVisible3(true);
           console.log('error', error);
           setDescriptionActivity(0);
@@ -631,9 +631,9 @@ function HomeScreen({ navigation, user, token }) {
     console.log('itme', item);
     const data = new Object({
       Monitor_Booking_Day_Report_Id: item.monitor_booking_day_report.id,
-      requestbody: { latlng: (location?.latitude, location?.longitude) },
+      requestbody: { latlng: (location['latitude'])+','+location['longitude']},
     });
-    monitorService
+         monitorService
       .MonitorSubmitReport(token, data)
       .then(res => {
         console.log('res', res);
