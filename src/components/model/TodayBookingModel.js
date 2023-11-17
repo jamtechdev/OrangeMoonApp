@@ -28,7 +28,7 @@ const TodayBookingModel = ({ visible4, hideModal4, bookingId, token, setMessage,
         console.log('itme', item)
         const data = new Object ({
             Monitor_Booking_Day_Report_Id : item.monitor_booking_day_report.id,
-            requestbody:{latlng : (location.latitude,location.longitude)}
+            requestbody:{latlng : (location['latitude']+','+location['longitude']) }
         })
         monitorService.MonitorSubmitReport(token, data).then((res) =>{
             console.log('res',res)
