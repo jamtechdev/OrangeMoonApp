@@ -1,13 +1,13 @@
 /* eslint-disable prettier/prettier */
 import * as React from 'react';
-import {ScrollView, StyleSheet, View, Pressable} from 'react-native'; // Import View
+import {ScrollView, StyleSheet, View, Pressable, TouchableOpacity } from 'react-native'; // Import View
 import {Avatar, Button, Card, Text} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {formatDate, formatTime} from '../../utils/_helpers';
 import globalStyles from '../../utils/_css/globalStyle';
 import {AppStyles} from '../../utils/AppStyles';
 import moment from 'moment';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+
 const TodayBookingCardList = ({
   item,
   openActionDialog,
