@@ -578,37 +578,51 @@ function HomeScreen({ navigation, user, token }) {
   };
   const arrivedMarked  = data => {
     setIsLoading(true);
-
+    if(location && location?.latitude){
+      const item = {
+        booking_day_request_id: data.id,
+        lat: location?.latitude,
+        lng: location?.longitude
+      };
+      apiArrived(item)
+    }else{
+    Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       position => {
-        console.log('xxxyyyzzz' , position);
         const { latitude, longitude } = position.coords;
         setLocation(position.coords);
         console.log(latitude, longitude);
-        let item = {
+        const item = {
           booking_day_request_id: data.id,
-          lat: location?.latitude,
-          lng: location?.longitude
+          lat: latitude,
+          lng: longitude
         };
-
-        monitorService
-          .markArrived(token, item)
-          .then(res => {
-            console.log(res);
-            todayReportData();
-            setIsLoading(false);
-          })
-          .catch(error => {
-            console.log(error);
-            setIsLoading(false);
-          });
+        apiArrived(item)
       },
       error => {
         console.error(error.message);
+        setIsLoading(false);
+        Alert.alert('Api call start : ==> ' +error.message )
       },
-      { enableHighAccuracy: false, timeout: 50000, maximumAge: 10000 },
+      { enableHighAccuracy: false, timeout: 5000, maximumAge: 1000 },
     );
+    }
   };
+
+  const apiArrived = (item)=>{
+    Alert.alert('Api call start ')
+    monitorService
+    .markArrived(token, item)
+    .then(res => {
+      console.log(res);
+      todayReportData();
+      setIsLoading(false);
+    })
+    .catch(error => {
+      console.log(error);
+      setIsLoading(false);
+    });
+  }
   const apiMonitorSubmit = () => {
     console.log('itme', item);
     const data = new Object({
