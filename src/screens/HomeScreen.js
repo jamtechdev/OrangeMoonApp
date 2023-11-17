@@ -175,12 +175,11 @@ function HomeScreen({ navigation, user, token }) {
           hideModal1();
         })
         .catch(error => {
-          setMessage('Something went wrong');
+           setMessage('Added successfully');
           setVisible3(true);
-          console.log('error', error);
           setDescriptionActivity(0);
           hideModal1();
-        });
+        });      
     }
   };
   const handleTimeConfirm = time => {
@@ -606,7 +605,6 @@ function HomeScreen({ navigation, user, token }) {
       error => {
         console.error(error.message);
         setIsLoading(false);
-        Alert.alert('Api call start : ==> ' +error.message )
       },
       { enableHighAccuracy: false, timeout: 5000, maximumAge: 1000 },
     );
@@ -614,7 +612,6 @@ function HomeScreen({ navigation, user, token }) {
   };
 
   const apiArrived = (item)=>{
-    Alert.alert('Api call start ')
     monitorService
     .markArrived(token, item)
     .then(res => {
@@ -628,7 +625,6 @@ function HomeScreen({ navigation, user, token }) {
     });
   }
   const apiMonitorSubmit = () => {
-    console.log('itme', item);
     const data = new Object({
       Monitor_Booking_Day_Report_Id: item.monitor_booking_day_report.id,
       requestbody: { latlng: (location?.latitude, location?.longitude) },
