@@ -6,6 +6,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { createdDate, formatTime } from '../../utils/_helpers';
 import globalStyles from '../../utils/_css/globalStyle';
 import {AppStyles} from '../../utils/AppStyles';
+
+import moment from 'moment';
 const  ActivitiesCardList = ({item  }) => (
   <Card style={styles.tableCard}>
     <Card.Content>
@@ -28,7 +30,7 @@ const  ActivitiesCardList = ({item  }) => (
       <View style={[globalStyles.buttonRow, {alignItems: 'center'}]}>
         <View style={styles.viewRow}>
           <View style={styles.badgeheadingText}>
-          <Text style={styles.valueTextinner}>	Created At : {item?.created_at}</Text>
+          <Text style={styles.valueTextinner}>	Created At : {moment(item?.created_at).format('MM/DD/YYYY HH:MM')}</Text>
           </View>
         </View>
       </View>

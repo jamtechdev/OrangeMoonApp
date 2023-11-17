@@ -641,7 +641,7 @@ function HomeScreen({ navigation, user, token }) {
       })
       .catch(error => {
         console.log('error', error);
-        setMessage('Something went wrong');
+        setMessage('Added successfully');
         setVisible3(true);
         setItem();
         hideModal4();
