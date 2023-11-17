@@ -49,6 +49,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import TodayBookingModel from '../components/model/TodayBookingModel';
 import NoDataFound from '../components/NoData';
 import IncidentModel from '../components/model/IncidentModel';
+import { isLocationEnabled , promptForEnableLocationIfNeeded  } from 'react-native-android-location-enabler';
 
 function HomeScreen({ navigation, user, token }) {
   const [dashboardData, setDashboardData] = useState([]);
@@ -157,8 +158,8 @@ function HomeScreen({ navigation, user, token }) {
       setHelpertext(false);
       const data = new Object({
         booking_day_report_id: bookingId,
-        activity_lat: location != null ? location.latitude : null,
-        activity_lng: location != null ? location.longitude : null,
+        activity_lat: location != null ? location?.latitude : null,
+        activity_lng: location != null ? location?.longitude : null,
         start_time: selectedTime,
         end_time: selectedTimeLast,
         description: DescriptionActivity,
@@ -245,6 +246,9 @@ function HomeScreen({ navigation, user, token }) {
     todayReportData();
     getPrecheckData();
     getGeoLocation();
+    if (Platform.OS === 'android') {
+    handleEnabledPressed()
+    }
   }, [isFocused]);
   useEffect(() => {
     const areArraysReady =
@@ -319,8 +323,8 @@ function HomeScreen({ navigation, user, token }) {
     // console.log("location",location)
     const data = new Object({
       booking_day_report_id: bookingId,
-      start_location_lat: location != null ? location.latitude : null,
-      start_location_lng: location != null ? location.longitude : null,
+      start_location_lat: location != null ? location?.latitude : null,
+      start_location_lng: location != null ? location?.longitude : null,
       precheck_question: questionaire,
       status: status,
       description: description,
@@ -606,14 +610,14 @@ function HomeScreen({ navigation, user, token }) {
       error => {
         console.error(error.message);
       },
-      { enableHighAccuracy: false, timeout: 50000, maximumAge: 10000 },
+      { enableHighAccuracy: false, timeout: 5000, maximumAge: 1000 },
     );
   };
   const apiMonitorSubmit = () => {
     console.log('itme', item);
     const data = new Object({
       Monitor_Booking_Day_Report_Id: item.monitor_booking_day_report.id,
-      requestbody: { latlng: (location.latitude, location.longitude) },
+      requestbody: { latlng: (location?.latitude, location?.longitude) },
     });
     monitorService
       .MonitorSubmitReport(token, data)
@@ -633,6 +637,29 @@ function HomeScreen({ navigation, user, token }) {
         hideModal4();
       });
   };
+
+
+  async function handleEnabledPressed() {
+    if (Platform.OS === 'android') {
+      try {
+        const enableResult = await promptForEnableLocationIfNeeded();
+      
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message);
+          // The user has not accepted to enable the location services or something went wrong during the process
+          // "err" : { "code" : "ERR00|ERR01|ERR02|ERR03", "message" : "message"}
+          // codes :
+          //  - ERR00 : The user has clicked on Cancel button in the popup
+          //  - ERR01 : If the Settings change are unavailable
+          //  - ERR02 : If the popup has failed to open
+          //  - ERR03 : Internal error
+        }
+      }
+    }
+  }
+
+
   return (
     <>
       <KeyboardAvoidingView
