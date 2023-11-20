@@ -61,7 +61,7 @@ function ChatScreen({ navigation, user, token }) {
                             "avatar": "https://staging.orangemoonsss.com/images/" + message.sender_image
                         },
                         "createdAt": new Date().toISOString(),
-                        "_id": uuidv4(),
+                        "_id":Math.floor(Math.random() * 111111111111111111),
                     }
                 ];
                 setMessages((previousMessages) =>
