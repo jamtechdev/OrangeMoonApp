@@ -44,7 +44,7 @@ import SchedulingFilterSearch from '../components/searchFilter/ScheduleFilterSea
 import NoDataFound from '../components/NoData';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import io from 'socket.io-client';
-
+import moment from 'moment';
 function Scheduling({navigation, user, token, route}) {
   const socket = io('https://dev.orangemoonsss.com');
 
@@ -131,7 +131,8 @@ function Scheduling({navigation, user, token, route}) {
         console.log(res.data, 'monitor availability response');
 
         for (const item of res.data.monitor_availability) {
-          const date = new Date(item.date);
+          const date = moment(item.date)
+          // const date = new Date(item.date);
           item.start = date;
           item.end = date;
         }
