@@ -131,7 +131,7 @@ function Scheduling({navigation, user, token, route}) {
         console.log(res.data, 'monitor availability response');
 
         for (const item of res.data.monitor_availability) {
-          const date = moment(item.date)
+          const date = moment(item?.date)
           // const date = new Date(item.date);
           item.start = date;
           item.end = date;

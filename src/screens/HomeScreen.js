@@ -133,7 +133,7 @@ function HomeScreen({ navigation, user, token }) {
     mode: 'onChange',
     defaultValues: {
       first_name:'',
-      preference: 'Yes',
+      // preference: 'Yes',
     },
   };
   const formOptionsIncident = {
@@ -903,7 +903,7 @@ function HomeScreen({ navigation, user, token }) {
                 <FormRadioButtons
                   control={control}
                   name="preference"
-                  defaultValue={'Yes'}
+                  // defaultValue={null}
                   label="Preference"
                   options={[
                     { label: 'Yes', value: 'Yes' },

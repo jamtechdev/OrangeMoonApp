@@ -31,7 +31,6 @@ const SchedulingModel = ({
 
   );
   const [selectedMonth, setselectedMonth] = useState(
-  
     );
 
   useEffect(() => {
@@ -54,9 +53,8 @@ const SchedulingModel = ({
   } , [visibleModel , bookingDetails])
 
 
-  console.log(bookingDetails , 'bookingDetails');
 
-console.log((parseInt(date) - parseInt(selectedDate)) , date , selectedDate, 'selectedDateselectedDateselectedDate');
+console.log(bookingDetails?.monitor_booking_day_requests && bookingDetails?.monitor_booking_day_requests.length > 0 && bookingDetails?.monitor_booking_day_requests[0].booking_day?.date , 'divyanshu');
 
   return (
     <Portal>
@@ -111,13 +109,14 @@ console.log((parseInt(date) - parseInt(selectedDate)) , date , selectedDate, 'se
               <View style={styles.detailRow}>
                 <Text style={styles.keyText}>Start Date: </Text>
                 <Text style={styles.valueText}>
-                  {bookingDetails?.booking?.start_date || '-'}{' '}
+                  {/* {bookingDetails?.booking?.monitor_booking_day_requests[0]?.booking_day.date || '-'}{' '} */}
+                  {bookingDetails?.monitor_booking_day_requests && bookingDetails?.monitor_booking_day_requests.length > 0 && bookingDetails?.monitor_booking_day_requests[0].booking_day?.date || '-'}{' '}
                 </Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.keyText}>End Date:</Text>
                 <Text style={styles.valueText}>
-                {bookingDetails?.booking?.start_date || '-'}{' '}
+                {bookingDetails?.monitor_booking_day_requests && bookingDetails?.monitor_booking_day_requests.length > 0 && bookingDetails?.monitor_booking_day_requests[bookingDetails?.monitor_booking_day_requests.length  -1].booking_day?.date || '-'}{' '}
                 </Text>
               </View>
               <View style={styles.detailRow}>
