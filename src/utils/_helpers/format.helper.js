@@ -1,7 +1,11 @@
+import moment from "moment";
+
 /* eslint-disable prettier/prettier */
 export const formatDate = (dateString) => {
     if (dateString == null) {
         const date = new Date()
+        console.log('formatting dates ' , dateString  , 1);
+
         return date.toLocaleDateString([], options);
     }
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -9,7 +13,9 @@ export const formatDate = (dateString) => {
     if (isNaN(date)) {
         return '-';
     }
-    return date.toLocaleDateString([], options);
+    console.log('formatting dates ' ,  moment(date).format('DD/MM/YYYY')  , 2);
+
+    return  moment(dateString).format('DD/MM/YYYY') 
 };
 
 

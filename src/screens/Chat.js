@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useLayoutEffect, useState, useCallback, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Alert} from 'react-native';
 import { connect, useSelector } from 'react-redux';
 import { AppIcon, AppStyles } from '../utils/AppStyles';
 import { Configuration } from '../utils/Configuration';
@@ -50,8 +50,8 @@ function ChatScreen({ navigation, user, token }) {
     useEffect(() => {
         // Listen for incoming messages
         socket.on('new-message', (message) => {
-            console.log(message, "new message", messages)
-            if (message.sender_id != user.id) {
+            console.log(message, "new message", user)
+            if (message?.receiver_id === user?.id) {
                 let newMessages = [
                     {
                         "text": message.msg,
@@ -64,12 +64,19 @@ function ChatScreen({ navigation, user, token }) {
                         "_id":Math.floor(Math.random() * 111111111111111111),
                     }
                 ];
+                // if (message?.sender_id === user?.id) {
+                //     setMessages((previousMessages) =>
+                //         GiftedChat.append(previousMessages, newMessages)
+                //     );
+                // }
+
                 setMessages((previousMessages) =>
                     GiftedChat.append(previousMessages, newMessages)
                 );
             }
 
         });
+        
 
         // Clean up the socket connection on unmount
         return () => {
@@ -108,7 +115,10 @@ function ChatScreen({ navigation, user, token }) {
             );
         }).catch(error => console.log(error))
     };
-
+    
+    
+   
+    
 
 
     return (
