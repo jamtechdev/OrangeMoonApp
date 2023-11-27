@@ -9,12 +9,12 @@ import { formatDate, formatTime } from '../../utils/_helpers';
 
 export default function CompleteFilterSearch({ completeData,setCompleteData, completeDataBkp}) {
     const [showFilter, setShowFilter] = useState(false);
-    const [activeFilter, setActiveFilter] = useState('')
+    const [activeFilter, setActiveFilter] = useState('date')
     const toggleFilter = ()=>setShowFilter(!showFilter);
     const [sortDirections, setSortDirections] = useState({
       id: 'none', // Initialize with 'none' as the default
       group_name: 'none',
-      start_date: 'none',
+      start_date: 'start_date',
       end_date: 'none',
     });
     const [searchQuery, setSearchQuery] = useState('');
