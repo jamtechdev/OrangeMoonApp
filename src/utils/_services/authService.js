@@ -3,7 +3,8 @@ import axios from "axios";
 export const authService = {
     login,
     logout,
-    tokenCheck
+    tokenCheck,
+    activeStatus
     // forgotPass
 };
 const API_URL = 'https://staging.orangemoonsss.com/api/v1'
@@ -40,3 +41,10 @@ async function tokenCheck(token) {
 //         { headers: { Authorization: "Bearer " + token } }
 //     );
 // }
+async function activeStatus(data, token) {
+    return await axios.post(
+        `${API_URL}/monitor-online-status`,
+        data,
+        { headers: { Authorization: "Bearer " + token } }
+    );
+}

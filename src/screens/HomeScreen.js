@@ -9,11 +9,12 @@ import {
   Platform,
   KeyboardAvoidingView,
   Alert,
+  AppState
 } from 'react-native'; // Import View
 import { connect } from 'react-redux';
 import { AppStyles } from '../utils/AppStyles';
 import { Configuration } from '../utils/Configuration';
-import { monitorService } from '../utils/_services';
+import { authService, monitorService } from '../utils/_services';
 import {
   Divider,
   Text,
@@ -183,6 +184,48 @@ function HomeScreen({ navigation, user, token }) {
         });      
     }
   };
+
+  // here app state update start 
+
+useEffect(() => {
+    const handleAppStateChange = (nextAppState) => {
+      if (nextAppState === 'active') {
+        // App is currently active
+        makeAPICallForStatus(true);
+      } else {
+        // App is in the background or inactive
+        makeAPICallForStatus(false);
+      }
+    };
+
+    // Subscribe to app state changes
+    AppState.addEventListener('change', handleAppStateChange);
+
+    // Initial API call when the component mounts (app opens)
+    makeAPICallForStatus(true);
+
+    // Clean up the subscription when the component unmounts
+    return () => {
+      AppState.removeEventListener('change', handleAppStateChange);
+      // API call when the component unmounts (app closes)
+      makeAPICallForStatus(false);
+    };
+  }, []);
+
+  
+ const makeAPICallForStatus = (isActive) => {
+     const data = {
+            userId : user?.monitor?.id,
+            userActiveonApp : isActive
+        }
+    authService.activeStatus(data, token).then((res) => {
+      console.log(`API call - App is ${isActive ? 'active' : 'inactive'}`, res);
+        }).catch((error) => {
+            console.log(error, "error");
+        })
+  };
+
+  // here app state update end
   const handleTimeConfirm = time => {
     // console.log("A date has been picked: ", time);
     // console.log(moment(time).add(90, 'minutes').format('hh:mm a'));
