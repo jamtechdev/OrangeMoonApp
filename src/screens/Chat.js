@@ -64,16 +64,15 @@ function ChatScreen({ navigation, user, token }) {
                         "_id":Math.floor(Math.random() * 111111111111111111),
                     }
                 ];
-                
-                if (message?.sender_id === user?.id) {
-                    setMessages((previousMessages) =>
-                        GiftedChat.append(previousMessages, newMessages)
-                    );
-                }
+                // if (message?.sender_id === user?.id) {
+                //     setMessages((previousMessages) =>
+                //         GiftedChat.append(previousMessages, newMessages)
+                //     );
+                // }
 
-                // setMessages((previousMessages) =>
-                //     GiftedChat.append(previousMessages, newMessages)
-                // );
+                setMessages((previousMessages) =>
+                    GiftedChat.append(previousMessages, newMessages)
+                );
             }
 
         });
