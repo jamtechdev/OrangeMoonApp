@@ -191,10 +191,10 @@ useEffect(() => {
     const handleAppStateChange = (nextAppState) => {
       if (nextAppState === 'active') {
         // App is currently active
-        makeAPICallForStatus(true);
+        makeAPICallForStatus(1);
       } else {
         // App is in the background or inactive
-        makeAPICallForStatus(false);
+        makeAPICallForStatus(0);
       }
     };
 
@@ -202,13 +202,13 @@ useEffect(() => {
     AppState.addEventListener('change', handleAppStateChange);
 
     // Initial API call when the component mounts (app opens)
-    makeAPICallForStatus(true);
+    makeAPICallForStatus(1);
 
     // Clean up the subscription when the component unmounts
     return () => {
       AppState.removeEventListener('change', handleAppStateChange);
       // API call when the component unmounts (app closes)
-      makeAPICallForStatus(false);
+      makeAPICallForStatus(0);
     };
   }, []);
 
