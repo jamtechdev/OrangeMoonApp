@@ -234,7 +234,7 @@ const ChatStack = () => (
                     </Pressable>
                 ),
                 headerLeftContainerStyle: { paddingLeft: 10 },
-                title: 'Chat',
+                title: 'Conversations',
             })}
         />
     </Stack.Navigator>
@@ -336,7 +336,7 @@ const PaymentStack = () => (
                     </Pressable>
                 ),
                 headerLeftContainerStyle: { paddingLeft: 10 },
-                title: 'Payment',
+                title: 'Payments',
             })}
         />
     </Stack.Navigator>
