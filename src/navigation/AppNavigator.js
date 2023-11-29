@@ -161,7 +161,7 @@ const CompleteReportStack = () => (
                     </Pressable>
                 ),
                 headerLeftContainerStyle: { paddingLeft: 10 },
-                title: 'Complete Report',
+                title: 'Completed Reports',
             })}
         />
     </Stack.Navigator>
