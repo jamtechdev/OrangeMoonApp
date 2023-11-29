@@ -67,7 +67,7 @@ function DrawerContainer({ navigation, auth, logout }) {
           }}
         />
         <MenuButton
-          title="Complete Report"
+          title="Completed Reports"
           icon='clone'
           active={active === 3 ? true : false}
           onPress={() => {
@@ -76,16 +76,7 @@ function DrawerContainer({ navigation, auth, logout }) {
           }}
         />
         <MenuButton
-          title="Chat"
-          icon='wechat'
-          active={active === 4 ? true : false}
-          onPress={() => {
-            setActive(4);
-            navigation.navigate('ChatStack');
-          }}
-        />
-        <MenuButton
-          title="Payment"
+          title="Payments"
           icon='credit-card'
           active={active === 5 ? true : false}
           onPress={() => {
@@ -93,6 +84,16 @@ function DrawerContainer({ navigation, auth, logout }) {
             navigation.navigate('PaymentStack');
           }}
         />
+        <MenuButton
+          title="Conversations"
+          icon='wechat'
+          active={active === 4 ? true : false}
+          onPress={() => {
+            setActive(4);
+            navigation.navigate('ChatStack');
+          }}
+        />
+
         <MenuButton
           title="Logout"
           icon='power-off'
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
   view: {
     paddingVertical: 15,
     paddingLeft: 10,
-    paddingTop:35,
+    paddingTop: 35,
     flexDirection: 'row',
     alignItems: 'center',
     // justifyContent: 'space-between',
