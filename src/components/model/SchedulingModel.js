@@ -16,7 +16,7 @@ import {
 import globalStyles from '../../utils/_css/globalStyle';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {AppStyles} from '../../utils/AppStyles';
-import {isWithin48Hours} from '../../utils/_helpers';
+import {formatDate, isWithin48Hours} from '../../utils/_helpers';
 import moment from 'moment';
 const SchedulingModel = ({
   visibleModel,
@@ -110,13 +110,13 @@ console.log(bookingDetails?.monitor_booking_day_requests && bookingDetails?.moni
                 <Text style={styles.keyText}>Start Date: </Text>
                 <Text style={styles.valueText}>
                   {/* {bookingDetails?.booking?.monitor_booking_day_requests[0]?.booking_day.date || '-'}{' '} */}
-                  {bookingDetails?.monitor_booking_day_requests && bookingDetails?.monitor_booking_day_requests.length > 0 && bookingDetails?.monitor_booking_day_requests[0].booking_day?.date || '-'}{' '}
+                  {bookingDetails?.monitor_booking_day_requests && bookingDetails?.monitor_booking_day_requests.length > 0 && formatDate(bookingDetails?.monitor_booking_day_requests[0].booking_day?.date) || '-'}{' '}
                 </Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.keyText}>End Date:</Text>
                 <Text style={styles.valueText}>
-                {bookingDetails?.monitor_booking_day_requests && bookingDetails?.monitor_booking_day_requests.length > 0 && bookingDetails?.monitor_booking_day_requests[bookingDetails?.monitor_booking_day_requests.length  -1].booking_day?.date || '-'}{' '}
+                {bookingDetails?.monitor_booking_day_requests && bookingDetails?.monitor_booking_day_requests.length > 0 && formatDate(bookingDetails?.monitor_booking_day_requests[bookingDetails?.monitor_booking_day_requests.length  -1].booking_day?.date) || '-'}{' '}
                 </Text>
               </View>
               <View style={styles.detailRow}>

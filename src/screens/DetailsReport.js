@@ -11,7 +11,7 @@ import PreCheckCardList from '../components/cards/PreCheckCardList';
 import ActivitiesCardList from '../components/cards/ActivitiesCardList';
 import IncidentCardList from '../components/cards/IncidentCardList';
 import { AppStyles } from '../utils/AppStyles';
-import { pdfGenerator } from '../utils/_helpers';
+import { formatDate, pdfGenerator } from '../utils/_helpers';
 
 function DetailsReport({ navigation, route, user, token }) {
     const [reportDetails, setReportDetails] = useState()
@@ -103,7 +103,7 @@ function DetailsReport({ navigation, route, user, token }) {
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >Date </Text>
-                                            <Text style={styles.valueText}>{bookingDayDetails?.date || '-'} </Text>
+                                            <Text style={styles.valueText}>{formatDate(bookingDayDetails?.date) || '-'} </Text>
                                         </View>
                                         <View style={styles.detailRow} >
                                             <Text style={styles.keyText} >Wellness Check Status </Text>

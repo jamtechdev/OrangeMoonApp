@@ -16,7 +16,7 @@ const SubReportCardList = ({item , navigateDetails }) => (
           </View>
         </View>
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>Date: {item?.date}</Text>
+          <Text style={styles.badgeText}>Date: {formatDate(item?.date)}</Text>
         </View>
       </View>
       <View style={[globalStyles.buttonRow, {alignItems: 'center'}]}>

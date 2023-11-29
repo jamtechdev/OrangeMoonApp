@@ -56,7 +56,7 @@ const  IncidentCardList = ({item  }) => (
       </View>
       <View style={[globalStyles.buttonRow, {alignItems: 'center'}]}>
         <View style={[styles.viewRow, {flexDirection: 'column', gap: 5, justifyContent:'flex-start', alignItems:'flex-start'}]}>
-            <Text style={styles.keyText}>Start Time</Text>
+            <Text style={styles.keyText}>Date</Text>
             <View style={styles.badgeheadingText}>
           <Text style={styles.valueTextinner}> {formatDate(item?.created_at)}</Text>
           </View>
