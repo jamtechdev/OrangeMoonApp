@@ -62,7 +62,7 @@ const TodayBookingCardList = ({
           <View style={styles.viewRow}>
             <View style={styles.badgeheadingText}>
               <Text style={styles.valueTextinner}>
-                Date:  { moment(item?.booking_day?.date).format('MM/DD/YYYY')}
+                Date: {formatDate(item?.booking_day?.date)}
               </Text>
             </View>
           </View>

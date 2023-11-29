@@ -13,9 +13,9 @@ export const formatDate = (dateString) => {
     if (isNaN(date)) {
         return '-';
     }
-    console.log('formatting dates ' ,  moment(date).format('DD/MM/YYYY')  , 2);
+    console.log('formatting dates ' ,  moment(date).format('MM/DD/YYYY')  , 2);
 
-    return  moment(dateString).format('DD/MM/YYYY') 
+    return  moment(dateString).format('MM/DD/YYYY') 
 };
 
 
