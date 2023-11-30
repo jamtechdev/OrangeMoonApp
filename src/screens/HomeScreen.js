@@ -213,9 +213,16 @@ useEffect(() => {
   }, []);
 
   
+// useEffect(() => {
+//   return () => {
+//     makeAPICallForStatus(0);
+//   };
+// }, []); 
+
+  
  const makeAPICallForStatus = (isActive) => {
      const data = {
-            userId : user?.monitor?.id,
+            userId : user?.id,
             userActiveonApp : isActive
         }
     authService.activeStatus(data, token).then((res) => {
