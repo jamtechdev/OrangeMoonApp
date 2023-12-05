@@ -4,7 +4,7 @@
 /* eslint-disable no-alert */
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Linking, Pressable } from 'react-native';
 import MenuButton from './MenuButton';
 import { AppIcon } from '../utils/AppStyles';
 import { connect } from 'react-redux';
@@ -29,6 +29,20 @@ function DrawerContainer({ navigation, auth, logout }) {
 
   };
 
+  const handleLink = async (type) => {
+    let url = 'https://orangemoonsss.com/privacy-policy'
+    if(type == 'terms'){
+      url = 'https://orangemoonsss.com/terms-of-service'
+    }
+    const supported = await Linking.openURL(url);
+    if (supported) {
+      // Open the URL in the default browser
+      await Linking.openURL(url);
+    } else {
+      console.error("Don't know how to open URL: " + url);
+    }
+  };
+
   return (
     <View style={[styles.content, { backgroundColor: '#232530' }]}>
       <View style={[styles.view, { backgroundColor: '#201f2b' }]}>
@@ -39,6 +53,7 @@ function DrawerContainer({ navigation, auth, logout }) {
         <Text style={{ color: '#fff' }} variant="headlineMedium"> Orange Moon</Text>
       </View>
       <View style={styles.container}>
+      <View style={styles.subContainer}>
         <MenuButton
           title="Home"
           icon='home'
@@ -102,7 +117,19 @@ function DrawerContainer({ navigation, auth, logout }) {
             handleLogout()
           }}
         />
+        </View>
+        <View style={styles.subContainer1}>
+        <Pressable onPress={()=>handleLink('link')}>
+        <Text style={styles.fontStyle}> Privacy Policy</Text>
+        </Pressable>
+        <Pressable onPress={()=>handleLink('terms')}>
+        <Text style={styles.fontStyle}> Terms of Service</Text>
+        </Pressable>
+        {/* <Text style={styles.fontStyle}> Version : 1.0.1</Text> */}
+        </View>
       </View>
+
+
     </View>
 
   );
@@ -125,6 +152,24 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     // paddingHorizontal: 20,
   },
+  subContainer:{
+    flex: 1,
+    alignItems: 'flex-start',
+    justifyContent:'space-between'
+  },
+  subContainer1:{
+    flex: 1,
+    justifyContent:'space-between',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    paddingBottom: 35,
+    flexDirection: 'row',
+    gap : 10,
+    alignItems: 'flex-end'
+  },
+  fontStyle:{
+    color: '#fff'
+  }
 });
 
 const mapStateToProps = (state) => ({

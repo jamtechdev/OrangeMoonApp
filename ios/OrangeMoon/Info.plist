@@ -36,9 +36,9 @@
 		</dict>
 	</dict>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow access to the photo library for selecting images</string>
+	<string>We need gallery/ photo Library access to select image for manage your user profile. </string>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow access to the camera for capturing images</string>
+	<string>We need camera access to capture image for manage your user profile. </string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
