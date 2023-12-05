@@ -168,7 +168,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end'
   },
   fontStyle:{
-    color: '#fff'
+    color: '#0957d0',
+    fontWeight: 'bold',
+    textDecorationLine: 'underline'
   }
 });
 
