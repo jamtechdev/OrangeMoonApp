@@ -76,8 +76,8 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Need Location Access </string>
+	<string>We need Location access for get and share your current location with admin for manage your account.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Need Location Accces</string>
+	<string>We need Location access for get and share your current location with admin for manage your account.</string>
 </dict>
 </plist>
