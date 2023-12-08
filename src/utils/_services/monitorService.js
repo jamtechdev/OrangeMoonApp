@@ -1,10 +1,9 @@
 /* eslint-disable prettier/prettier */
 import axios from "axios";
-// import { Connection } from "../connection";
+import { API_URL } from "../Connection";
 import axiosInstance from "./axiosService";
-// const API_URL = Connection.staging;
 
-const API_URL = 'https://staging.orangemoonsss.com/api/v1'
+
 export const monitorService = {
     dashboard,
     bookingRequest,
@@ -129,7 +128,6 @@ async function BookingReportActionCheck(token, data) {
     );
 }
 
-//https://staging.orangemoonsss.com/api/v1/monitor-booking-day-report/78/continue/00:00/04:00
 
 async function getAllDetailsReport(token, data) {
     return await axiosInstance.get(

@@ -19,10 +19,11 @@ import { monitorService } from '../utils/_services';
 import { transformedStateData, transformedCityData, phoneRegExp, socialSecurity, numberArray, formatPhoneNumber, formatSocialSecurity } from '../utils/_helpers';
 import { authService } from '../utils/_services/authService';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { IMAGE_URL } from '../utils/Connection';
 
 function EditProfileScreen({ user, token, navigation, login }) {
     const { first_name, last_name, email, monitor, password, userEmail } = user;
-    const [imageSrc, setImageSrc] = useState('https://staging.orangemoonsss.com/images/' + monitor?.photo);
+    const [imageSrc, setImageSrc] = useState(IMAGE_URL + monitor?.photo);
     const [image, setImage] = useState('')
     const [loading, setLoading] = useState(false);
     const [stateList, setStateList] = useState([]);

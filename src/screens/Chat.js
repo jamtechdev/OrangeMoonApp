@@ -8,6 +8,7 @@ import { GiftedChat } from 'react-native-gifted-chat';
 import { chatService } from '../utils/_services';
 import io from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
+import { IMAGE_URL } from '../utils/Connection';
 function ChatScreen({ navigation, user, token }) {
     console.log(user)
     const [messages, setMessages] = useState([])
@@ -33,7 +34,7 @@ function ChatScreen({ navigation, user, token }) {
                         user: {
                             _id: item.sender_id,         // Use receiver_id as _id for the user
                             name: item.sender_name,      // Use sender_name as name
-                            avatar: 'https://staging.orangemoonsss.com/images/' + item.sender_img,     // Use sender_img as avatar
+                            avatar: IMAGE_URL + item.sender_img,     // Use sender_img as avatar
                         },
                     };
                 });
@@ -58,7 +59,7 @@ function ChatScreen({ navigation, user, token }) {
                         "user": {
                             "_id": message.sender_id,
                             "name": message.sender_name,
-                            "avatar": "https://staging.orangemoonsss.com/images/" + message.sender_image
+                            "avatar": IMAGE_URL + message.sender_image
                         },
                         "createdAt": new Date().toISOString(),
                         "_id":Math.floor(Math.random() * 111111111111111111),
@@ -129,7 +130,7 @@ function ChatScreen({ navigation, user, token }) {
                 user={{
                     _id: user?.id,
                     name: user?.first_name + ' ' + user?.last_name,
-                    avatar: 'https://staging.orangemoonsss.com/images/' + '1672486286.jpg',
+                    avatar: IMAGE_URL + '1672486286.jpg',
                 }}
                 renderUsernameOnMessage={true}
                 showUserAvatar={false}

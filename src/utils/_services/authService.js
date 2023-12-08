@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import axios from "axios";
+import { API_URL } from "../Connection";
 export const authService = {
     login,
     logout,
@@ -7,7 +8,6 @@ export const authService = {
     activeStatus
     // forgotPass
 };
-const API_URL = 'https://staging.orangemoonsss.com/api/v1'
 async function login(data) {
     return await axios.post(
         `${API_URL}/auth/login`,

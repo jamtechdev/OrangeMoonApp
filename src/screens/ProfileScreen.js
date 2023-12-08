@@ -9,6 +9,7 @@ import { AppStyles, AppIcon } from '../utils/AppStyles';
 import InputLabelView from '../components/InputLabelView';
 import { monitorService } from '../utils/_services';
 import { getStateNamesByIds } from '../utils/_helpers';
+import { IMAGE_URL } from '../utils/Connection';
 function ProfileScreen({ user, navigation, token }) {
     const [profileData, setProfileData] = useState()
     // navigation.navigate('LoginStack')
@@ -17,7 +18,7 @@ function ProfileScreen({ user, navigation, token }) {
     useEffect(() => {
         setProfileData(user)
     }, [user])
-    const imageSrc = 'https://staging.orangemoonsss.com/images/' + profileData?.monitor?.photo;
+    const imageSrc = IMAGE_URL + profileData?.monitor?.photo;
     useEffect(() => {
         monitorService.getStateList(token).then(async res => {
             setStateList(res.data.states);

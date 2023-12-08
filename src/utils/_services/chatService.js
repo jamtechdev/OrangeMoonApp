@@ -1,9 +1,8 @@
 /* eslint-disable prettier/prettier */
 import axios from 'axios';
-// import { Connection } from "../connection";
+import { API_URL } from '../Connection';
 import axiosInstance from './axiosService';
-// const API_URL = Connection.staging;
-const API_URL = 'https://staging.orangemoonsss.com/api/v1';
+
 
 export const chatService = {
   getConversation,
