@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end'
   },
   fontStyle:{
-    color: '#0957d0',
+    color: '#fff',
     fontWeight: 'bold',
     textDecorationLine: 'underline'
   }
