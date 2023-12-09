@@ -54,7 +54,7 @@ const SchedulingModel = ({
 
 
 
-console.log(bookingDetails?.monitor_booking_day_requests && bookingDetails?.monitor_booking_day_requests.length > 0 && bookingDetails?.monitor_booking_day_requests[0].booking_day?.date , 'divyanshu');
+console.log(bookingDetails?.monitor_booking_day_requests && bookingDetails?.monitor_booking_day_requests.length > 0 && bookingDetails?.monitor_booking_day_requests[0].booking_day?.date , 'Hello World');
 
   return (
     <Portal>

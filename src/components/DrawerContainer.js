@@ -4,7 +4,7 @@
 /* eslint-disable no-alert */
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Linking, Pressable } from 'react-native';
+import { StyleSheet, View, Linking, Pressable, Alert } from 'react-native';
 import MenuButton from './MenuButton';
 import { AppIcon } from '../utils/AppStyles';
 import { connect } from 'react-redux';
@@ -90,15 +90,9 @@ function DrawerContainer({ navigation, auth, logout }) {
             navigation.navigate('CompleteReportStack');
           }}
         />
-        <MenuButton
-          title="Payments"
-          icon='credit-card'
-          active={active === 5 ? true : false}
-          onPress={() => {
-            setActive(5);
-            navigation.navigate('PaymentStack');
-          }}
-        />
+
+
+
         <MenuButton
           title="Conversations"
           icon='wechat'
@@ -108,15 +102,25 @@ function DrawerContainer({ navigation, auth, logout }) {
             navigation.navigate('ChatStack');
           }}
         />
-
-        <MenuButton
-          title="Logout"
+                <MenuButton
+          title="Payments"
+          icon='credit-card'
+          active={active === 5 ? true : false}
+          onPress={() => {
+            setActive(5);
+            navigation.navigate('PaymentStack');
+          }}
+        />
+<MenuButton
+          title="Log Out"
           icon='power-off'
           active={false}
           onPress={() => {
-            handleLogout()
+            // setActive(5)
+  handleLogout()
           }}
         />
+
         </View>
         <View style={styles.subContainer1}>
         <Pressable onPress={()=>handleLink('link')}>
@@ -158,7 +162,7 @@ const styles = StyleSheet.create({
     justifyContent:'space-between'
   },
   subContainer1:{
-    flex: 1,
+    flex: .5,
     justifyContent:'space-between',
     paddingVertical: 15,
     paddingHorizontal: 30,
