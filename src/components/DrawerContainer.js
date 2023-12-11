@@ -17,11 +17,11 @@ function DrawerContainer({ navigation, auth, logout }) {
   const [active, setActive] = useState(0);
   const handleLogout = () => {
     const { token } = auth;
-    authService.logout(token).then(res => {
-      console.log(res);
-    }).catch(error => {
-      console.log(error)
-    })
+    // authService.logout(token).then(res => {
+    //   console.log(res);
+    // }).catch(error => {
+    //   console.log(error)
+    // })
     navigation.navigate('LoginStack')
     setTimeout(() => {
       logout();
