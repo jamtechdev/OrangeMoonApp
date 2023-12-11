@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     justifyContent:'space-between'
   },
   subContainer1:{
-    flex: .5,
+    flex: 0.5,
     justifyContent:'space-between',
     paddingVertical: 15,
     paddingHorizontal: 30,
