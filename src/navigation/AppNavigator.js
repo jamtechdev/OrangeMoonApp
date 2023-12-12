@@ -29,6 +29,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import DetailsReport from '../screens/DetailsReport';
 import { useRoute } from '@react-navigation/native';
 import { authService } from '../utils/_services';
+import Splash from '../components/Splash';
 
 const Stack = createStackNavigator();
 
@@ -421,7 +422,7 @@ const AppNavigator = () => {
     // Render the appropriate navigation based on the user role
     authService.tokenCheck(token).then(res=>{
         console.log(res, "result")
-    setAppInitialized(1);
+    setAppInitialized(1)
     }).catch(error=>{
         setAppInitialized(2);
         console.log(error, "token error")
@@ -429,10 +430,11 @@ const AppNavigator = () => {
 
     if (appInitialized == 0) {
         return (
-            <View style={styles.container}>
-            <ActivityIndicator size="large" color={AppStyles.color.tint} />
-            <Text>Loading...</Text>
-          </View>
+            <Splash />
+        //     <View style={styles.container}>
+        //     <ActivityIndicator size="large" color={AppStyles.color.tint} />
+        //     <Text>Loading...</Text>
+        //   </View>
         );
       } else {
     return (
