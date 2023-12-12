@@ -3,36 +3,36 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-alert */
 /* eslint-disable prettier/prettier */
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Linking, Pressable, Alert } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {StyleSheet, View, Linking, Pressable, Alert} from 'react-native';
 import MenuButton from './MenuButton';
-import { AppIcon } from '../utils/AppStyles';
-import { connect } from 'react-redux';
-import { logoutSuccess } from '../redux/actions/authActions';
-import { authService } from '../utils/_services';
-import { Text } from 'react-native-paper';
+import {AppIcon} from '../utils/AppStyles';
+import {connect} from 'react-redux';
+import {logoutSuccess} from '../redux/actions/authActions';
+import {authService} from '../utils/_services';
+import {Text} from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 
-function DrawerContainer({ navigation, auth, logout }) {
+function DrawerContainer({navigation, auth, count, logout}) {
   const [active, setActive] = useState(0);
+
   const handleLogout = () => {
-    const { token } = auth;
+    const {token} = auth;
     // authService.logout(token).then(res => {
     //   console.log(res);
     // }).catch(error => {
     //   console.log(error)
     // })
-    navigation.navigate('LoginStack')
+    navigation.navigate('LoginStack');
     setTimeout(() => {
       logout();
     }, 1500);
-
   };
 
-  const handleLink = async (type) => {
-    let url = 'https://orangemoonsss.com/privacy-policy'
+  const handleLink = async type => {
+    let url = 'https://orangemoonsss.com/privacy-policy';
     if (type == 'terms') {
-      url = 'https://orangemoonsss.com/terms-of-service'
+      url = 'https://orangemoonsss.com/terms-of-service';
     }
     const supported = await Linking.openURL(url);
     if (supported) {
@@ -44,19 +44,22 @@ function DrawerContainer({ navigation, auth, logout }) {
   };
 
   return (
-    <View style={[styles.content, { backgroundColor: '#232530' }]}>
-      <View style={[styles.view, { backgroundColor: '#201f2b' }]}>
+    <View style={[styles.content, {backgroundColor: '#232530'}]}>
+      <View style={[styles.view, {backgroundColor: '#201f2b'}]}>
         <FastImage
-          style={{ width: 70, height: 70 }}
+          style={{width: 70, height: 70}}
           source={AppIcon.images.logo}
         />
-        <Text style={{ color: '#fff' }} variant="headlineMedium"> Orange Moon</Text>
+        <Text style={{color: '#fff'}} variant="headlineMedium">
+          {' '}
+          Orange Moon
+        </Text>
       </View>
       <View style={styles.container}>
-<View style={styles.subContainer}>
+        <View style={styles.subContainer}>
           <MenuButton
             title="Home"
-            icon='home'
+            icon="home"
             active={active === 0 ? true : false}
             onPress={() => {
               setActive(0);
@@ -65,7 +68,7 @@ function DrawerContainer({ navigation, auth, logout }) {
           />
           <MenuButton
             title="Archive Booking"
-            icon='book'
+            icon="book"
             active={active === 1 ? true : false}
             onPress={() => {
               setActive(1);
@@ -74,7 +77,7 @@ function DrawerContainer({ navigation, auth, logout }) {
           />
           <MenuButton
             title="Scheduling"
-            icon='table'
+            icon="table"
             active={active === 2 ? true : false}
             onPress={() => {
               setActive(2);
@@ -83,7 +86,7 @@ function DrawerContainer({ navigation, auth, logout }) {
           />
           <MenuButton
             title="Completed Reports"
-            icon='clone'
+            icon="clone"
             active={active === 3 ? true : false}
             onPress={() => {
               setActive(3);
@@ -91,20 +94,19 @@ function DrawerContainer({ navigation, auth, logout }) {
             }}
           />
 
-
-
           <MenuButton
             title="Conversations"
-            icon='wechat'
+            icon="wechat"
             active={active === 4 ? true : false}
             onPress={() => {
               setActive(4);
               navigation.navigate('ChatStack');
             }}
+            badge={count}
           />
           <MenuButton
             title="Payments"
-            icon='credit-card'
+            icon="credit-card"
             active={active === 5 ? true : false}
             onPress={() => {
               setActive(5);
@@ -113,14 +115,14 @@ function DrawerContainer({ navigation, auth, logout }) {
           />
           <MenuButton
             title="Log Out"
-            icon='power-off'
+            icon="power-off"
             active={false}
             onPress={() => {
               // setActive(5)
-              handleLogout()
+              handleLogout();
             }}
           />
-</View>
+        </View>
 
         <View style={styles.subContainer1}>
           <Pressable onPress={() => handleLink('link')}>
@@ -132,10 +134,7 @@ function DrawerContainer({ navigation, auth, logout }) {
           {/* <Text style={styles.fontStyle}> Version : 1.0.1</Text> */}
         </View>
       </View>
-
-
     </View>
-
   );
 }
 
@@ -154,36 +153,35 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'flex-start',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
     // paddingHorizontal: 20,
   },
   subContainer: {
     flex: 1,
     alignItems: 'flex-start',
-
   },
   subContainer1: {
-
     justifyContent: 'space-between',
     paddingVertical: 15,
     paddingHorizontal: 30,
     paddingBottom: 35,
     flexDirection: 'row',
     gap: 10,
-    alignItems: 'flex-end'
+    alignItems: 'flex-end',
   },
   fontStyle: {
     color: '#fff',
     fontWeight: 'bold',
-    textDecorationLine: 'underline'
-  }
+    textDecorationLine: 'underline',
+  },
 });
 
-const mapStateToProps = (state) => ({
-  auth: state.auth
+const mapStateToProps = state => ({
+  auth: state.auth,
+  count: state.auth.count,
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   logout: () => dispatch(logoutSuccess()),
 });
 

@@ -5,7 +5,7 @@ export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 export const ROUTE_VALUE = 'ROUTE_VALUE';
 export const UPDATE_PROFILE = 'UPDATE_PROFILE';
-
+export const UNREAD_COUNT = 'UNREAD_COUNT'
 // Action Creators
 
 export const loginSuccess = (response, token) => ({
@@ -28,3 +28,7 @@ export const updateProfile = (updatedProfileData) => {
         payload: updatedProfileData,
     };
 };
+export const unreadCount = (id) => ({
+    type: UNREAD_COUNT,
+    payload: id
+});

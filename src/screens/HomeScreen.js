@@ -14,7 +14,7 @@ import {
 import { connect } from 'react-redux';
 import { AppStyles } from '../utils/AppStyles';
 import { Configuration } from '../utils/Configuration';
-import { authService, monitorService } from '../utils/_services';
+import { authService, chatService, monitorService } from '../utils/_services';
 import {
   Divider,
   Text,
@@ -52,8 +52,9 @@ import NoDataFound from '../components/NoData';
 import IncidentModel from '../components/model/IncidentModel';
 import { isLocationEnabled , promptForEnableLocationIfNeeded  } from 'react-native-android-location-enabler';
 import TokenAlert from '../components/dialog/TokenAlertDialog';
+import { unreadCount } from '../redux/actions/authActions';
 
-function HomeScreen({ navigation, user, token }) {
+function HomeScreen({ navigation, user, token, unreadCount }) {
   const [dashboardData, setDashboardData] = useState([]);
   const [dashboardDataBkp, setDashboardDataBkp] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -212,6 +213,15 @@ useEffect(() => {
     };
   }, []);
 
+
+  const checkMsgCount=()=>{
+    console.log(token , user.monitor.id)
+    chatService.getUnreadMassageCount(token, user.monitor.id).then((res)=>{
+      console.log(res, "unread msg count ")
+      unreadCount(res?.data?.count)
+    }).catch((error)=>{console.log(error)})
+  }
+
   
 // useEffect(() => {
 //   return () => {
@@ -221,7 +231,10 @@ useEffect(() => {
 
   
  const makeAPICallForStatus = (isActive) => {
-     const data = {
+  if(isActive){
+    checkMsgCount()
+  }   
+  const data = {
             userId : user?.id,
             userActiveonApp : isActive
         }
@@ -1637,5 +1650,9 @@ const mapStateToProps = state => ({
   user: state.auth.user,
   token: state.auth.token,
 });
+const mapDispatchToProps = dispatch => ({
+  unreadCount: (id) => dispatch(unreadCount(id)),
+});
 
-export default connect(mapStateToProps)(HomeScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
+
