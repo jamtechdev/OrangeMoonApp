@@ -31,7 +31,7 @@ function DrawerContainer({ navigation, auth, logout }) {
 
   const handleLink = async (type) => {
     let url = 'https://orangemoonsss.com/privacy-policy'
-    if(type == 'terms'){
+    if (type == 'terms') {
       url = 'https://orangemoonsss.com/terms-of-service'
     }
     const supported = await Linking.openURL(url);
@@ -53,83 +53,83 @@ function DrawerContainer({ navigation, auth, logout }) {
         <Text style={{ color: '#fff' }} variant="headlineMedium"> Orange Moon</Text>
       </View>
       <View style={styles.container}>
-      <View style={styles.subContainer}>
-        <MenuButton
-          title="Home"
-          icon='home'
-          active={active === 0 ? true : false}
-          onPress={() => {
-            setActive(0);
-            navigation.navigate('Tab');
-          }}
-        />
-        <MenuButton
-          title="Archive Booking"
-          icon='book'
-          active={active === 1 ? true : false}
-          onPress={() => {
-            setActive(1);
-            navigation.navigate('ArchiveBookingStack');
-          }}
-        />
-        <MenuButton
-          title="Scheduling"
-          icon='table'
-          active={active === 2 ? true : false}
-          onPress={() => {
-            setActive(2);
-            navigation.navigate('SchedulingStack');
-          }}
-        />
-        <MenuButton
-          title="Completed Reports"
-          icon='clone'
-          active={active === 3 ? true : false}
-          onPress={() => {
-            setActive(3);
-            navigation.navigate('CompleteReportStack');
-          }}
-        />
+<View style={styles.subContainer}>
+          <MenuButton
+            title="Home"
+            icon='home'
+            active={active === 0 ? true : false}
+            onPress={() => {
+              setActive(0);
+              navigation.navigate('Tab');
+            }}
+          />
+          <MenuButton
+            title="Archive Booking"
+            icon='book'
+            active={active === 1 ? true : false}
+            onPress={() => {
+              setActive(1);
+              navigation.navigate('ArchiveBookingStack');
+            }}
+          />
+          <MenuButton
+            title="Scheduling"
+            icon='table'
+            active={active === 2 ? true : false}
+            onPress={() => {
+              setActive(2);
+              navigation.navigate('SchedulingStack');
+            }}
+          />
+          <MenuButton
+            title="Completed Reports"
+            icon='clone'
+            active={active === 3 ? true : false}
+            onPress={() => {
+              setActive(3);
+              navigation.navigate('CompleteReportStack');
+            }}
+          />
 
 
 
-        <MenuButton
-          title="Conversations"
-          icon='wechat'
-          active={active === 4 ? true : false}
-          onPress={() => {
-            setActive(4);
-            navigation.navigate('ChatStack');
-          }}
-        />
-                <MenuButton
-          title="Payments"
-          icon='credit-card'
-          active={active === 5 ? true : false}
-          onPress={() => {
-            setActive(5);
-            navigation.navigate('PaymentStack');
-          }}
-        />
-<MenuButton
-          title="Log Out"
-          icon='power-off'
-          active={false}
-          onPress={() => {
-            // setActive(5)
-  handleLogout()
-          }}
-        />
+          <MenuButton
+            title="Conversations"
+            icon='wechat'
+            active={active === 4 ? true : false}
+            onPress={() => {
+              setActive(4);
+              navigation.navigate('ChatStack');
+            }}
+          />
+          <MenuButton
+            title="Payments"
+            icon='credit-card'
+            active={active === 5 ? true : false}
+            onPress={() => {
+              setActive(5);
+              navigation.navigate('PaymentStack');
+            }}
+          />
+          <MenuButton
+            title="Log Out"
+            icon='power-off'
+            active={false}
+            onPress={() => {
+              // setActive(5)
+              handleLogout()
+            }}
+          />
+</View>
 
-        </View>
         <View style={styles.subContainer1}>
-        <Pressable onPress={()=>handleLink('link')}>
-        <Text style={styles.fontStyle}> Privacy Policy</Text>
-        </Pressable>
-        <Pressable onPress={()=>handleLink('terms')}>
-        <Text style={styles.fontStyle}> Terms of Service</Text>
-        </Pressable>
-        {/* <Text style={styles.fontStyle}> Version : 1.0.1</Text> */}
+          <Pressable onPress={() => handleLink('link')}>
+            <Text style={styles.fontStyle}> Privacy Policy</Text>
+          </Pressable>
+          <Pressable onPress={() => handleLink('terms')}>
+            <Text style={styles.fontStyle}> Terms of Service</Text>
+          </Pressable>
+          {/* <Text style={styles.fontStyle}> Version : 1.0.1</Text> */}
         </View>
       </View>
 
@@ -154,24 +154,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'flex-start',
+    justifyContent: 'space-between'
     // paddingHorizontal: 20,
   },
-  subContainer:{
+  subContainer: {
     flex: 1,
     alignItems: 'flex-start',
-    justifyContent:'space-between'
+
   },
-  subContainer1:{
-    flex: 0.5,
-    justifyContent:'space-between',
+  subContainer1: {
+
+    justifyContent: 'space-between',
     paddingVertical: 15,
     paddingHorizontal: 30,
     paddingBottom: 35,
     flexDirection: 'row',
-    gap : 10,
+    gap: 10,
     alignItems: 'flex-end'
   },
-  fontStyle:{
+  fontStyle: {
     color: '#fff',
     fontWeight: 'bold',
     textDecorationLine: 'underline'
