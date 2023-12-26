@@ -11,6 +11,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { IMAGE_URL } from '../utils/Connection';
 function ChatScreen({ navigation, user, token }) {
     console.log(user)
+    const adminId = 8 // prod 
+    // const adminId = 1 // STAGING 
     const [messages, setMessages] = useState([])
     const [page, setPage] = useState(1)
     const socket = io('https://dev.orangemoonsss.com');
@@ -22,7 +24,7 @@ function ChatScreen({ navigation, user, token }) {
 
     useEffect(() => {
 
-        chatService.getConversation(token, user.id, 8, page).then(res => {
+        chatService.getConversation(token, user.id, adminId, page).then(res => {
             console.log(res, "get getConversation data");
             let response = res?.data?.data.reverse()
             if (response) {
@@ -91,7 +93,7 @@ function ChatScreen({ navigation, user, token }) {
         const sendData = {
             message: newMessages[0]?.text,
             sender_id: user.id,
-            receiver_id: 8,
+            receiver_id: adminId,
             sender_name: newMessages[0]?.user?.name,
             receiver_name: 'Orangemoon',
             sender_img: user.monitor.photo,
@@ -101,7 +103,7 @@ function ChatScreen({ navigation, user, token }) {
         const newMessagesData = {
             msg: newMessages[0]?.text,
             sender_id: user.id,
-            receiver_id: 1,
+            receiver_id: adminId,
             sender_name: newMessages[0]?.user?.name,
             receiver_name: 'Orangemoon',
             sender_img: '1672486286.jpg',
