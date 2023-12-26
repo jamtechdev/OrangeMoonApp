@@ -8,11 +8,10 @@ import { GiftedChat } from 'react-native-gifted-chat';
 import { chatService } from '../utils/_services';
 import io from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
-import { IMAGE_URL } from '../utils/Connection';
+import { IMAGE_URL, ADMIN_ID } from '../utils/Connection';
 function ChatScreen({ navigation, user, token }) {
     console.log(user)
-    const adminId = 8 // prod 
-    // const adminId = 1 // STAGING 
+  
     const [messages, setMessages] = useState([])
     const [page, setPage] = useState(1)
     const socket = io('https://dev.orangemoonsss.com');
@@ -24,7 +23,7 @@ function ChatScreen({ navigation, user, token }) {
 
     useEffect(() => {
 
-        chatService.getConversation(token, user.id, adminId, page).then(res => {
+        chatService.getConversation(token, user.id, ADMIN_ID, page).then(res => {
             console.log(res, "get getConversation data");
             let response = res?.data?.data.reverse()
             if (response) {
@@ -93,7 +92,7 @@ function ChatScreen({ navigation, user, token }) {
         const sendData = {
             message: newMessages[0]?.text,
             sender_id: user.id,
-            receiver_id: adminId,
+            receiver_id: ADMIN_ID,
             sender_name: newMessages[0]?.user?.name,
             receiver_name: 'Orangemoon',
             sender_img: user.monitor.photo,
@@ -103,7 +102,7 @@ function ChatScreen({ navigation, user, token }) {
         const newMessagesData = {
             msg: newMessages[0]?.text,
             sender_id: user.id,
-            receiver_id: adminId,
+            receiver_id: ADMIN_ID,
             sender_name: newMessages[0]?.user?.name,
             receiver_name: 'Orangemoon',
             sender_img: '1672486286.jpg',
