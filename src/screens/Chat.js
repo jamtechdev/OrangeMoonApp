@@ -22,7 +22,7 @@ function ChatScreen({ navigation, user, token }) {
 
     useEffect(() => {
 
-        chatService.getConversation(token, user.id, 1, page).then(res => {
+        chatService.getConversation(token, user.id, 8, page).then(res => {
             console.log(res, "get getConversation data");
             let response = res?.data?.data.reverse()
             if (response) {
@@ -91,7 +91,7 @@ function ChatScreen({ navigation, user, token }) {
         const sendData = {
             message: newMessages[0]?.text,
             sender_id: user.id,
-            receiver_id: 1,
+            receiver_id: 8,
             sender_name: newMessages[0]?.user?.name,
             receiver_name: 'Orangemoon',
             sender_img: user.monitor.photo,
