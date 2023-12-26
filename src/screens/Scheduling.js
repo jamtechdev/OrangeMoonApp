@@ -363,6 +363,13 @@ function Scheduling({navigation, user, token, route}) {
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
+    const today = moment().startOf('day'); // Get today's date at the start of the day
+    const inDate = moment(event).startOf('day');
+    console.log(inDate.isSameOrAfter(today))
+    if(!inDate.isSameOrAfter(today)){
+      setVisibleToast(true);
+      return;
+    }
     const dateExists = eventData.some(item => {
       const itemDate = new Date(item.date);
       return itemDate.getTime() === targetDate.getTime();

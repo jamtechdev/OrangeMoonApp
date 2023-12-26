@@ -12,11 +12,11 @@ const ArchiveCardList = ({item }) => (
       <View style={[globalStyles.buttonRow, {alignItems: 'center'}]}>
         <View style={styles.viewRow}>
           <View style={styles.badgeheadingText}>
-            <Text style={styles.valueTextinner}>Id: {item.id}</Text>
+            <Text style={styles.valueTextinner}>Id: {item.booking_id}</Text>
           </View>
         </View>
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>Status : {formatDate(item.status)}</Text>
+          <Text style={styles.badgeText}>Status : completed</Text>
         </View>
       </View>
 

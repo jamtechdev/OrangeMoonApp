@@ -23,7 +23,7 @@ function ChatScreen({ navigation, user, token }) {
     useEffect(() => {
 
         chatService.getConversation(token, user.id, 1, page).then(res => {
-            console.log(res?.data?.data, "here my console res");
+            console.log(res, "get getConversation data");
             let response = res?.data?.data.reverse()
             if (response) {
                 const transformedData = response.map(item => {
@@ -110,7 +110,7 @@ function ChatScreen({ navigation, user, token }) {
         }
         socket.emit('new-message', newMessagesData);
         chatService.postConversation(token, sendData).then(res => {
-            console.log(res, "here my console res");
+            console.log(res, "here my send data ");
             setMessages((previousMessages) =>
                 GiftedChat.append(previousMessages, newMessages)
             );
