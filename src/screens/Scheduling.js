@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable prettier/prettier */
-import React, {useMemo, useState, useEffect} from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -25,15 +25,15 @@ import {
   Modal,
   Dialog,
 } from 'react-native-paper';
-import {connect} from 'react-redux';
-import {monitorService} from '../utils/_services';
-import {AppStyles} from '../utils/AppStyles';
+import { connect } from 'react-redux';
+import { monitorService } from '../utils/_services';
+import { AppStyles } from '../utils/AppStyles';
 import globalStyles from '../utils/_css/globalStyle';
 import LoadingContainer from '../components/LoadingContainer';
-import {formatDate, formatTime} from '../utils/_helpers';
-import {Calendar} from 'react-native-big-calendar';
+import { formatDate, formatTime } from '../utils/_helpers';
+import { Calendar } from 'react-native-big-calendar';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {useForm, Controller} from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import FormDateInput from '../components/FormDateInput';
 import SearchBox from '../components/SearchBox';
@@ -45,7 +45,7 @@ import NoDataFound from '../components/NoData';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import io from 'socket.io-client';
 import moment from 'moment';
-function Scheduling({navigation, user, token, route}) {
+function Scheduling({ navigation, user, token, route }) {
   const socket = io('https://dev.orangemoonsss.com');
 
 
@@ -182,16 +182,16 @@ function Scheduling({navigation, user, token, route}) {
     };
   };
 
-  const CustomEvent = ({event, touchableOpacityProps}) => (
+  const CustomEvent = ({ event, touchableOpacityProps }) => (
     <Pressable
       {...touchableOpacityProps}
       onPress={() => onEventPress(event)}
-      style={[styles.customEventContainer, {backgroundColor: event.color}]}
+      style={[styles.customEventContainer, { backgroundColor: event.color }]}
       key={event?.id}>
       {event.color !== 'yellow' ? (
         <Text style={styles.eventText}>{event.title}</Text>
       ) : (
-        <Text style={[styles.eventText, {color: AppStyles.color.black}]}>
+        <Text style={[styles.eventText, { color: AppStyles.color.black }]}>
           {event.title}
         </Text>
       )}
@@ -206,8 +206,11 @@ function Scheduling({navigation, user, token, route}) {
     return differenceInDays <= 30;
   };
   const onEventPress = event => {
-    const eventDate = new Date(event.date);
-    const currentDate = new Date();
+
+    const currentDate = moment().startOf('day');
+    const eventDate = moment(event.date).startOf('day');
+    console.log(eventDate.isSameOrAfter(currentDate))
+
     if (event.status === 'OFFERED' || event.status === 'BOOKED') {
       if (!isDateWithin30Days(event.date)) {
         setVisibleToast(true);
@@ -230,7 +233,7 @@ function Scheduling({navigation, user, token, route}) {
       }
       return;
     } else if (
-      eventDate >= currentDate.setHours(0, 0, 0, 0) &&
+      eventDate.isSameOrAfter(currentDate) &&
       (event.status === 'NOT AVAILABLE' || event.status == 'AVAILABLE')
     ) {
       setVisibleDialog(true);
@@ -366,7 +369,7 @@ function Scheduling({navigation, user, token, route}) {
     const today = moment().startOf('day'); // Get today's date at the start of the day
     const inDate = moment(event).startOf('day');
     console.log(inDate.isSameOrAfter(today))
-    if(!inDate.isSameOrAfter(today)){
+    if (!inDate.isSameOrAfter(today)) {
       setVisibleToast(true);
       return;
     }
@@ -396,7 +399,7 @@ function Scheduling({navigation, user, token, route}) {
           />
         }
         showsVerticalScrollIndicator={false}
-        scrollIndicatorInsets={{top: 0, left: 0, bottom: 0, right: 0}}>
+        scrollIndicatorInsets={{ top: 0, left: 0, bottom: 0, right: 0 }}>
         <View style={styles.container}>
           <Text style={globalStyles.subtitle}> Manage Schedule </Text>
           <Divider style={globalStyles.divider} />
