@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable prettier/prettier */
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import {
   View,
   ScrollView,
@@ -30,15 +30,9 @@ import { monitorService } from '../utils/_services';
 import { AppStyles } from '../utils/AppStyles';
 import globalStyles from '../utils/_css/globalStyle';
 import LoadingContainer from '../components/LoadingContainer';
-import { formatDate, formatTime } from '../utils/_helpers';
 import { Calendar } from 'react-native-big-calendar';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { useForm, Controller } from 'react-hook-form';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import FormDateInput from '../components/FormDateInput';
-import SearchBox from '../components/SearchBox';
 import SchedulingModel from '../components/model/SchedulingModel';
-import SchedulingDateDialog from '../components/dialog/SchedulingDateDialog';
 import SchedulingCardList from '../components/cards/SchedulingCardList';
 import SchedulingFilterSearch from '../components/searchFilter/ScheduleFilterSearch';
 import NoDataFound from '../components/NoData';
@@ -47,8 +41,6 @@ import io from 'socket.io-client';
 import moment from 'moment';
 function Scheduling({ navigation, user, token, route }) {
   const socket = io('https://dev.orangemoonsss.com');
-
-
   const [eventData, setEventData] = useState([]);
   const [assignableData, setAssignableData] = useState([]);
   const [assignableDataBkp, setAssignableDataBkp] = useState([]);
@@ -65,26 +57,15 @@ function Scheduling({ navigation, user, token, route }) {
   const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [modelType, setModelType] = useState();
   const [refreshing, setRefreshing] = useState(false);
-  const [page, setPage] = useState(0);
-  const [numberOfItemsPerPageList] = useState([10, 25, 50, 100]);
   const [isStartDateVisible, setIsStartDateVisible] = useState(false);
   const [isEndDateVisible, setIsEndDateVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(moment());
 
-  const [itemsPerPage, onItemsPerPageChange] = useState(
-    numberOfItemsPerPageList[0],
-  );
-  const memoizedStartDate = useMemo(() => startDate, [startDate]);
-  const memoizedEndDate = useMemo(() => endDate, [endDate]);
 
-  const from = page * itemsPerPage;
-  const to = Math.min((page + 1) * itemsPerPage, assignableData?.length);
   const showModal = () => setVisibleModel(true);
   const hideModal = () => setVisibleModel(false);
   const hideDialog = () => setVisibleDialog(false);
   const hideAlert = () => setShowAlert(false);
-  React.useEffect(() => {
-    setPage(0);
-  }, [itemsPerPage]);
 
   useEffect(() => {
     getdayList();
@@ -140,6 +121,7 @@ function Scheduling({ navigation, user, token, route }) {
         setIsLoading(false);
         setIsButtonLoading(false);
         hideDialog();
+
       })
       .catch(error => {
         console.log(error);
@@ -150,28 +132,6 @@ function Scheduling({ navigation, user, token, route }) {
       });
   };
 
-
-  const [selectedDate, setSelectedDate] = useState(new Date());
-
-  const goToPreviousMonth = () => {
-    const newDate = new Date(selectedDate);
-    newDate.setMonth(newDate.getMonth() - 1);
-    setSelectedDate(newDate);
-  };
-
-  const goToNextMonth = () => {
-    const newDate = new Date(selectedDate);
-    newDate.setMonth(newDate.getMonth() + 1);
-    setSelectedDate(newDate);
-  };
-
-  const goToToday = () => {
-    setSelectedDate(new Date());
-  };
-  const onChangeDate = newDates => {
-    const newDate = newDates[0];
-    setSelectedDate(newDate);
-  };
   const eventStyleGetter = (event, start, end, isSelected) => {
     return {
       backgroundColor: event.color,
@@ -206,10 +166,9 @@ function Scheduling({ navigation, user, token, route }) {
     return differenceInDays <= 30;
   };
   const onEventPress = event => {
-
     const currentDate = moment().startOf('day');
     const eventDate = moment(event.date).startOf('day');
-    console.log(eventDate.isSameOrAfter(currentDate))
+    console.log(eventDate.isSameOrAfter(currentDate));
 
     if (event.status === 'OFFERED' || event.status === 'BOOKED') {
       if (!isDateWithin30Days(event.date)) {
@@ -234,16 +193,18 @@ function Scheduling({ navigation, user, token, route }) {
       return;
     } else if (
       eventDate.isSameOrAfter(currentDate) &&
-      (event.status === 'NOT AVAILABLE' || event.status == 'AVAILABLE')
+      (event.status === 'NOT AVAILABLE' || event.status === 'AVAILABLE')
     ) {
-      setVisibleDialog(true);
+      // Setting the start and end date directly without opening the Dialog
       setStartDate(event.date);
       setEndDate(event.date);
+      setVisibleDialog(true);
       return;
     } else {
       setVisibleToast(true);
     }
   };
+
 
   const updateAvailability = (start, end, status) => {
     console.log(start, end);
@@ -335,51 +296,42 @@ function Scheduling({ navigation, user, token, route }) {
 
   const handleConfirmEnd = dateTimeString => {
     console.warn('A date has been picked: ', dateTimeString);
-    const date = new Date(dateTimeString);
+    const date = moment(dateTimeString);
     setIsEndDateVisible(false);
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
-    const day = date.getDate().toString().padStart(2, '0');
 
-    const formattedDate = `${year}-${month}-${day}`;
+    const formattedDate = date.format('YYYY-MM-DD');
     setEndDate(formattedDate);
     setIsEndDateVisible(false);
   };
+
   const handleConfirmStart = dateTimeString => {
     console.warn('A date has been picked: ', dateTimeString);
-    const date = new Date(dateTimeString);
+    const date = moment(dateTimeString);
     setIsStartDateVisible(false);
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
-    const day = date.getDate().toString().padStart(2, '0');
 
-    const formattedDate = `${year}-${month}-${day}`;
+    const formattedDate = date.format('YYYY-MM-DD');
     setStartDate(formattedDate);
   };
 
+
   const checkEventOrNot = event => {
-    const targetDate = new Date(event);
-    console.log(targetDate, 'date ');
-    const inputDate = targetDate;
-    const date = new Date(inputDate);
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}`;
-    const today = moment().startOf('day'); // Get today's date at the start of the day
-    const inDate = moment(event).startOf('day');
-    console.log(inDate.isSameOrAfter(today))
-    if (!inDate.isSameOrAfter(today)) {
+    const targetDate = moment(event);
+    console.log(targetDate, 'date');
+
+    const formattedDate = targetDate.format('YYYY-MM-DD');
+    const today = moment().startOf('day');
+
+    if (!targetDate.isSameOrAfter(today)) {
       setVisibleToast(true);
       return;
     }
+
     const dateExists = eventData.some(item => {
-      const itemDate = new Date(item.date);
-      return itemDate.getTime() === targetDate.getTime();
+      const itemDate = moment(item.date);
+      return itemDate.isSame(targetDate, 'day');
     });
-    if (dateExists) {
-      return;
-    } else {
+
+    if (!dateExists) {
       setVisibleDialog(true);
       setStartDate(formattedDate);
       setEndDate(formattedDate);
@@ -387,6 +339,50 @@ function Scheduling({ navigation, user, token, route }) {
     }
   };
 
+  const goToPreviousMonth = useCallback(() => {
+    setSelectedDate(prevDate => prevDate.clone().subtract(1, 'month'));
+  }, []);
+
+  const goToNextMonth = useCallback(() => {
+    setSelectedDate(prevDate => prevDate.clone().add(1, 'month'));
+  }, []);
+
+  const goToToday = useCallback(() => {
+    setSelectedDate(moment());
+  }, []);
+
+  const onChangeDate = newDates => {
+    const newDate = moment(newDates[0]);
+    setSelectedDate(newDate);
+  };
+
+  const formattedDate = useMemo(() => selectedDate.format('MMMM YYYY'), [selectedDate]);
+
+  const [currentMonthEvents, setCurrentMonthEvents] = useState();
+
+  const getCurrentMonthEvents = () => {
+    const startOfCurrentMonth = moment(selectedDate).startOf('month');
+    const endOfCurrentMonth = moment(selectedDate).endOf('month');
+
+    const startOfPrevMonth = moment(selectedDate).subtract(1, 'month').startOf('month');
+    const endOfPrevMonth = moment(selectedDate).subtract(1, 'month').endOf('month');
+
+    const startOfNextMonth = moment(selectedDate).add(1, 'month').startOf('month');
+    const endOfNextMonth = moment(selectedDate).add(1, 'month').endOf('month');
+
+    const currentMonthEvents = eventData.filter(event => {
+      const eventDate = moment(event.date);
+      return eventDate.isBetween(startOfCurrentMonth, endOfCurrentMonth, null, '[]') ||
+        (eventDate.isBetween(startOfPrevMonth, endOfPrevMonth, null, '[]') && eventDate.date() >= endOfPrevMonth.date() - 6) ||
+        (eventDate.isBetween(startOfNextMonth, endOfNextMonth, null, '[]') && eventDate.date() <= startOfNextMonth.date() + 6);
+    });
+
+    setCurrentMonthEvents(currentMonthEvents);
+  };
+
+  useEffect(() => {
+    getCurrentMonthEvents();
+  }, [eventData, selectedDate])
   return (
     <>
       <ScrollView
@@ -404,37 +400,34 @@ function Scheduling({ navigation, user, token, route }) {
           <Text style={globalStyles.subtitle}> Manage Schedule </Text>
           <Divider style={globalStyles.divider} />
           <View style={styles.dateView}>
-            <Button title="Today" onPress={goToToday}>
+            <TouchableOpacity onPress={goToToday}>
               <Text style={styles.todayButton}> Today</Text>
-            </Button>
-            <Text style={styles.monthText}>
-              {selectedDate.toLocaleDateString('en-US', {
-                month: 'long',
-                year: 'numeric',
-              })}
-            </Text>
+            </TouchableOpacity>
+            <Text style={styles.monthText}>{formattedDate}</Text>
             <View style={styles.iconView}>
-              <Icon
-                color={AppStyles.color?.tint}
-                style={styles.dateIcon}
-                name="angle-left"
-                size={30}
-                onPress={goToPreviousMonth}
-              />
-              <Icon
-                color={AppStyles.color?.tint}
-                style={styles.dateIcon}
-                name="angle-right"
-                size={30}
-                onPress={goToNextMonth}
-              />
+              <TouchableOpacity onPress={goToPreviousMonth}>
+                <Icon
+                  color={AppStyles.color?.tint}
+                  style={styles.dateIcon}
+                  name="angle-left"
+                  size={30}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={goToNextMonth}>
+                <Icon
+                  color={AppStyles.color?.tint}
+                  style={styles.dateIcon}
+                  name="angle-right"
+                  size={30}
+                />
+              </TouchableOpacity>
             </View>
           </View>
           <Calendar
-            events={eventData || []}
+            events={currentMonthEvents || []}
             mode="month"
             height={400}
-            date={selectedDate}
+            date={selectedDate.toDate()} // Convert to JavaScript Date object
             showAllDayEventCell={true}
             onChangeDate={onChangeDate}
             eventCellStyle={eventStyleGetter}
@@ -444,9 +437,7 @@ function Scheduling({ navigation, user, token, route }) {
                 touchableOpacityProps={touchableOpacityProps}
               />
             )}
-            onPressDateHeader={e =>
-              console.log('onPressDateHeader date here ', e)
-            }
+            onPressDateHeader={e => console.log('onPressDateHeader date here ', e)}
             onPressCell={e => checkEventOrNot(e)}
             onPressEvent={e => console.log('onPressEvent date here ', e)}
           />
