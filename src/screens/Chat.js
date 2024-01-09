@@ -8,21 +8,42 @@ import { GiftedChat } from 'react-native-gifted-chat';
 import { chatService } from '../utils/_services';
 import io from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
-import { IMAGE_URL, ADMIN_ID } from '../utils/Connection';
+import { IMAGE_URL, ADMIN_ID, APP_URL, CHAT_PATH } from '../utils/Connection';
+import { useFocusEffect } from '@react-navigation/native';
 function ChatScreen({ navigation, user, token }) {
-    console.log(user)
   
     const [messages, setMessages] = useState([])
     const [page, setPage] = useState(1)
-    const socket = io('https://dev.orangemoonsss.com');
-    // useLayoutEffect(() => {
-    //     navigation.setOptions({
-    //         title: 'Chat',
-    //     });
-    // }, [navigation]);
+    const [socket, setSocket] = useState(null);
 
-    useEffect(() => {
+    useFocusEffect(
+        React.useCallback(() => {
+            getAllMessage()
+            const newSocket = io('https://dev.orangemoonsss.com', {
+                auth: {
+                    token: token,
+                    source_url: APP_URL,
+                    page_path: CHAT_PATH,
+                },
+            });
 
+            newSocket.on('connect', () => {
+                console.log('Connected to socket.io chat');
+            });
+
+            setSocket(newSocket);
+
+            return () => {
+                if (newSocket) {
+                    newSocket.disconnect();
+                    console.log('Disconnected from socket.io chat');
+                }
+            };
+        }, [token])
+    );
+
+
+    const getAllMessage = ()=>{
         chatService.getConversation(token, user.id, ADMIN_ID, page).then(res => {
             console.log(res, "get getConversation data");
             let response = res?.data?.data.reverse()
@@ -46,10 +67,10 @@ function ChatScreen({ navigation, user, token }) {
         chatService.updateUnreadMassage(token).then(res => {
             console.log(res, "here my console res");
         }).catch(error => console.log(error))
+    }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
     useEffect(() => {
+        if (!socket) return;
         // Listen for incoming messages
         socket.on('new-message', (message) => {
             console.log(message, "new message", user)
@@ -79,13 +100,8 @@ function ChatScreen({ navigation, user, token }) {
 
         });
         
-
-        // Clean up the socket connection on unmount
-        return () => {
-            socket.disconnect();
-        };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [socket]);
 
     const handleSend = (newMessages) => {
         console.log(newMessages)

@@ -8,16 +8,101 @@ import {StyleSheet, View, Linking, Pressable, Alert} from 'react-native';
 import MenuButton from './MenuButton';
 import {AppIcon} from '../utils/AppStyles';
 import {connect} from 'react-redux';
-import {logoutSuccess} from '../redux/actions/authActions';
-import {authService} from '../utils/_services';
-import {Text} from 'react-native-paper';
+import {logoutSuccess, unreadCount} from '../redux/actions/authActions';
+import {authService, chatService} from '../utils/_services';
+import {Portal, Snackbar, Text} from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
+import {APP_PATH, APP_URL} from '../utils/Connection';
+import {io} from 'socket.io-client';
 
-function DrawerContainer({navigation, auth, count, logout}) {
+function DrawerContainer({navigation, auth, count, user, logout, unreadCountAction}) {
   const [active, setActive] = useState(0);
+  const {token} = auth;
+  const [socket, setSocket] = useState(null);
+  const [visibleToast, setVisibleToast] = useState(false);
 
+  const newSocket = io('https://dev.orangemoonsss.com', {
+    auth: {
+      token: token,
+      source_url: APP_URL,
+      page_path: APP_PATH,
+    },
+  });
+
+  useEffect(() => {
+    const initializeSocket = () => {
+      newSocket.on('connect', () => {
+        console.log('Connected to socket.io drawer');
+      });
+
+      return newSocket;
+    };
+
+    setSocket(initializeSocket());
+
+    return () => {
+      if (socket) {
+        socket.disconnect();
+        console.log('Disconnected from socket.io drawer');
+      }
+    };
+  }, []);
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      checkMsgCount();
+    }, 2000); // Call checkMsgCount every 2 seconds
+
+    // Clear the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []); // Empty dependency array ensures it only runs once on mount
+
+  const checkMsgCount = () => {
+    const prevCount = count;
+    // console.log(token , user.monitor.id)
+    chatService
+      .getUnreadMassageCount(token, user.monitor.user_id)
+      .then(res => {
+        console.log(res, 'unread msg count ');
+        unreadCountAction(count);
+        if (res?.data?.count > prevCount) {
+        setVisibleToast(true);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  const handleChatPageNavigation = () => {
+    if (socket) {
+      socket.disconnect();
+      console.log('Disconnected from socket.io in drawer page');
+    }
+    setActive(4);
+    navigation.navigate('ChatStack');
+  };
+
+  const handleOtherPageNavigation = (pageName, status) => {
+    if (socket && socket?.connected == false) {
+      const initializeSocket = () => {
+        newSocket.on('connect', () => {
+          console.log('Reconnected to socket.io drawer');
+        });
+
+        return newSocket;
+      };
+
+      setSocket(initializeSocket());
+      console.log('Reconnected to socket.io drawer');
+    }
+    setActive(status);
+    navigation.navigate(pageName);
+  };
   const handleLogout = () => {
-    const {token} = auth;
+    if (socket) {
+      socket.disconnect();
+      console.log('Disconnected from socket.io drawer');
+    }
     // authService.logout(token).then(res => {
     //   console.log(res);
     // }).catch(error => {
@@ -62,8 +147,7 @@ function DrawerContainer({navigation, auth, count, logout}) {
             icon="home"
             active={active === 0 ? true : false}
             onPress={() => {
-              setActive(0);
-              navigation.navigate('Tab');
+              handleOtherPageNavigation('Tab', 0);
             }}
           />
           <MenuButton
@@ -71,8 +155,7 @@ function DrawerContainer({navigation, auth, count, logout}) {
             icon="book"
             active={active === 1 ? true : false}
             onPress={() => {
-              setActive(1);
-              navigation.navigate('ArchiveBookingStack');
+              handleOtherPageNavigation('ArchiveBookingStack', 1);
             }}
           />
           <MenuButton
@@ -80,8 +163,7 @@ function DrawerContainer({navigation, auth, count, logout}) {
             icon="table"
             active={active === 2 ? true : false}
             onPress={() => {
-              setActive(2);
-              navigation.navigate('SchedulingStack');
+              handleOtherPageNavigation('SchedulingStack', 2);
             }}
           />
           <MenuButton
@@ -89,8 +171,7 @@ function DrawerContainer({navigation, auth, count, logout}) {
             icon="clone"
             active={active === 3 ? true : false}
             onPress={() => {
-              setActive(3);
-              navigation.navigate('CompleteReportStack');
+              handleOtherPageNavigation('CompleteReportStack', 3);
             }}
           />
 
@@ -98,10 +179,7 @@ function DrawerContainer({navigation, auth, count, logout}) {
             title="Conversations"
             icon="wechat"
             active={active === 4 ? true : false}
-            onPress={() => {
-              setActive(4);
-              navigation.navigate('ChatStack');
-            }}
+            onPress={handleChatPageNavigation}
             badge={count}
           />
           <MenuButton
@@ -109,8 +187,7 @@ function DrawerContainer({navigation, auth, count, logout}) {
             icon="credit-card"
             active={active === 5 ? true : false}
             onPress={() => {
-              setActive(5);
-              navigation.navigate('PaymentStack');
+              handleOtherPageNavigation('PaymentStack', 5);
             }}
           />
           <MenuButton
@@ -134,6 +211,19 @@ function DrawerContainer({navigation, auth, count, logout}) {
           {/* <Text style={styles.fontStyle}> Version : 1.0.1</Text> */}
         </View>
       </View>
+      <Portal>
+        <Snackbar
+          visible={visibleToast}
+          onDismiss={() => setVisibleToast(false)}
+          duration={1000}
+          wrapperStyle={{top: 50}}
+          style={{
+            backgroundColor: '#4CAF50',
+            color: 'white',
+          }}>
+          You got a new message!
+        </Snackbar>
+      </Portal>
     </View>
   );
 }
@@ -179,10 +269,12 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
   auth: state.auth,
   count: state.auth.count,
+  user: state.auth.user,
 });
 
 const mapDispatchToProps = dispatch => ({
   logout: () => dispatch(logoutSuccess()),
+  unreadCountAction: id => dispatch(unreadCount(id)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(DrawerContainer);

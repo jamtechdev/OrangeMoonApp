@@ -188,39 +188,39 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
 
   // here app state update start 
 
-useEffect(() => {
-    const handleAppStateChange = (nextAppState) => {
-      if (nextAppState === 'active') {
-        // App is currently active
-        makeAPICallForStatus(1);
-      } else {
-        // App is in the background or inactive
-        makeAPICallForStatus(0);
-      }
-    };
+// useEffect(() => {
+//     const handleAppStateChange = (nextAppState) => {
+//       if (nextAppState === 'active') {
+//         // App is currently active
+//         makeAPICallForStatus(1);
+//       } else {
+//         // App is in the background or inactive
+//         makeAPICallForStatus(0);
+//       }
+//     };
 
-    // Subscribe to app state changes
-    AppState.addEventListener('change', handleAppStateChange);
+//     // Subscribe to app state changes
+//     AppState.addEventListener('change', handleAppStateChange);
 
-    // Initial API call when the component mounts (app opens)
-    makeAPICallForStatus(1);
+//     // Initial API call when the component mounts (app opens)
+//     makeAPICallForStatus(1);
 
-    // Clean up the subscription when the component unmounts
-    return () => {
-      AppState.removeEventListener('change', handleAppStateChange);
-      // API call when the component unmounts (app closes)
-      makeAPICallForStatus(0);
-    };
-  }, []);
+//     // Clean up the subscription when the component unmounts
+//     return () => {
+//       AppState.removeEventListener('change', handleAppStateChange);
+//       // API call when the component unmounts (app closes)
+//       makeAPICallForStatus(0);
+//     };
+//   }, []);
 
 
-  const checkMsgCount=()=>{
-    console.log(token , user.monitor.id)
-    chatService.getUnreadMassageCount(token, user.monitor.id).then((res)=>{
-      console.log(res, "unread msg count ")
-      unreadCount(res?.data?.count)
-    }).catch((error)=>{console.log(error)})
-  }
+  // const checkMsgCount=()=>{
+  //   console.log(token , user.monitor.id)
+  //   chatService.getUnreadMassageCount(token, user.monitor.id).then((res)=>{
+  //     console.log(res, "unread msg count ")
+  //     unreadCount(res?.data?.count)
+  //   }).catch((error)=>{console.log(error)})
+  // }
 
   
 // useEffect(() => {
@@ -230,20 +230,20 @@ useEffect(() => {
 // }, []); 
 
   
- const makeAPICallForStatus = (isActive) => {
-  if(isActive){
-    checkMsgCount()
-  }   
-  const data = {
-            userId : user?.id,
-            userActiveonApp : isActive
-        }
-    authService.activeStatus(data, token).then((res) => {
-      console.log(`API call - App is ${isActive ? 'active' : 'inactive'}`, res);
-        }).catch((error) => {
-            console.log(error, "error");
-        })
-  };
+//  const makeAPICallForStatus = (isActive) => {
+//   if(isActive){
+//     checkMsgCount()
+//   }   
+//   const data = {
+//             userId : user?.id,
+//             userActiveonApp : isActive
+//         }
+//     authService.activeStatus(data, token).then((res) => {
+//       console.log(`API call - App is ${isActive ? 'active' : 'inactive'}`, res);
+//         }).catch((error) => {
+//             console.log(error, "error");
+//         })
+//   };
 
   // here app state update end
   const handleTimeConfirm = time => {
