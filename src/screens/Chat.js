@@ -64,8 +64,8 @@ function ChatScreen({ navigation, user, token }) {
             }
 
         }).catch(error => console.log(error))
-        chatService.updateUnreadMassage(token).then(res => {
-            console.log(res, "here my console res");
+        chatService.updateUnreadMassage(token,ADMIN_ID, user.id ).then(res => {
+            console.log(res, "here my console res update msg");
         }).catch(error => console.log(error))
     }
 

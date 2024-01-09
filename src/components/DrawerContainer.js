@@ -57,13 +57,13 @@ function DrawerContainer({navigation, auth, count, user, logout, unreadCountActi
   }, []); // Empty dependency array ensures it only runs once on mount
 
   const checkMsgCount = () => {
-    const prevCount = count;
+    let prevCount = count;
     // console.log(token , user.monitor.id)
     chatService
       .getUnreadMassageCount(token, user.monitor.user_id)
       .then(res => {
         console.log(res, 'unread msg count ');
-        unreadCountAction(count);
+        unreadCountAction(res?.data?.count);
         if (res?.data?.count > prevCount) {
         setVisibleToast(true);
         }

@@ -49,7 +49,7 @@ async function updateStatus(token, status, user_id) {
 
 async function getUnreadMassageCount(token, monitorId) {
   return await axiosInstance.get(
-    `${API_URL}/get-monitor-unread-conversation?monitorId=${monitorId}'`,
+    `${API_URL}/get-monitor-unread-conversation?monitorId=${monitorId}`,
     {
       headers: {Authorization: 'Bearer ' + token},
     },
