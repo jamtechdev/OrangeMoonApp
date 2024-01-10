@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-quotes */
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
@@ -15,7 +16,7 @@ import FastImage from 'react-native-fast-image';
 import {APP_PATH, APP_URL} from '../utils/Connection';
 import {io} from 'socket.io-client';
 
-function DrawerContainer({navigation, auth, count, user, logout, unreadCountAction}) {
+function DrawerContainer({navigation, auth, count, logout}) {
   const [active, setActive] = useState(0);
   const {token} = auth;
   const [socket, setSocket] = useState(null);
@@ -47,31 +48,12 @@ function DrawerContainer({navigation, auth, count, user, logout, unreadCountActi
       }
     };
   }, []);
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      checkMsgCount();
-    }, 2000); // Call checkMsgCount every 2 seconds
 
-    // Clear the interval on component unmount
-    return () => clearInterval(intervalId);
-  }, []); // Empty dependency array ensures it only runs once on mount
-
-  const checkMsgCount = () => {
-    let prevCount = count;
-    // console.log(token , user.monitor.id)
-    chatService
-      .getUnreadMassageCount(token, user.monitor.user_id)
-      .then(res => {
-        console.log(res, 'unread msg count ');
-        unreadCountAction(res?.data?.count);
-        if (res?.data?.count > prevCount) {
-        setVisibleToast(true);
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
+  useEffect(()=>{
+if(count !== 0 && active !== 4 ){
+  setVisibleToast(true);
+}
+  },[count])
 
   const handleChatPageNavigation = () => {
     if (socket) {
@@ -121,7 +103,6 @@ function DrawerContainer({navigation, auth, count, user, logout, unreadCountActi
     }
     const supported = await Linking.openURL(url);
     if (supported) {
-      // Open the URL in the default browser
       await Linking.openURL(url);
     } else {
       console.error("Don't know how to open URL: " + url);
@@ -269,12 +250,10 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
   auth: state.auth,
   count: state.auth.count,
-  user: state.auth.user,
 });
 
 const mapDispatchToProps = dispatch => ({
   logout: () => dispatch(logoutSuccess()),
-  unreadCountAction: id => dispatch(unreadCount(id)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(DrawerContainer);

@@ -1,13 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable prettier/prettier */
-import React,{useState} from 'react';
+import React,{useEffect, useState} from 'react';
 import { Image, Pressable, StyleSheet, ActivityIndicator, Text , View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import { useSelector } from 'react-redux'; // Import useSelector from react-redux
+import { useDispatch, useSelector } from 'react-redux'; // Import useSelector from react-redux
 import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
@@ -28,8 +29,9 @@ import DrawerContainer from '../components/DrawerContainer';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DetailsReport from '../screens/DetailsReport';
 import { useRoute } from '@react-navigation/native';
-import { authService } from '../utils/_services';
+import { authService, chatService } from '../utils/_services';
 import Splash from '../components/Splash';
+import { unreadCount } from '../redux/actions/authActions';
 
 const Stack = createStackNavigator();
 
@@ -417,16 +419,48 @@ const DrawerStack = () => (
 
 const AppNavigator = () => {
     let auth = useSelector((state) => state.auth); // Get user role from Redux store
-    const { token } = auth;
+    const { token, user, count } = auth;
     const [appInitialized, setAppInitialized] = useState(0);
+    const [updateStatus, setUpdateStatus]=useState(0)
+    const dispatch = useDispatch();
+    useEffect(() => {
+        authService.tokenCheck(token).then(res=>{
+            console.log(res, "result")
+        setAppInitialized(1)
+        }).catch(error=>{
+            setAppInitialized(2);
+            console.log(error, "token error")
+        })
+        const intervalId = setInterval(() => {
+          checkMsgCount();
+        }, 2000); // Call checkMsgCount every 2 seconds
+    
+        return () => clearInterval(intervalId);
+      }, []); 
+    
+      useEffect(()=>{
+        if(updateStatus !== 0){
+            console.log('dispatch here ')
+            dispatch(unreadCount(updateStatus));
+        }
+      },[updateStatus])
+
+      const checkMsgCount = () => {
+        chatService
+          .getUnreadMassageCount(token, user.monitor.user_id)
+          .then(res => {
+            console.log(res?.data?.count, 'unread msg count ', count);
+            if (res?.data?.count != count) {
+                setUpdateStatus(res?.data?.count)
+              }
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      };
+
     // Render the appropriate navigation based on the user role
-    authService.tokenCheck(token).then(res=>{
-        console.log(res, "result")
-    setAppInitialized(1)
-    }).catch(error=>{
-        setAppInitialized(2);
-        console.log(error, "token error")
-    })
+
 
     if (appInitialized == 0) {
         return (

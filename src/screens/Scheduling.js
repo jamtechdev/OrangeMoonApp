@@ -40,7 +40,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import io from 'socket.io-client';
 import moment from 'moment';
 function Scheduling({ navigation, user, token, route }) {
-  const socket = io('https://dev.orangemoonsss.com');
+  // const socket = io('https://dev.orangemoonsss.com');
   const [eventData, setEventData] = useState([]);
   const [assignableData, setAssignableData] = useState([]);
   const [assignableDataBkp, setAssignableDataBkp] = useState([]);
@@ -72,17 +72,17 @@ function Scheduling({ navigation, user, token, route }) {
     getAssignList();
   }, [token]);
 
-  useEffect(() => {
-    // Listen for live calender update check 
-    socket.on('update-calender', () => {
-      getdayList();
-      getAssignList();
-    });
-    return () => {
-      socket.disconnect();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   // Listen for live calender update check 
+  //   socket.on('update-calender', () => {
+  //     getdayList();
+  //     getAssignList();
+  //   });
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   const handleRefresh = () => {
     setRefreshing(true);

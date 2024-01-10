@@ -10,7 +10,8 @@ import io from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
 import { IMAGE_URL, ADMIN_ID, APP_URL, CHAT_PATH } from '../utils/Connection';
 import { useFocusEffect } from '@react-navigation/native';
-function ChatScreen({ navigation, user, token }) {
+import { unreadCount } from '../redux/actions/authActions';
+function ChatScreen({ navigation, user, token, unreadCountAction }) {
   
     const [messages, setMessages] = useState([])
     const [page, setPage] = useState(1)
@@ -64,8 +65,12 @@ function ChatScreen({ navigation, user, token }) {
             }
 
         }).catch(error => console.log(error))
+        getUpdateUnreadCount()
+    }
+    const getUpdateUnreadCount = ()=>{
         chatService.updateUnreadMassage(token,ADMIN_ID, user.id ).then(res => {
             console.log(res, "here my console res update msg");
+            unreadCountAction(0);
         }).catch(error => console.log(error))
     }
 
@@ -92,7 +97,7 @@ function ChatScreen({ navigation, user, token }) {
                 //         GiftedChat.append(previousMessages, newMessages)
                 //     );
                 // }
-
+                getUpdateUnreadCount()
                 setMessages((previousMessages) =>
                     GiftedChat.append(previousMessages, newMessages)
                 );
@@ -174,5 +179,8 @@ const mapStateToProps = (state) => ({
     user: state.auth.user,
     token: state.auth.token
 });
+const mapDispatchToProps = dispatch => ({
+    unreadCountAction: id => dispatch(unreadCount(id)),
+  });
 
-export default connect(mapStateToProps)(ChatScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(ChatScreen);
