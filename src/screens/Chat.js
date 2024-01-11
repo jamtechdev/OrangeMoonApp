@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useLayoutEffect, useState, useCallback, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Alert} from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
 import { connect, useSelector } from 'react-redux';
 import { AppIcon, AppStyles } from '../utils/AppStyles';
 import { Configuration } from '../utils/Configuration';
@@ -11,8 +11,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { IMAGE_URL, ADMIN_ID, APP_URL, CHAT_PATH } from '../utils/Connection';
 import { useFocusEffect } from '@react-navigation/native';
 import { unreadCount } from '../redux/actions/authActions';
-function ChatScreen({ navigation, user, token, unreadCountAction }) {
-  
+function ChatScreen({ navigation, user, token, unreadCountAction, count }) {
+
     const [messages, setMessages] = useState([])
     const [page, setPage] = useState(1)
     const [socket, setSocket] = useState(null);
@@ -22,7 +22,7 @@ function ChatScreen({ navigation, user, token, unreadCountAction }) {
             getAllMessage()
             const newSocket = io('https://dev.orangemoonsss.com', {
                 auth: {
-                    token: token,
+                    token: user?.monitor?.user_id,
                     source_url: APP_URL,
                     page_path: CHAT_PATH,
                 },
@@ -40,11 +40,11 @@ function ChatScreen({ navigation, user, token, unreadCountAction }) {
                     console.log('Disconnected from socket.io chat');
                 }
             };
-        }, [token])
+        }, [token, count])
     );
 
 
-    const getAllMessage = ()=>{
+    const getAllMessage = () => {
         chatService.getConversation(token, user.id, ADMIN_ID, page).then(res => {
             console.log(res, "get getConversation data");
             let response = res?.data?.data.reverse()
@@ -67,8 +67,8 @@ function ChatScreen({ navigation, user, token, unreadCountAction }) {
         }).catch(error => console.log(error))
         getUpdateUnreadCount()
     }
-    const getUpdateUnreadCount = ()=>{
-        chatService.updateUnreadMassage(token,ADMIN_ID, user.id ).then(res => {
+    const getUpdateUnreadCount = () => {
+        chatService.updateUnreadMassage(token, ADMIN_ID, user.id).then(res => {
             console.log(res, "here my console res update msg");
             unreadCountAction(0);
         }).catch(error => console.log(error))
@@ -89,7 +89,7 @@ function ChatScreen({ navigation, user, token, unreadCountAction }) {
                             "avatar": IMAGE_URL + message.sender_image
                         },
                         "createdAt": new Date().toISOString(),
-                        "_id":Math.floor(Math.random() * 111111111111111111),
+                        "_id": Math.floor(Math.random() * 111111111111111111),
                     }
                 ];
                 // if (message?.sender_id === user?.id) {
@@ -104,9 +104,9 @@ function ChatScreen({ navigation, user, token, unreadCountAction }) {
             }
 
         });
-        
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [socket]);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [socket, count]);
 
     const handleSend = (newMessages) => {
         console.log(newMessages)
@@ -138,10 +138,10 @@ function ChatScreen({ navigation, user, token, unreadCountAction }) {
             );
         }).catch(error => console.log(error))
     };
-    
-    
-   
-    
+
+
+
+
 
 
     return (
@@ -177,10 +177,11 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
-    token: state.auth.token
+    token: state.auth.token,
+    count: state.auth.count
 });
 const mapDispatchToProps = dispatch => ({
     unreadCountAction: id => dispatch(unreadCount(id)),
-  });
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChatScreen);

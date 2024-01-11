@@ -4,33 +4,36 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-alert */
 /* eslint-disable prettier/prettier */
-import React, {useState, useEffect} from 'react';
-import {StyleSheet, View, Linking, Pressable, Alert} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Linking, Pressable, Alert } from 'react-native';
 import MenuButton from './MenuButton';
-import {AppIcon} from '../utils/AppStyles';
-import {connect} from 'react-redux';
-import {logoutSuccess, unreadCount} from '../redux/actions/authActions';
-import {authService, chatService} from '../utils/_services';
-import {Portal, Snackbar, Text} from 'react-native-paper';
+import { AppIcon } from '../utils/AppStyles';
+import { connect } from 'react-redux';
+import { logoutSuccess, unreadCount } from '../redux/actions/authActions';
+import { authService, chatService } from '../utils/_services';
+import { Portal, Snackbar, Text } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
-import {APP_PATH, APP_URL} from '../utils/Connection';
-import {io} from 'socket.io-client';
+import { APP_PATH, APP_URL } from '../utils/Connection';
+import { io } from 'socket.io-client';
 
-function DrawerContainer({navigation, auth, count, logout}) {
+function DrawerContainer({ navigation, token, count, logout, user }) {
   const [active, setActive] = useState(0);
-  const {token} = auth;
   const [socket, setSocket] = useState(null);
   const [visibleToast, setVisibleToast] = useState(false);
+  const [pageOn, setPageOn] = useState(false);
 
   const newSocket = io('https://dev.orangemoonsss.com', {
     auth: {
-      token: token,
+      token: user?.monitor?.user_id,
       source_url: APP_URL,
       page_path: APP_PATH,
     },
   });
 
   useEffect(() => {
+    setTimeout(() => {
+      setPageOn(true)
+    }, 3000);
     const initializeSocket = () => {
       newSocket.on('connect', () => {
         console.log('Connected to socket.io drawer');
@@ -41,19 +44,17 @@ function DrawerContainer({navigation, auth, count, logout}) {
 
     setSocket(initializeSocket());
 
-    return () => {
-      if (socket) {
-        socket.disconnect();
-        console.log('Disconnected from socket.io drawer');
-      }
-    };
+    // return () => {
+    //   socket.disconnect();
+    //   console.log('Disconnected from socket.io drawer');
+    // };
   }, []);
 
-  useEffect(()=>{
-if(count !== 0 && active !== 4 ){
-  setVisibleToast(true);
-}
-  },[count])
+  useEffect(() => {
+    if (count !== 0 && active !== 4 && pageOn == true) {
+      setVisibleToast(true);
+    }
+  }, [count])
 
   const handleChatPageNavigation = () => {
     if (socket) {
@@ -110,13 +111,13 @@ if(count !== 0 && active !== 4 ){
   };
 
   return (
-    <View style={[styles.content, {backgroundColor: '#232530'}]}>
-      <View style={[styles.view, {backgroundColor: '#201f2b'}]}>
+    <View style={[styles.content, { backgroundColor: '#232530' }]}>
+      <View style={[styles.view, { backgroundColor: '#201f2b' }]}>
         <FastImage
-          style={{width: 70, height: 70}}
+          style={{ width: 70, height: 70 }}
           source={AppIcon.images.logo}
         />
-        <Text style={{color: '#fff'}} variant="headlineMedium">
+        <Text style={{ color: '#fff' }} variant="headlineMedium">
           {' '}
           Orange Moon
         </Text>
@@ -197,7 +198,7 @@ if(count !== 0 && active !== 4 ){
           visible={visibleToast}
           onDismiss={() => setVisibleToast(false)}
           duration={1000}
-          wrapperStyle={{top: 50}}
+          wrapperStyle={{ top: 50 }}
           style={{
             backgroundColor: '#4CAF50',
             color: 'white',
@@ -248,8 +249,9 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => ({
-  auth: state.auth,
+  token: state.auth.token,
   count: state.auth.count,
+  user: state.auth.user
 });
 
 const mapDispatchToProps = dispatch => ({

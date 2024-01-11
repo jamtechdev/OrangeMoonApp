@@ -2,8 +2,8 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable prettier/prettier */
-import React,{useEffect, useState} from 'react';
-import { Image, Pressable, StyleSheet, ActivityIndicator, Text , View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Image, Pressable, StyleSheet, ActivityIndicator, Text, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -421,43 +421,49 @@ const AppNavigator = () => {
     let auth = useSelector((state) => state.auth); // Get user role from Redux store
     const { token, user, count } = auth;
     const [appInitialized, setAppInitialized] = useState(0);
-    const [updateStatus, setUpdateStatus]=useState(0)
+    const [updateStatus, setUpdateStatus] = useState(0)
     const dispatch = useDispatch();
     useEffect(() => {
-        authService.tokenCheck(token).then(res=>{
+        authService.tokenCheck(token).then(res => {
             console.log(res, "result")
-        setAppInitialized(1)
-        }).catch(error=>{
+            setAppInitialized(1)
+        }).catch(error => {
             setAppInitialized(2);
             console.log(error, "token error")
         })
         const intervalId = setInterval(() => {
-          checkMsgCount();
+
+            checkMsgCount();
         }, 2000); // Call checkMsgCount every 2 seconds
-    
+
         return () => clearInterval(intervalId);
-      }, []); 
-    
-      useEffect(()=>{
-        if(updateStatus !== 0){
+    }, [token]);
+
+    useEffect(() => {
+        if (updateStatus !== 0) {
             console.log('dispatch here ')
             dispatch(unreadCount(updateStatus));
         }
-      },[updateStatus])
+    }, [updateStatus])
 
-      const checkMsgCount = () => {
+    const checkMsgCount = () => {
+        if (!token) {
+            return
+        }
         chatService
-          .getUnreadMassageCount(token, user.monitor.user_id)
-          .then(res => {
-            console.log(res?.data?.count, 'unread msg count ', count);
-            if (res?.data?.count != count) {
-                setUpdateStatus(res?.data?.count)
-              }
-          })
-          .catch(error => {
-            console.log(error);
-          });
-      };
+            .getUnreadMassageCount(token, user?.monitor?.user_id)
+            .then(res => {
+                console.log(res?.data?.count, 'unread msg count ', count);
+                if (res?.data?.count != count) {
+                    if (res?.data?.count !== 0) {
+                        setUpdateStatus(res?.data?.count)
+                    }
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    };
 
     // Render the appropriate navigation based on the user role
 
@@ -465,27 +471,27 @@ const AppNavigator = () => {
     if (appInitialized == 0) {
         return (
             <Splash />
-        //     <View style={styles.container}>
-        //     <ActivityIndicator size="large" color={AppStyles.color.tint} />
-        //     <Text>Loading...</Text>
-        //   </View>
+            //     <View style={styles.container}>
+            //     <ActivityIndicator size="large" color={AppStyles.color.tint} />
+            //     <Text>Loading...</Text>
+            //   </View>
         );
-      } else {
-    return (
-        <NavigationContainer>
-            <Stack.Navigator
-                initialRouteName={appInitialized == 1 ? 'DrawerStack' : 'LoginStack'} // Check if user role exists
-                screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="LoginStack" component={LoginStack} />
-                <Stack.Screen name="DrawerStack" component={DrawerStack} />
-                <Stack.Screen name="BookingDetails" component={BookingDetailsStack} />
-                <Stack.Screen name="SubReport" component={SubReportStack} />
-                <Stack.Screen name="EditProfile" component={EditProfileStack} />
-                <Stack.Screen name="DetailsReport" component={DetailsReportStack} />
-            </Stack.Navigator>
-        </NavigationContainer>
-    );
-      }
+    } else {
+        return (
+            <NavigationContainer>
+                <Stack.Navigator
+                    initialRouteName={appInitialized == 1 ? 'DrawerStack' : 'LoginStack'} // Check if user role exists
+                    screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="LoginStack" component={LoginStack} />
+                    <Stack.Screen name="DrawerStack" component={DrawerStack} />
+                    <Stack.Screen name="BookingDetails" component={BookingDetailsStack} />
+                    <Stack.Screen name="SubReport" component={SubReportStack} />
+                    <Stack.Screen name="EditProfile" component={EditProfileStack} />
+                    <Stack.Screen name="DetailsReport" component={DetailsReportStack} />
+                </Stack.Navigator>
+            </NavigationContainer>
+        );
+    }
 };
 
 const styles = StyleSheet.create({
@@ -493,7 +499,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-      },
+    },
     headerTitleStyle: {
         fontWeight: 'bold',
         textAlign: 'center',
