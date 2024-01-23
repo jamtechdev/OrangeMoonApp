@@ -72,7 +72,7 @@ function PaymentScreen({ navigation, user, token }) {
 
   const handlePayment = async () => {
     const url =
-      'https://connect.stripe.com/express/oauth/v2/authorize?response_type=code&scope=read_write&redirect_uri=https%3A%2F%2Fstaging.orangemoonsss.com%2Fstripe%2Fconnect-stripe-redirect&client_id=ca_Kz1aOhcWevW0ykZu1nnhOHp07QrKyBB5';
+      'https://connect.stripe.com/express/oauth/v2/authorize?response_type=code&scope=read_write&redirect_uri=https%3A%2F%2Fapp.orangemoonsss.com%2Fstripe%2Fconnect-stripe-redirect&client_id=ca_Kz1aqXKrCnyt770OsvE7l7sqltb6F7QV';
     const supported = await Linking.openURL(url);
     if (supported) {
       // Open the URL in the default browser
