@@ -53,6 +53,11 @@ import IncidentModel from '../components/model/IncidentModel';
 import { isLocationEnabled , promptForEnableLocationIfNeeded  } from 'react-native-android-location-enabler';
 import TokenAlert from '../components/dialog/TokenAlertDialog';
 import { unreadCount } from '../redux/actions/authActions';
+import SpInAppUpdates, {
+  NeedsUpdateResponse,
+  IAUUpdateKind,
+  StartUpdateOptions,
+} from 'sp-react-native-in-app-updates';
 
 function HomeScreen({ navigation, user, token, unreadCount }) {
   const [dashboardData, setDashboardData] = useState([]);
@@ -152,6 +157,31 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
   const helperfunction = res => {
     console.log('helper functi', res);
   };
+
+  const inAppUpdates = new SpInAppUpdates(
+    false // isDebug
+  );
+
+  const checkUpdate = () => { 
+    inAppUpdates.checkNeedsUpdate().then((result) => {
+      if (result.shouldUpdate) {
+        let updateOptions = {};
+        if (Platform.OS === 'android') {
+          // android only, on iOS the user will be promped to go to your app store page
+          updateOptions = {
+            updateType: IAUUpdateKind.FLEXIBLE,
+          };
+        }
+        inAppUpdates.startUpdate(updateOptions);
+      }
+    });
+  }
+
+  useEffect(() => {
+    checkUpdate()
+  }, [])
+  
+
   const handleActivitySubmit = () => {
     console.log('Description activity', DescriptionActivity);
     if (!DescriptionActivity || DescriptionActivity.length === 0) {
