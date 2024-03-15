@@ -58,6 +58,8 @@ import SpInAppUpdates, {
   IAUUpdateKind,
   StartUpdateOptions,
 } from 'sp-react-native-in-app-updates';
+import DeviceInfo from 'react-native-device-info';
+import { IOS_STORE_VERSION } from '../utils/Connection';
 
 function HomeScreen({ navigation, user, token, unreadCount }) {
   const [dashboardData, setDashboardData] = useState([]);
@@ -154,131 +156,110 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
   const hideTimePicker = () => {
     setTimePickerVisibility(false);
   };
-  const helperfunction = res => {
-    console.log('helper functi', res);
-  };
 
   const inAppUpdates = new SpInAppUpdates(
     false // isDebug
   );
 
   const checkUpdate = () => { 
-    inAppUpdates.checkNeedsUpdate().then((result) => {
-      if (result.shouldUpdate) {
-        let updateOptions = {};
-        if (Platform.OS === 'android') {
-          // android only, on iOS the user will be promped to go to your app store page
-          updateOptions = {
-            updateType: IAUUpdateKind.FLEXIBLE,
-          };
+    if (Platform.OS === 'android') {
+      inAppUpdates.checkNeedsUpdate().then((result) => {
+        if (result.shouldUpdate) {
+           let updateOptions = {
+              updateType: IAUUpdateKind.FLEXIBLE,
+            };
+          inAppUpdates.startUpdate(updateOptions);
         }
-        inAppUpdates.startUpdate(updateOptions);
-      }
-    });
+      });
+    }{
+      inAppUpdates.checkNeedsUpdate({ curVersion: IOS_STORE_VERSION }).then((result) => {
+        console.log(result)
+        if (result.shouldUpdate) {
+          inAppUpdates.startUpdate(updateOptions);
+        }
+      }); 
+    }
+ 
   }
 
   useEffect(() => {
     checkUpdate()
   }, [])
   
-
-  const handleActivitySubmit = () => {
-    console.log('Description activity', DescriptionActivity);
-    if (!DescriptionActivity || DescriptionActivity.length === 0) {
-      setHelpertext(true);
-    } else {
-      console.log('api');
-      setHelpertext(false);
+    const handleActivitySubmit = async () => {
+      if (!DescriptionActivity || DescriptionActivity.length === 0) {
+        setHelpertext(true);
+      return;
+      }
+    setIsLoading(true);
+    Geolocation.requestAuthorization();
+    
+    if (Platform.OS === 'android') {
+      const checkEnabled = await isLocationEnabled();
+      console.log('checkEnabled', checkEnabled);
+  
+      if (!checkEnabled) {
+        console.error('Location services are not enabled.');
+        setIsLoading(false);
+        return;
+      }
+    }
+  
+    let locationObtained = false;
+  
+    const onSuccess = (position) => {
+      const { latitude, longitude } = position.coords;
+      setLocation(position.coords);
+      console.log(latitude, longitude);
       const data = new Object({
         booking_day_report_id: bookingId,
-        activity_lat: location != null ? location?.latitude : null,
-        activity_lng: location != null ? location?.longitude : null,
+        activity_lat: latitude,
+        activity_lng: longitude,
         start_time: selectedTime,
         end_time: selectedTimeLast,
         description: DescriptionActivity,
       });
+      apiActivitySubmit(data)
+      locationObtained = true;
+    };
+  
+    const onError = (error) => {
+      console.error(error.message);
+      setIsLoading(false);
+      if (!locationObtained) {
+        console.error('Failed to obtain location.');
+      }
+    };
+  
+    Geolocation.getCurrentPosition(onSuccess, onError, {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 1000
+    });
+  };
+  const apiActivitySubmit = (data) => {
+      setHelpertext(false);
+ 
       console.log('Add new activity data', data);
       monitorService
         .bookingdayActivity(token, data)
         .then(res => {
-          helperfunction(res);
-          setMessage(res.datfvsfgbghnha.message);
+          console.log(res.data, "here active response ")
+          setMessage(res.data.message);
           setVisible3(true);
           setDescriptionActivity(0);
           hideModal1();
         })
         .catch(error => {
-           setMessage('Added successfully');
+          console.log(error,' here activity response error')
           setVisible3(true);
           setDescriptionActivity(0);
           hideModal1();
-        });      
+        }).finally(()=>setIsLoading(false))
     }
-  };
-
-  // here app state update start 
-
-// useEffect(() => {
-//     const handleAppStateChange = (nextAppState) => {
-//       if (nextAppState === 'active') {
-//         // App is currently active
-//         makeAPICallForStatus(1);
-//       } else {
-//         // App is in the background or inactive
-//         makeAPICallForStatus(0);
-//       }
-//     };
-
-//     // Subscribe to app state changes
-//     AppState.addEventListener('change', handleAppStateChange);
-
-//     // Initial API call when the component mounts (app opens)
-//     makeAPICallForStatus(1);
-
-//     // Clean up the subscription when the component unmounts
-//     return () => {
-//       AppState.removeEventListener('change', handleAppStateChange);
-//       // API call when the component unmounts (app closes)
-//       makeAPICallForStatus(0);
-//     };
-//   }, []);
-
-
-  // const checkMsgCount=()=>{
-  //   console.log(token , user.monitor.id)
-  //   chatService.getUnreadMassageCount(token, user.monitor.id).then((res)=>{
-  //     console.log(res, "unread msg count ")
-  //     unreadCount(res?.data?.count)
-  //   }).catch((error)=>{console.log(error)})
-  // }
-
-  
-// useEffect(() => {
-//   return () => {
-//     makeAPICallForStatus(0);
-//   };
-// }, []); 
-
-  
-//  const makeAPICallForStatus = (isActive) => {
-//   if(isActive){
-//     checkMsgCount()
-//   }   
-//   const data = {
-//             userId : user?.id,
-//             userActiveonApp : isActive
-//         }
-//     authService.activeStatus(data, token).then((res) => {
-//       console.log(`API call - App is ${isActive ? 'active' : 'inactive'}`, res);
-//         }).catch((error) => {
-//             console.log(error, "error");
-//         })
-//   };
 
   // here app state update end
   const handleTimeConfirm = time => {
-    // console.log("A date has been picked: ", time);
-    // console.log(moment(time).add(90, 'minutes').format('hh:mm a'));
     setSelectedTime(moment(time).format('hh:mm A'));
     setSelectTimeLast(moment(time).add(30, 'minutes').format('hh:mm A'));
     hideTimePicker();
@@ -296,10 +277,6 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
     console.warn('A date has been picked: ', time);
     setSelectTimeLast(moment(time).format('hh:mm A'));
     setSelectedTime(moment(time).subtract(30, 'minutes').format('hh:mm A'));
-    // const dt = new Date(time);
-    // const x = dt.toLocaleTimeString()
-    // console.log('time', x)
-    // setSelectTimeLast(x)
     hideTimeLastPicker();
   };
   const {
@@ -325,8 +302,6 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
     setquestionaire([...questionaire, precheckQuestions[next].question]);
     reset();
     precheckpostApi();
-    // setNext(0)
-    // hideModal()
   };
   const [time, setTime] = useState({ hours: '12', minutes: '00' });
   const [visibleTime, setVisibleTime] = React.useState(false);
@@ -336,6 +311,12 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
 
   const isFocused = useIsFocused();
   useEffect(() => {
+    Geolocation.setRNConfiguration({
+      skipPermissionRequests: false,
+      authorizationLevel: 'always',
+      enableBackgroundLocationUpdates: false,
+      locationProvider: 'auto' 
+    });
     todayReportData();
     getPrecheckData();
     getGeoLocation();
@@ -391,9 +372,6 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
     if (intervalInHours <= 8 && intervalInHours > 1) {
       active = true;
     }
-    // else if (intervalInHours <= 1 && monitorBookingDayRequest.monitorBookingRequest.temperature_button === true) {
-    //   active = true;
-    // }
 
     const getBookingTimeZone =
       monitorBookingDayRequest.booking_day.booking?.hotel?.state?.time_zone ||
@@ -438,7 +416,6 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
   };
 
   const handleNext = (data, newdata) => {
-    // console.log(precheckQuestions[next].question)
     setDescription([...description, data.first_name]);
     setStatus([...status, data.preference]);
     setquestionaire([...questionaire, precheckQuestions[next].question]);
@@ -447,11 +424,8 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
     if (next != 11) {
       setNext(next + 1);
     }
-    // console.log("data are", data)
   };
-  const handleIncident = data => {
-    console.log('data', data);
-  };
+
 
   const showModal = () => setVisible(true);
   const hideModal = () => {
@@ -491,22 +465,6 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
       }
     }
   };
-  // Old code
-  // const openPrecheckDialog = (item, name) => {
-  //   console.log('name', name)
-  //   setBookingId(item.monitor_booking_day_report.id);
-  //   console.log(item, 'here my item data ')
-  //   if (item?.monitor_booking_day_report && item?.precheckCount === 0) {
-  //     showModal()
-  //   }
-  //   else if (item?.monitor_booking_day_report && item?.precheckCount > 0) {
-  //     if (name === 'plus') {
-  //       setVisible1(true)
-  //     } else {
-  //       setVisible2(true)
-  //     }
-  //   }
-  // }
   const openActionDialog = (item, name) => {
     console.log('name', name);
     if (name === 'stop') {
@@ -619,18 +577,10 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
       });
   };
 
-  // function isTimePastOrEqual(bookingStartTime) {
-  //   const currentDateTime = new Date();
-  //   return currentDateTime >= bookingStartTime;
-  // }
-  // const getShowButtonCheck = (monitorBookingDayRequest) => {
-  //   const bookingStartTime = new Date(monitorBookingDayRequest.booking_day.date + ' ' + monitorBookingDayRequest.booking_day.start_time);
-  //   const isActive = isTimePastOrEqual(bookingStartTime);
-  //   return isActive;
-  // }
 
   const incidentSubmit = newdata => {
     console.log('newData', newdata);
+setIsLoading(true)
     const data = new Object({
       booking_day_report_id: bookingId,
       location: newdata.location,
@@ -657,15 +607,16 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
         setMessage('Something went wrong');
         setVisible3(true);
         hideModal2();
-      });
+      }).finally(()=> setIsLoading(false))
   };
   const getGeoLocation = () => {
+
     Geolocation.requestAuthorization();
     Geolocation.getCurrentPosition(
       position => {
         const { latitude, longitude } = position.coords;
         setLocation(position.coords);
-        console.log(latitude, longitude);
+        console.log(latitude, longitude, "latlong");
       },
       error => {
         console.error(error.message);
@@ -673,39 +624,54 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   };
-  const arrivedMarked  = data => {
+  const arrivedMarked = async (data) => {
     setIsLoading(true);
-    if(location && location?.latitude){
+    Geolocation.requestAuthorization();
+    
+    if (Platform.OS === 'android') {
+      const checkEnabled = await isLocationEnabled();
+      console.log('checkEnabled', checkEnabled);
+  
+      if (!checkEnabled) {
+        console.error('Location services are not enabled.');
+        setIsLoading(false);
+        return;
+      }
+    }
+  
+    let locationObtained = false;
+  
+    const onSuccess = (position) => {
+      const { latitude, longitude } = position.coords;
+      setLocation(position.coords);
+      console.log(latitude, longitude);
       const item = {
         booking_day_request_id: data.id,
-        lat: location?.latitude,
-        lng: location?.longitude
+        lat: latitude,
+        lng: longitude
       };
-      apiArrived(item)
-    }else{
-    Geolocation.requestAuthorization();
-    Geolocation.getCurrentPosition(
-      position => {
-        const { latitude, longitude } = position.coords;
-        setLocation(position.coords);
-        console.log(latitude, longitude);
-        const item = {
-          booking_day_request_id: data.id,
-          lat: latitude,
-          lng: longitude
-        };
-        apiArrived(item)
-      },
-      error => {
-        console.error(error.message);
-        setIsLoading(false);
-      },
-      { enableHighAccuracy: false, timeout: 5000, maximumAge: 1000 },
-    );
-    }
+      apiArrived(item);
+      locationObtained = true;
+    };
+  
+    const onError = (error) => {
+      console.error(error.message);
+      setIsLoading(false);
+      if (!locationObtained) {
+        console.error('Failed to obtain location.');
+      }
+    };
+  
+    Geolocation.getCurrentPosition(onSuccess, onError, {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 1000
+    });
   };
+  
 
   const apiArrived = (item)=>{
+    console.log(item, "here item ")
     monitorService
     .markArrived(token, item)
     .then(res => {
@@ -718,11 +684,51 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
       setIsLoading(false);
     });
   }
-  const apiMonitorSubmit = () => {
-    const data = new Object({
-      Monitor_Booking_Day_Report_Id: item.monitor_booking_day_report.id,
-      requestbody: { latlng: (location['latitude']+','+location['longitude']) },
+  const updateFinalSubmit = async (data) => {
+    setIsLoading(true);
+    Geolocation.requestAuthorization();
+    
+    if (Platform.OS === 'android') {
+      const checkEnabled = await isLocationEnabled();
+      console.log('checkEnabled', checkEnabled);
+  
+      if (!checkEnabled) {
+        console.error('Location services are not enabled.');
+        setIsLoading(false);
+        return;
+      }
+    }
+  
+    let locationObtained = false;
+  
+    const onSuccess = (position) => {
+      const { latitude, longitude } = position.coords;
+      setLocation(position.coords);
+      console.log(latitude, longitude);
+      const data = new Object({
+        Monitor_Booking_Day_Report_Id: item.monitor_booking_day_report.id,
+        requestbody: { latlng: (latitude+','+longitude) },
+      });
+      apiMonitorSubmit(data)
+      locationObtained = true;
+    };
+  
+    const onError = (error) => {
+      console.error(error.message);
+      setIsLoading(false);
+      if (!locationObtained) {
+        console.error('Failed to obtain location.');
+      }
+    };
+  
+    Geolocation.getCurrentPosition(onSuccess, onError, {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 1000
     });
+  };
+  const apiMonitorSubmit = (data) => {
+    console.log(data, "submitted data ")
     monitorService
       .MonitorSubmitReport(token, data)
       .then(res => {
@@ -735,11 +741,11 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
       })
       .catch(error => {
         console.log('error', error);
-        setMessage('Added successfully');
-        setVisible3(true);
+        // setMessage('Added successfully');
+        // setVisible3(true);
         setItem();
         hideModal4();
-      });
+      }).finally(()=> setIsLoading(false))
   };
 
 
@@ -795,6 +801,12 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
                     {dashboardData && dashboardData.length == 0 && (
                     <NoDataFound />
                     )}
+                    {/* <Button
+
+                  mode="contained"
+                  onPress={() => arrivedMarked({id : 520})}>
+                  Submit
+                </Button> */}
                   </View>
                 </>
               );
@@ -827,19 +839,6 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
           ListEmptyComponent={
             !dashboardData?.length && !isLoading && (<NoDataFound />)
           }
-        // ListFooterComponent={
-        //   <DataTable.Pagination
-        //     page={page}
-        //     numberOfPages={Math.ceil(dashboardData.length / itemsPerPage)}
-        //     onPageChange={page => setPage(page)}
-        //     label={`${from + 1}-${to} of ${dashboardData.length}`}
-        //     numberOfItemsPerPageList={numberOfItemsPerPageList}
-        //     numberOfItemsPerPage={itemsPerPage}
-        //     onItemsPerPageChange={onItemsPerPageChange}
-        //     showFastPaginationControls
-        //     selectPageDropdownLabel={'Rows per page'}
-        //   />
-        // }
         />
 
         <Portal>
@@ -996,13 +995,11 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
                 <FormRadioButtons
                   control={control}
                   name="preference"
-                  // defaultValue={null}
                   label="Preference"
                   options={[
                     { label: 'Yes', value: 'Yes' },
                     { label: 'No', value: 'No' },
                   ]}
-                  // Helpertext = {data[next].HelpText}
                   radioButton={radioButton}
                   setRadio={setRadio}
                   errors={errors}
@@ -1144,71 +1141,6 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
           errors2={errors2}
           setTimePickerVisibility={setTimePickerVisibility}
           selectedTime={selectedTime} />
-        {/* <Portal>
-          <Dialog visible={visible2} onDismiss={hideModal2}>
-            <View
-              style={{
-                ...styles.rowView,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-              <Dialog.Title style={globalStyles.subtitle}>
-                Incident
-              </Dialog.Title>
-              <View style={{marginTop: 10}}>
-                <Icon
-                  color={AppStyles.color?.tint}
-                  style={globalStyles.rightImageIcon}
-                  name="close"
-                  size={20}
-                  onPress={hideModal2}
-                />
-              </View>
-            </View>
-            <Dialog.Content style={{minHeight: 500}}>
-              <ScrollView
-                style={{
-                  ...globalStyles.cardContainer,
-                  minHeight: 90,
-                  paddingHorizontal: 0,
-                  paddingVertical: 0,
-                  backgroundColor: 'transparent',
-                }}
-                nestedScrollEnabled={true}>
-                <Card style={{...globalStyles.card}} mode="contained">
-                  <Card.Content>
-                    <View style={styles.detailsContainer}>
-                  
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                        }}>
-                        <Button
-                          textColor={AppStyles.color.white}
-                          buttonColor={AppStyles.color.tint}
-                          mode="contained-tonal"
-                          style={styles.buttonStyle}
-                         >
-                          Submit
-                        </Button>
-                        <Button
-                          textColor={AppStyles.color.black}
-                          buttonColor={AppStyles.color.white}
-                          mode="contained-tonal"
-                          style={styles.buttonStyle}
-                          onPress={hideModal2}>
-                          Back
-                        </Button>
-                      </View>
-                    </View>
-                  </Card.Content>
-                </Card>
-              </ScrollView>
-            </Dialog.Content>
-          </Dialog>
-        </Portal> */}
-        {/* <IncidentModal visible2={visible2} hideModal2={hideModal2} bookingId={bookingId} token={token} setMessage={setMessage} setVisible3={setVisible3} /> */}
         <Portal>
           <Portal>
             <Dialog visible={visible4} onDismiss={hideModal4}>
@@ -1230,7 +1162,7 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
                     buttonColor={AppStyles.color.tint}
                     mode="contained-tonal"
                     style={styles.buttonStyle}
-                    onPress={apiMonitorSubmit}>
+                    onPress={updateFinalSubmit}>
                     Yes
                   </Button>
                   <Button
@@ -1274,375 +1206,6 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
       </KeyboardAvoidingView>
     </>
   );
-  //---------Old code-----------------------
-  // return (
-  //   <>
-  //     <KeyboardAvoidingView
-  //       style={{ flex: 1 }}
-  //       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-  //       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
-  //     >
-  //       <ScrollView style={styles.container}
-  //         refreshControl={
-  //           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-  //         }
-  //       >
-  //         {/* <Text style={globalStyles.subtitle} onPress={() => getGeoLocation()}>Today's Booking</Text> */}
-  //         <Text style={globalStyles.subtitle}>Today's Booking</Text>
-  //         <Divider style={globalStyles.divider} />
-  //         <View style={styles.container}>
-  //           <TodayFilterSearch
-  //             dashboardDataBkp={dashboardDataBkp}
-  //             setDashboardData={setDashboardData}
-  //             searchQuery={searchQuery}
-  //             setSearchQuery={setSearchQuery}
-  //             sortDirections={sortDirections}
-  //             setSortDirections={setSortDirections}
-  //             dashboardData={dashboardData}
-  //           />
-  //           <FlatList
-  //             data={dashboardData?.slice(from, to)}
-  //             keyExtractor={item => item.id.toString()}
-  //             renderItem={({ item }) => (
-  //               <TodayBookingCardList
-  //                 item={item}
-  //                 checkActive={checkActive}
-  //                 openPrecheckDialog={openPrecheckDialog}
-  //                 openActionDialog={openActionDialog}
-  //                 navigation={navigation}
-  //               />
-  //             )}
-  //           />
-  //           {!dashboardData?.length && !isLoading && (
-  //             <Text style={globalStyles.emptyData}> Data not found</Text>
-  //           )}
-  //           <DataTable.Pagination
-  //             page={page}
-  //             numberOfPages={Math.ceil(dashboardData.length / itemsPerPage)}
-  //             onPageChange={page => setPage(page)}
-  //             label={`${from + 1}-${to} of ${dashboardData.length}`}
-  //             numberOfItemsPerPageList={numberOfItemsPerPageList}
-  //             numberOfItemsPerPage={itemsPerPage}
-  //             onItemsPerPageChange={onItemsPerPageChange}
-  //             showFastPaginationControls
-  //             selectPageDropdownLabel={'Rows per page'}
-  //           />
-  //           <Portal>
-  //             <Dialog visible={isDialogVisible} onDismiss={closeActionDialog}>
-  //               <Dialog.Title>Wellness Check{ }</Dialog.Title>
-  //               <Dialog.Content>
-  //                 {askQuestion.question1 === true && (
-  //                   <View>
-  //                     <Text>
-  //                       Within the last 10 days have you been diagnosed with
-  //                       COVID-19 or had a test confirming you have the virus?
-  //                     </Text>
-  //                     <RadioButton.Group
-  //                       onValueChange={handleRadioSelect}
-  //                       value={selectedRadio}>
-  //                       <RadioButton.Item label="yes" value="yes" />
-  //                       <RadioButton.Item label="No" value="No" />
-  //                     </RadioButton.Group>
-  //                     <HelperText
-  //                       type="error"
-  //                       visible={selectedRadio == 'yes' ? true : false}>
-  //                       Please contact the Night Auditor on duty
-  //                     </HelperText>
-  //                   </View>
-  //                 )}
-  //                 {askQuestion.question2 === true && (
-  //                   <View>
-  //                     <Text>
-  //                       Do you live in the same household with, or have you had
-  //                       close contact with someone who in the past 14 days has
-  //                       been in isolation for COVID-19 or had a test confirming
-  //                       they have the virus?
-  //                     </Text>
-  //                     <RadioButton.Group
-  //                       onValueChange={handleRadioSelect}
-  //                       value={selectedRadio}>
-  //                       <RadioButton.Item label="yes" value="yes" />
-  //                       <RadioButton.Item label="No" value="No" />
-  //                     </RadioButton.Group>
-  //                     <HelperText
-  //                       type="error"
-  //                       visible={selectedRadio == 'yes' ? true : false}>
-  //                       Please contact the Night Auditor on duty
-  //                     </HelperText>
-  //                   </View>
-  //                 )}
-  //                 {askQuestion.question3 === true && (
-  //                   <View>
-  //                     <Text>
-  //                       Have you experienced any of these symptoms today or within
-  //                       the past 24 hours, which is new or not explained by
-  //                       another reason?
-  //                     </Text>
-  //                     <Text>Fever, chills, or repeated shaking/shivering</Text>
-  //                     <Text> Cough</Text>
-  //                     <Text> Shortness of breath or difficulty breathing</Text>
-  //                     <Text> Feeling unusually weak or fatigue</Text>
-  //                     <Text> Muscle or body aches</Text>
-  //                     <Text> Headache</Text>
-  //                     <Text> Loss of taste or smell</Text>
-  //                     <Text> Sore throat</Text>
-  //                     <Text> Congestion or runny nose</Text>
-  //                     <Text> Nausea or vomiting</Text>
-  //                     <Text> Diarrhea</Text>
-  //                     <RadioButton.Group
-  //                       onValueChange={handleRadioSelect}
-  //                       value={selectedRadio}>
-  //                       <RadioButton.Item label="yes" value="yes" />
-  //                       <RadioButton.Item label="No" value="No" />
-  //                     </RadioButton.Group>
-  //                     <HelperText
-  //                       type="error"
-  //                       visible={selectedRadio == 'No' ? true : false}>
-  //                       Symptoms & Exposure: Passed, Click Submit button to
-  //                       continue
-  //                     </HelperText>
-  //                   </View>
-  //                 )}
-  //                 {askQuestion.question4 === true && (
-  //                   <View>
-  //                     <Text>
-  //                       Are all of the symptoms you're experiencing related to a
-  //                       known chronic condition?
-  //                     </Text>
-  //                     <RadioButton.Group
-  //                       onValueChange={handleRadioSelect}
-  //                       value={selectedRadio}>
-  //                       <RadioButton.Item label="yes" value="yes" />
-  //                       <RadioButton.Item label="No" value="No" />
-  //                     </RadioButton.Group>
-  //                     <HelperText
-  //                       type="error"
-  //                       visible={selectedRadio == 'yes' ? true : false}>
-  //                       Please contact the Night Auditor on duty
-  //                     </HelperText>
-  //                     <HelperText
-  //                       type="error"
-  //                       visible={selectedRadio == 'No' ? true : false}>
-  //                       Symptoms & Exposure: Passed, Click Submit button to
-  //                       continue
-  //                     </HelperText>
-  //                   </View>
-  //                 )}
-  //               </Dialog.Content>
-  //               <Dialog.Actions>
-  //                 {selectedRadio && (
-  //                   <Button mode="contained" onPress={() => actionCheckSubmit()}>
-  //                     Submit
-  //                   </Button>
-  //                 )}
-  //                 <Button mode="contained" onPress={() => closeActionDialog()}>
-  //                   Cancel
-  //                 </Button>
-  //               </Dialog.Actions>
-  //             </Dialog>
-  //           </Portal>
-
-  //           <Portal>
-  //             <Dialog visible={visible} onDismiss={hideModal}>
-  //               <View style={styles.rowView}>
-  //                 <Dialog.Title style={globalStyles.subtitle}>Wellness Check</Dialog.Title>
-  //                 <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal} />
-  //               </View>
-  //               <Dialog.Content>
-  //                 <View style={{ marginTop: 15, minHeight: 36 }}>
-  //                   <Text style={{ fontWeight: '700' }}>{precheckQuestions[next]?.question}</Text>
-  //                 </View>
-  //                 <View style={{ marginTop: 15 }}>
-  //                   <View style={{ marginLeft: 10 }}>
-  //                     <FormTextInput
-  //                       control={control}
-  //                       errors={errors}
-  //                       name="first_name"
-  //                       label="Description"
-  //                       style={{ backgroundColor: 'transparent', width: '100%' }}
-  //                     />
-  //                   </View>
-  //                   <FormRadioButtons
-  //                     control={control}
-  //                     name="preference"
-  //                     label="Preference"
-  //                     options={[
-  //                       { label: 'Yes', value: 'Yes' },
-  //                       { label: 'No', value: 'No' },
-  //                     ]}
-  //                     // Helpertext = {data[next].HelpText}
-  //                     radioButton={radioButton}
-  //                     setRadio={setRadio}
-  //                     errors={errors}
-  //                   />
-  //                 </View>
-  //               </Dialog.Content>
-  //               <Dialog.Actions>
-  //                 {next != precheckQuestions.length - 1 ? (
-  //                   <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleSubmit(handleNext)}>
-  //                     Next
-  //                   </Button>
-  //                 ) : (
-  //                   <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleSubmit(onSubmit)}>
-  //                     Submit
-  //                   </Button>
-  //                 )}
-  //               </Dialog.Actions>
-  //             </Dialog>
-  //           </Portal>
-
-  //           <Portal>
-  //             <Dialog visible={visible1} onDismiss={hideModal1}>
-  //               <View style={{ ...styles.rowView, flexDirection: 'row', justifyContent: 'space-between' }}>
-  //                 <Dialog.Title style={globalStyles.subtitle}>Add New Activity</Dialog.Title>
-  //                 <View style={{ marginTop: 10 }}>
-  //                   <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal1} />
-  //                 </View>
-  //               </View>
-  //               <Dialog.Content>
-  //                 <View style={{ flexDirection: 'row', padding: 20, justifyContent: 'space-between' }}>
-  //                   <Text style={{ fontSize: 15, fontWeight: 'bold', }}>Start Date</Text>
-  //                   <Text style={{ fontSize: 15, fontWeight: 'bold', }}>End Date</Text>
-  //                 </View>
-  //                 <View style={{ minHeight: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
-  //                   <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={{ width: 130 }} onPress={() => { showTimePicker() }}>
-  //                     {selectedTime}
-  //                   </Button>
-  //                   <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={{ width: 130 }} onPress={() => { showTimeLastPicker() }}>
-  //                     {selectedTimeLast}
-  //                   </Button>
-  //                 </View>
-  //                 <View style={{ alignItems: 'center', justifyContent: 'center', minHeight: 50 }}>
-  //                   <HelperText>
-  //                     <Text>Minimum 1/2 Hours Required</Text>
-  //                   </HelperText>
-  //                 </View>
-  //                 <View style={{ marginTop: 15 }}>
-  //                   <View style={{ marginLeft: 20, minHeight: 40 }}>
-  //                     <Text style={{ fontSize: 15, fontWeight: 'bold', }}>Description</Text>
-  //                   </View>
-  //                   <View>
-  //                     <TextInput style={{ height: 100, borderRadius: 20 }} onChangeText={(e) => setDescriptionActivity(e)} underlineColor="transparent" placeholder='description' />
-  //                   </View>
-  //                 </View>
-  //                 <HelperText style={{ minHeight: 40 }} visible={helper}>
-  //                   <HelperText type="error">This field is required</HelperText>
-  //                 </HelperText>
-  //               </Dialog.Content>
-  //               <Dialog.Actions style={{ alignItems: 'center', justifyContent: 'center' }}>
-  //                 <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleActivitySubmit}>
-  //                   Submit
-  //                 </Button>
-  //               </Dialog.Actions>
-  //             </Dialog>
-  //           </Portal>
-  //           <Portal>
-  //             <Dialog visible={visible2} onDismiss={hideModal2}>
-  //               <View style={{ ...styles.rowView, flexDirection: 'row', justifyContent: 'space-between' }}>
-  //                 <Dialog.Title style={globalStyles.subtitle}>Incident</Dialog.Title>
-  //                 <View style={{ marginTop: 10 }}>
-  //                   <Icon color={AppStyles.color?.tint} style={globalStyles.rightImageIcon} name='close' size={20} onPress={hideModal2} />
-  //                 </View>
-  //               </View>
-  //               <Dialog.Content style={{ minHeight: 500 }}>
-  //                 <ScrollView style={{ ...globalStyles.cardContainer, minHeight: 90, paddingHorizontal: 0, paddingVertical: 0, backgroundColor: 'transparent' }} nestedScrollEnabled={true}>
-  //                   <Card style={{ ...globalStyles.card }} mode='contained' >
-  //                     <Card.Content>
-  //                       <View style={styles.detailsContainer}>
-  //                         <FormTextInput control={control2} errors={errors2} name="location" label="Location" />
-  //                         <FormRadioButtons
-  //                           control={control2}
-  //                           name="external"
-  //                           label="Is External Involve"
-  //                           options={[
-  //                             { label: 'Yes', value: 'yes' },
-  //                             { label: 'No', value: 'no' },
-  //                           ]}
-  //                           errors={errors2}
-  //                         />
-  //                         <FormRadioButtons
-  //                           control={control2}
-  //                           name="witness"
-  //                           label="Is Witness Involve"
-  //                           options={[
-  //                             { label: 'Yes', value: 'yes' },
-  //                             { label: 'No', value: 'no' },
-  //                           ]}
-  //                           errors={errors2}
-  //                         />
-  //                         <FormTextInput control={control2} errors={errors2} name="incidentdescription" label="Description" />
-  //                         <View>
-  //                           <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#777' }}>Time:</Text>
-  //                         </View>
-  //                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', minHeight: 60 }}>
-  //                           <View style={{ padding: 12 }}>
-  //                             <Text style={{
-  //                               fontSize: 16,
-  //                               color: '#777',
-  //                               fontWeight: '600',
-  //                               textAlign: 'left',
-  //                               paddingBottom: 0,
-  //                             }}>{selectedTime}</Text>
-  //                           </View>
-  //                           <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={{ ...styles.buttonStyle, height: 40 }} onPress={() => setTimePickerVisibility(true)} uppercase={false}>
-  //                             Pick time
-  //                           </Button>
-  //                         </View>
-  //                         <View style={{ padding: 10 }}>
-  //                           <Divider style={globalStyles.divider} />
-  //                         </View>
-  //                         <FormTextInput control={control2} errors={errors2} name="witness_description" label="Witness Description" />
-  //                         <FormTextInput control={control2} errors={errors2} name="students" label="Students" />
-  //                         <FormTextInput control={control2} errors={errors2} name="rooms" label="Rooms" />
-  //                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-  //                           <Button textColor={AppStyles.color.white} buttonColor={AppStyles.color.tint} mode="contained-tonal" style={styles.buttonStyle} onPress={handleSubmit2(incidentSubmit)}>
-  //                             Submit
-  //                           </Button>
-  //                           <Button textColor={AppStyles.color.black} buttonColor={AppStyles.color.white} mode="contained-tonal" style={styles.buttonStyle} onPress={hideModal2}>
-  //                             Back
-  //                           </Button>
-  //                         </View>
-  //                       </View>
-  //                     </Card.Content>
-
-  //                   </Card>
-  //                 </ScrollView>
-  //               </Dialog.Content>
-  //             </Dialog>
-  //           </Portal>
-  //           {/* <IncidentModal visible2={visible2} hideModal2={hideModal2} bookingId={bookingId} token={token} setMessage={setMessage} setVisible3={setVisible3} /> */}
-  //           <HomePageModal visible4={visible4} hideModal4={hideModal4} item={item} token={token} setItem={setItem} location={location} setMessage={setMessage} setVisible3={setVisible3} />
-  //           <DateTimePickerModal
-  //             isVisible={isTimePickerVisible}
-  //             mode="time"
-  //             value={new Date()}
-  //             onConfirm={handleTimeConfirm}
-  //             onCancel={hideTimePicker}
-  //           />
-  //           <DateTimePickerModal
-  //             isVisible={isTimePickerVisibleLast}
-  //             mode="time"
-  //             value={new Date()}
-  //             onConfirm={handleTimeLastConfirm}
-  //             onCancel={hideTimeLastPicker}
-  //           />
-  //         </View>
-  //       </ScrollView>
-  //       {isLoading && (
-  //         <Portal>
-  //           <LoadingContainer />
-  //         </Portal>
-  //       )}
-  //       <Snackbar
-  //         visible={visible3}
-  //         onDismiss={() => setVisible3(false)}
-  //         duration={3000}
-  //       >
-  //         {Message}
-  //       </Snackbar>
-  //     </KeyboardAvoidingView>
-  //   </>
-  // );
 }
 
 const styles = StyleSheet.create({

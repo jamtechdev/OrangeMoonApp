@@ -30,7 +30,7 @@ const  ActivitiesCardList = ({item  }) => (
       <View style={[globalStyles.buttonRow, {alignItems: 'center'}]}>
         <View style={styles.viewRow}>
           <View style={styles.badgeheadingText}>
-          <Text style={styles.valueTextinner}>	Created At : {moment(item?.created_at).format('MM/DD/YYYY HH:MM')}</Text>
+          <Text style={styles.valueTextinner}>	Created At : {moment(item?.created_at).format('MM/DD/YYYY HH:MM:SS')}</Text>
           </View>
         </View>
       </View>
