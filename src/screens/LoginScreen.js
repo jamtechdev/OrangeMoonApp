@@ -65,12 +65,11 @@ function LoginScreen({ navigation, user, login }) {
 
 
   return (
-    <KeyboardAvoidingView
+    <View
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
+      // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      // keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
     >
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={globalStyles.container}>
         <FastImage
           style={globalStyles.logo}
@@ -168,8 +167,7 @@ function LoginScreen({ navigation, user, login }) {
           Email & Password does not match with our record
         </Snackbar>
       </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 

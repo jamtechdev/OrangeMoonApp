@@ -196,10 +196,8 @@ function EditProfileScreen({ user, token, navigation, login }) {
         });
     };
     return (
-        <KeyboardAvoidingView
+        <View
             style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
         >
             <ScrollView style={globalStyles.cardContainer} nestedScrollEnabled={true}>
                 <Card style={globalStyles.card}>
@@ -313,7 +311,7 @@ function EditProfileScreen({ user, token, navigation, login }) {
                     </Dialog.Actions>
                 </Dialog>
             </Portal>
-        </KeyboardAvoidingView>
+        </View>
     );
 }
 

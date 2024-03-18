@@ -34,6 +34,7 @@
     "react-native-gifted-chat": "^2.4.0",
     "react-native-html-to-pdf": "^0.12.0",
     "react-native-image-crop-picker": "^0.40.0",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-modal-datetime-picker": "^17.1.0",
     "react-native-multiple-select": "^0.5.12",
     "react-native-paper": "^5.8.0",

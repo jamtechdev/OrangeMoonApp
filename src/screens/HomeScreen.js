@@ -772,10 +772,8 @@ setIsLoading(true)
 
   return (
     <>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}>
+      <View
+        style={{ flex: 1 }}>
       
         <FlatList
           style={styles.container}
@@ -1203,7 +1201,7 @@ setIsLoading(true)
           duration={3000}>
           {Message}
         </Snackbar>
-      </KeyboardAvoidingView>
+      </View>
     </>
   );
 }

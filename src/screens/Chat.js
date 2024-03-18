@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { IMAGE_URL, ADMIN_ID, APP_URL, CHAT_PATH } from '../utils/Connection';
 import { useFocusEffect } from '@react-navigation/native';
 import { unreadCount } from '../redux/actions/authActions';
+import { SafeAreaView } from 'react-native-safe-area-context'
 function ChatScreen({ navigation, user, token, unreadCountAction, count }) {
 
     const [messages, setMessages] = useState([])
@@ -161,6 +162,8 @@ function ChatScreen({ navigation, user, token, unreadCountAction, count }) {
                 alwaysShowSend={true}
                 // alignTop={true}
                 // infiniteScroll={true}
+                keyboardShouldPersistTaps='never'
+                isKeyboardInternallyHandled={false}
                 placeholder="Type a message..."
                 timeTextStyle={{ left: { color: 'red' }, right: { color: 'green' } }}
             />
