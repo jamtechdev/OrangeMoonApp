@@ -841,11 +841,6 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
             !dashboardData?.length && !isLoading && (<NoDataFound />)
           }
         />
-        <Button
-          mode="contained"
-          onPress={() => getGeoLocation()}>
-          Submit
-        </Button>
         <Portal>
           <Dialog visible={isDialogVisible} onDismiss={closeActionDialog}>
             <Dialog.Title>Wellness Check{ }</Dialog.Title>
