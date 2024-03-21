@@ -50,7 +50,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import TodayBookingModel from '../components/model/TodayBookingModel';
 import NoDataFound from '../components/NoData';
 import IncidentModel from '../components/model/IncidentModel';
-import { isLocationEnabled , promptForEnableLocationIfNeeded  } from 'react-native-android-location-enabler';
+import { isLocationEnabled, promptForEnableLocationIfNeeded } from 'react-native-android-location-enabler';
 import TokenAlert from '../components/dialog/TokenAlertDialog';
 import { unreadCount } from '../redux/actions/authActions';
 import SpInAppUpdates, {
@@ -141,7 +141,7 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
     resolver: yupResolver(validationSchema),
     mode: 'onChange',
     defaultValues: {
-      first_name:'',
+      first_name: '',
       // preference: 'Yes',
     },
   };
@@ -161,52 +161,52 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
     false // isDebug
   );
 
-  const checkUpdate = () => { 
+  const checkUpdate = () => {
     if (Platform.OS === 'android') {
       inAppUpdates.checkNeedsUpdate().then((result) => {
         if (result.shouldUpdate) {
-           let updateOptions = {
-              updateType: IAUUpdateKind.FLEXIBLE,
-            };
+          let updateOptions = {
+            updateType: IAUUpdateKind.FLEXIBLE,
+          };
           inAppUpdates.startUpdate(updateOptions);
         }
       });
-    }{
+    } {
       inAppUpdates.checkNeedsUpdate({ curVersion: IOS_STORE_VERSION }).then((result) => {
         console.log(result)
         if (result.shouldUpdate) {
           inAppUpdates.startUpdate(updateOptions);
         }
-      }); 
+      });
     }
- 
+
   }
 
   useEffect(() => {
     checkUpdate()
   }, [])
-  
-    const handleActivitySubmit = async () => {
-      if (!DescriptionActivity || DescriptionActivity.length === 0) {
-        setHelpertext(true);
+
+  const handleActivitySubmit = async () => {
+    if (!DescriptionActivity || DescriptionActivity.length === 0) {
+      setHelpertext(true);
       return;
-      }
+    }
     setIsLoading(true);
     Geolocation.requestAuthorization();
-    
+
     if (Platform.OS === 'android') {
       const checkEnabled = await isLocationEnabled();
       console.log('checkEnabled', checkEnabled);
-  
+
       if (!checkEnabled) {
         console.error('Location services are not enabled.');
         setIsLoading(false);
         return;
       }
     }
-  
+
     let locationObtained = false;
-  
+
     const onSuccess = (position) => {
       const { latitude, longitude } = position.coords;
       setLocation(position.coords);
@@ -222,7 +222,7 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
       apiActivitySubmit(data)
       locationObtained = true;
     };
-  
+
     const onError = (error) => {
       console.error(error.message);
       setIsLoading(false);
@@ -230,33 +230,34 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
         console.error('Failed to obtain location.');
       }
     };
-  
-    Geolocation.getCurrentPosition(onSuccess, onError, {
-      enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 1000
-    });
+
+    Geolocation.getCurrentPosition(onSuccess, onError,
+      Platform.OS === 'android' ? { enableHighAccuracy: true } : {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 1000
+      });
   };
   const apiActivitySubmit = (data) => {
-      setHelpertext(false);
- 
-      console.log('Add new activity data', data);
-      monitorService
-        .bookingdayActivity(token, data)
-        .then(res => {
-          console.log(res.data, "here active response ")
-          setMessage(res.data.message);
-          setVisible3(true);
-          setDescriptionActivity(0);
-          hideModal1();
-        })
-        .catch(error => {
-          console.log(error,' here activity response error')
-          setVisible3(true);
-          setDescriptionActivity(0);
-          hideModal1();
-        }).finally(()=>setIsLoading(false))
-    }
+    setHelpertext(false);
+
+    console.log('Add new activity data', data);
+    monitorService
+      .bookingdayActivity(token, data)
+      .then(res => {
+        console.log(res.data, "here active response ")
+        setMessage(res.data.message);
+        setVisible3(true);
+        setDescriptionActivity(0);
+        hideModal1();
+      })
+      .catch(error => {
+        console.log(error, ' here activity response error')
+        setVisible3(true);
+        setDescriptionActivity(0);
+        hideModal1();
+      }).finally(() => setIsLoading(false))
+  }
 
   // here app state update end
   const handleTimeConfirm = time => {
@@ -315,13 +316,13 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
       skipPermissionRequests: false,
       authorizationLevel: 'always',
       enableBackgroundLocationUpdates: false,
-      locationProvider: 'auto' 
+      locationProvider: 'auto'
     });
     todayReportData();
     getPrecheckData();
     getGeoLocation();
     if (Platform.OS === 'android') {
-    handleEnabledPressed()
+      handleEnabledPressed()
     }
   }, [isFocused]);
   useEffect(() => {
@@ -580,7 +581,7 @@ function HomeScreen({ navigation, user, token, unreadCount }) {
 
   const incidentSubmit = newdata => {
     console.log('newData', newdata);
-setIsLoading(true)
+    setIsLoading(true)
     const data = new Object({
       booking_day_report_id: bookingId,
       location: newdata.location,
@@ -607,7 +608,7 @@ setIsLoading(true)
         setMessage('Something went wrong');
         setVisible3(true);
         hideModal2();
-      }).finally(()=> setIsLoading(false))
+      }).finally(() => setIsLoading(false))
   };
   const getGeoLocation = () => {
 
@@ -621,26 +622,26 @@ setIsLoading(true)
       error => {
         console.error(error.message);
       },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+      Platform.OS === 'android' ? { enableHighAccuracy: true }  : { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   };
   const arrivedMarked = async (data) => {
     setIsLoading(true);
     Geolocation.requestAuthorization();
-    
+
     if (Platform.OS === 'android') {
       const checkEnabled = await isLocationEnabled();
       console.log('checkEnabled', checkEnabled);
-  
+
       if (!checkEnabled) {
         console.error('Location services are not enabled.');
         setIsLoading(false);
         return;
       }
     }
-  
+
     let locationObtained = false;
-  
+
     const onSuccess = (position) => {
       const { latitude, longitude } = position.coords;
       setLocation(position.coords);
@@ -653,7 +654,7 @@ setIsLoading(true)
       apiArrived(item);
       locationObtained = true;
     };
-  
+
     const onError = (error) => {
       console.error(error.message);
       setIsLoading(false);
@@ -661,58 +662,59 @@ setIsLoading(true)
         console.error('Failed to obtain location.');
       }
     };
-  
-    Geolocation.getCurrentPosition(onSuccess, onError, {
-      enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 1000
-    });
-  };
-  
 
-  const apiArrived = (item)=>{
+    Geolocation.getCurrentPosition(onSuccess, onError,
+      Platform.OS === 'android' ? { enableHighAccuracy: true, } : {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 1000
+      });
+  };
+
+
+  const apiArrived = (item) => {
     console.log(item, "here item ")
     monitorService
-    .markArrived(token, item)
-    .then(res => {
-      console.log(res);
-      todayReportData();
-      setIsLoading(false);
-    })
-    .catch(error => {
-      console.log(error);
-      setIsLoading(false);
-    });
+      .markArrived(token, item)
+      .then(res => {
+        console.log(res);
+        todayReportData();
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.log(error);
+        setIsLoading(false);
+      });
   }
   const updateFinalSubmit = async (data) => {
     setIsLoading(true);
     Geolocation.requestAuthorization();
-    
+
     if (Platform.OS === 'android') {
       const checkEnabled = await isLocationEnabled();
       console.log('checkEnabled', checkEnabled);
-  
+
       if (!checkEnabled) {
         console.error('Location services are not enabled.');
         setIsLoading(false);
         return;
       }
     }
-  
+
     let locationObtained = false;
-  
+
     const onSuccess = (position) => {
       const { latitude, longitude } = position.coords;
       setLocation(position.coords);
       console.log(latitude, longitude);
       const data = new Object({
         Monitor_Booking_Day_Report_Id: item.monitor_booking_day_report.id,
-        requestbody: { latlng: (latitude+','+longitude) },
+        requestbody: { latlng: (latitude + ',' + longitude) },
       });
       apiMonitorSubmit(data)
       locationObtained = true;
     };
-  
+
     const onError = (error) => {
       console.error(error.message);
       setIsLoading(false);
@@ -720,12 +722,13 @@ setIsLoading(true)
         console.error('Failed to obtain location.');
       }
     };
-  
-    Geolocation.getCurrentPosition(onSuccess, onError, {
-      enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 1000
-    });
+
+    Geolocation.getCurrentPosition(onSuccess, onError,
+      Platform.OS === 'android' ? { enableHighAccuracy: true, } : {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 1000
+      });
   };
   const apiMonitorSubmit = (data) => {
     console.log(data, "submitted data ")
@@ -745,7 +748,7 @@ setIsLoading(true)
         // setVisible3(true);
         setItem();
         hideModal4();
-      }).finally(()=> setIsLoading(false))
+      }).finally(() => setIsLoading(false))
   };
 
 
@@ -753,7 +756,7 @@ setIsLoading(true)
     if (Platform.OS === 'android') {
       try {
         const enableResult = await promptForEnableLocationIfNeeded();
-      
+
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message);
@@ -774,7 +777,7 @@ setIsLoading(true)
     <>
       <View
         style={{ flex: 1 }}>
-      
+
         <FlatList
           style={styles.container}
           data={[{ key: 'header' }, ...dashboardData]}
@@ -797,7 +800,7 @@ setIsLoading(true)
                       dashboardData={dashboardData}
                     />
                     {dashboardData && dashboardData.length == 0 && (
-                    <NoDataFound />
+                      <NoDataFound />
                     )}
                     {/* <Button
 
@@ -822,7 +825,7 @@ setIsLoading(true)
                   openPrecheckDialog={openPrecheckDialog}
                   openActionDialog={openActionDialog}
                   navigation={navigation}
-                  ArrivedMarked={arrivedMarked }
+                  ArrivedMarked={arrivedMarked}
                 />
               );
             }
@@ -838,7 +841,11 @@ setIsLoading(true)
             !dashboardData?.length && !isLoading && (<NoDataFound />)
           }
         />
-
+        <Button
+          mode="contained"
+          onPress={() => getGeoLocation()}>
+          Submit
+        </Button>
         <Portal>
           <Dialog visible={isDialogVisible} onDismiss={closeActionDialog}>
             <Dialog.Title>Wellness Check{ }</Dialog.Title>
@@ -1030,104 +1037,106 @@ setIsLoading(true)
 
         <Portal>
           <Dialog visible={visible1} onDismiss={hideModal1}>
-            <View
-              style={{
-                ...styles.rowView,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-              <Dialog.Title style={globalStyles.subtitle}>
-                Add New Activity
-              </Dialog.Title>
-              <View style={{ marginTop: 10 }}>
-                <Icon
-                  color={AppStyles.color?.tint}
-                  style={globalStyles.rightImageIcon}
-                  name="close"
-                  size={20}
-                  onPress={hideModal1}
-                />
-              </View>
-            </View>
-            <Dialog.Content>
+            <ScrollView showsVerticalScrollIndicator={false}>
               <View
                 style={{
-                  flexDirection: 'row',
-                  padding: 20,
-                  justifyContent: 'space-between',
-                }}>
-                <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
-                  Start Time
-                </Text>
-                <Text style={{ fontSize: 15, fontWeight: 'bold' }}>End Time</Text>
-              </View>
-              <View
-                style={{
-                  minHeight: 5,
+                  ...styles.rowView,
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                 }}>
-                <Button
-                  textColor={AppStyles.color.white}
-                  buttonColor={AppStyles.color.tint}
-                  mode="contained-tonal"
-                  style={{ width: 130 }}
-                  onPress={() => {
-                    showTimePicker();
-                  }}>
-                  {selectedTime}
-                </Button>
-                <Button
-                  textColor={AppStyles.color.white}
-                  buttonColor={AppStyles.color.tint}
-                  mode="contained-tonal"
-                  style={{ width: 130 }}
-                  onPress={() => {
-                    showTimeLastPicker();
-                  }}>
-                  {selectedTimeLast}
-                </Button>
-              </View>
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  minHeight: 50,
-                }}>
-                <HelperText>
-                  <Text>Minimum 1/2 Hours Required</Text>
-                </HelperText>
-              </View>
-              <View style={{ marginTop: 15 }}>
-                <View style={{ marginLeft: 20, minHeight: 40 }}>
-                  <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
-                    Description
-                  </Text>
-                </View>
-                <View>
-                  <TextInput
-                    style={{ height: 100, borderRadius: 20 }}
-                    onChangeText={e => setDescriptionActivity(e)}
-                    underlineColor="transparent"
-                    placeholder="description"
+                <Dialog.Title style={globalStyles.subtitle}>
+                  Add New Activity
+                </Dialog.Title>
+                <View style={{ marginTop: 10 }}>
+                  <Icon
+                    color={AppStyles.color?.tint}
+                    style={globalStyles.rightImageIcon}
+                    name="close"
+                    size={20}
+                    onPress={hideModal1}
                   />
                 </View>
               </View>
-              <HelperText style={{ minHeight: 40 }} visible={helper}>
-                <HelperText type="error">This field is required</HelperText>
-              </HelperText>
-            </Dialog.Content>
-            <Dialog.Actions
-              style={{ alignItems: 'center', justifyContent: 'center' }}>
-              <Button
-                textColor={AppStyles.color.white}
-                buttonColor={AppStyles.color.tint}
-                mode="contained-tonal"
-                style={styles.buttonStyle}
-                onPress={handleActivitySubmit}>
-                Submit
-              </Button>
-            </Dialog.Actions>
+              <Dialog.Content>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    padding: 20,
+                    justifyContent: 'space-between',
+                  }}>
+                  <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
+                    Start Time
+                  </Text>
+                  <Text style={{ fontSize: 15, fontWeight: 'bold' }}>End Time</Text>
+                </View>
+                <View
+                  style={{
+                    minHeight: 5,
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}>
+                  <Button
+                    textColor={AppStyles.color.white}
+                    buttonColor={AppStyles.color.tint}
+                    mode="contained-tonal"
+                    style={{ width: 130 }}
+                    onPress={() => {
+                      showTimePicker();
+                    }}>
+                    {selectedTime}
+                  </Button>
+                  <Button
+                    textColor={AppStyles.color.white}
+                    buttonColor={AppStyles.color.tint}
+                    mode="contained-tonal"
+                    style={{ width: 130 }}
+                    onPress={() => {
+                      showTimeLastPicker();
+                    }}>
+                    {selectedTimeLast}
+                  </Button>
+                </View>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: 50,
+                  }}>
+                  <HelperText>
+                    <Text>Minimum 1/2 Hours Required</Text>
+                  </HelperText>
+                </View>
+                <View style={{ marginTop: 15 }}>
+                  <View style={{ marginLeft: 20, minHeight: 40 }}>
+                    <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
+                      Description
+                    </Text>
+                  </View>
+                  <View>
+                    <TextInput
+                      style={{ height: 100, borderRadius: 20 }}
+                      onChangeText={e => setDescriptionActivity(e)}
+                      underlineColor="transparent"
+                      placeholder="description"
+                    />
+                  </View>
+                </View>
+                <HelperText style={{ minHeight: 40 }} visible={helper}>
+                  <HelperText type="error">This field is required</HelperText>
+                </HelperText>
+              </Dialog.Content>
+              <Dialog.Actions
+                style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <Button
+                  textColor={AppStyles.color.white}
+                  buttonColor={AppStyles.color.tint}
+                  mode="contained-tonal"
+                  style={styles.buttonStyle}
+                  onPress={handleActivitySubmit}>
+                  Submit
+                </Button>
+              </Dialog.Actions>
+            </ScrollView>
           </Dialog>
         </Portal>
         <IncidentModel

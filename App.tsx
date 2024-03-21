@@ -12,7 +12,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView } from '@pietile-native-kit/keyboard-aware-scrollview';
 
 export default function App() {
   return (
@@ -22,7 +22,8 @@ export default function App() {
           style={{flex: 1}}
           contentContainerStyle={{flexGrow: 1}}
           keyboardShouldPersistTaps="handled"
-          enableOnAndroid={true}
+          enableOnAndroid='true'
+          // enableAutomaticScroll={(Platform.OS === 'ios')}
           // extraScrollHeight={Platform.select({ios: 50, android: 100})}
           >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
