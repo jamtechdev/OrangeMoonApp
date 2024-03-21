@@ -137,7 +137,7 @@ function ForgetPasswordScreen({ navigation, user, login }) {
                         value={value}
                         placeholderTextColor={AppStyles.color.grey}
                         underlineColorAndroid="transparent"
-                        right={<TextInput.Icon icon={confirmPassword ? "eye-off" : "eye"} onPress={() => setConfirmPassword(!ConfirmPassword)} />}
+                        right={<TextInput.Icon icon={confirmPassword ? "eye-off" : "eye"} onPress={() => setConfirmPassword(!confirmPassword)} />}
                     />
                 )}
             />
